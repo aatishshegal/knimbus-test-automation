@@ -1,0 +1,782 @@
+[
+    {
+        "scenario": "Full Name - Blank field",
+        "field": "FullName",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Full name is required (3-100 characters)"
+    },
+    {
+        "scenario": "Full Name - Enter only 2 char",
+        "field": "FullName",
+        "validationType": "errorMessage",
+        "value": "ab",
+        "expectedError": "Atleast 3 characters required"
+    },
+    {
+        "scenario": "Full Name - Enter leading and trailing spaces",
+        "field": "FullName",
+        "validationType": "errorMessage",
+        "value": " test name ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "Full Name - Enter HTML format",
+        "field": "FullName",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "Full Name - Enter 102 characters",
+        "field": "FullName",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 100 characters allowed"
+    },
+    {
+        "scenario": "Email - Blank field",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Email is required"
+    },
+    {
+        "scenario": "Email - Missing/misplaced @ symbol (plainaddress)",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "plainaddress",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - @missingusername.com (nothing before @)",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "@missingusername.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - username@.com (missing domain name)",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Multiple @ symbols",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@domain@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Missing top-level domain",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@domain",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Double dot in domain",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@domain..com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Trailing dot after TLD",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@domain.com.",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Domain starts with dot",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@.domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Local part starts with a dot",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": ".username@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Local part ends with a dot",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username.@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Consecutive dots in local part",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "user..name@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Unescaped space in local part",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "user name@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - @ symbol in local part, unescaped",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "user@name@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Unsupported special character",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "user!name@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - user#name@domain.com",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "user#name@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Comma instead of dot",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "usern#ame@domain,com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Non-ASCII",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "\u00fcser@domain.com",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - Whitespace only",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "    ",
+        "expectedError": "Email is required"
+    },
+    {
+        "scenario": "Email - Nothing after @",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Email - TLD too short",
+        "field": "Email",
+        "validationType": "errorMessage",
+        "value": "username@domain.c",
+        "expectedError": "Invalid email address"
+    },
+    {
+        "scenario": "Password - Blank Password",
+        "field": "Password",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Password is required (5-30 characters)"
+    },
+    {
+        "scenario": "Password - Less than 5 char",
+        "field": "Password",
+        "validationType": "errorMessage",
+        "value": "1234",
+        "expectedError": "Atleast 5 characters required"
+    },
+    {
+        "scenario": "Password - In between space",
+        "field": "Password",
+        "validationType": "errorMessage",
+        "value": "12 345",
+        "expectedError": "Space not allowed"
+    },
+    {
+        "scenario": "Password - When enter 32 characters",
+        "field": "Password",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 30 characters allowed"
+    },
+    {
+        "scenario": "Affiliation restricts input to 100 characters max",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 100 characters allowed"
+    },
+    {
+        "scenario": "Department restricts input to 100 characters max",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 100 characters allowed"
+    },
+    {
+        "scenario": "Degree restricts input to 150 characters max",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 150 characters allowed"
+    },
+    {
+        "scenario": "Year restricts input to 4 characters max",
+        "field": "admissionYear",
+        "validationType": "errorMessage",
+        "value": "20245",
+        "bypassLength": true,
+        "expectedError": "Maximum 4 characters allowed"
+    },
+    {
+        "scenario": "ID Document upload rejects file size > 1MB",
+        "field": "idDocumentFront",
+        "validationType": "fileUpload",
+        "value": "large_image.jpg",
+        "expectedError": "File size exceeded the maximum limit!"
+    },
+    {
+        "scenario": "ID Document upload rejects invalid format",
+        "field": "idDocumentFront",
+        "validationType": "fileUpload",
+        "value": "invalid_format.pdf",
+        "expectedError": "Invalid file format. Only .jpg, .jpeg, .png, image/jpeg, image/png files are allowed."
+    },
+    {
+        "scenario": "Mobile restricts input to less than 7 characters",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "12345",
+        "expectedError": "Atleast 7 characters required"
+    },
+    {
+        "scenario": "Mobile restricts input to more than 20 characters",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "1234567890123456789012",
+        "bypassLength": true,
+        "expectedError": "Maximum 20 characters allowed"
+    },
+    {
+        "scenario": "membershipStatus - Space is entered in front or back",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "membershipType - Space is entered in front or back",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "summary - Space is entered in front or back",
+        "field": "summary",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "cadre - Space is entered in front or back",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "batch - Space is entered in front or back",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "rank - Space is entered in front or back",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "designation - Space is entered in front or back",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "residentialAddress - Space is entered in front or back",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "officeAddress - Space is entered in front or back",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "areaOfStudy - Space is entered in front or back",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "qualification - Space is entered in front or back",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "department - Space is entered in front or back",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "idNumber - Space is entered in front or back",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "college - Space is entered in front or back",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+    },
+    {
+        "scenario": "membershipStatus - HTML is used",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "membershipType - HTML is used",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "summary - HTML is used",
+        "field": "summary",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "cadre - HTML is used",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "batch - HTML is used",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "rank - HTML is used",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "designation - HTML is used",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "residentialAddress - HTML is used",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "officeAddress - HTML is used",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "areaOfStudy - HTML is used",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "qualification - HTML is used",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "department - HTML is used",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "idNumber - HTML is used",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "college - HTML is used",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+    },
+    {
+        "scenario": "membershipStatus - More than 102 characters",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "membershipType - More than 102 characters",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "cadre - More than 102 characters",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "batch - More than 102 characters",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "rank - More than 102 characters",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "designation - More than 102 characters",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "department - More than 102 characters",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "idNumber - More than 102 characters",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "college - More than 102 characters",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "areaOfStudy - More than 152 characters",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 150 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "qualification - More than 152 characters",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 150 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "summary - More than 2002 characters",
+        "field": "summary",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 2000 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "residentialAddress - More than 2002 characters",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 2000 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "officeAddress - More than 2002 characters",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 2000 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "membershipType - Blank/Unselected",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Membership Type is required (100 characters)"
+    },
+    {
+        "scenario": "college - Blank/Unselected",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "College / Organization is required (100 characters)"
+    },
+    {
+        "scenario": "idNumber - Blank/Unselected",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "ID Number is required (100 characters)"
+    },
+    {
+        "scenario": "department - Blank/Unselected",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Department is required (100 characters)"
+    },
+    {
+        "scenario": "qualification - Blank/Unselected",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Qualification / Degree / Program is required (150 characters)"
+    },
+    {
+        "scenario": "areaOfStudy - Blank/Unselected",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Area of Study / Speciality is required (150 characters)"
+    },
+    {
+        "scenario": "admissionYear - Blank/Unselected",
+        "field": "admissionYear",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Admission Year is required"
+    },
+    {
+        "scenario": "mobile - Blank/Unselected",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Mobile is required (7-20 numbers)"
+    },
+    {
+        "scenario": "officePhone - Blank/Unselected",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Office Phone is required (4-20 numbers)"
+    },
+    {
+        "scenario": "residentialPhone - Blank/Unselected",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Residential Phone is required (4-20 numbers)"
+    },
+    {
+        "scenario": "officeAddress - Blank/Unselected",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Office Address is required (2000 characters)"
+    },
+    {
+        "scenario": "residentialAddress - Blank/Unselected",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Residential Address is required (2000 characters)"
+    },
+    {
+        "scenario": "nationality - Blank/Unselected",
+        "field": "nationality",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Nationality is required"
+    },
+    {
+        "scenario": "designation - Blank/Unselected",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Designation is required (100 characters)"
+    },
+    {
+        "scenario": "rank - Blank/Unselected",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Rank is required (100 characters)"
+    },
+    {
+        "scenario": "batch - Blank/Unselected",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Batch is required (100 characters)"
+    },
+    {
+        "scenario": "cadre - Blank/Unselected",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Cadre is required (100 characters)"
+    },
+    {
+        "scenario": "summary - Blank/Unselected",
+        "field": "summary",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Summary is required (2000 characters)"
+    },
+    {
+        "scenario": "membershipStatus - Blank/Unselected",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Membership Status is required (100 characters)"
+    },
+    {
+        "scenario": "officePhone - Less than 3 or 3 characters",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "12",
+        "expectedError": "Atleast 4 characters required"
+    },
+    {
+        "scenario": "residentialPhone - Less than 3 or 3 characters",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "12",
+        "expectedError": "Atleast 4 characters required"
+    },
+    {
+        "scenario": "mobile - Non-numeric characters",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "abc1234",
+        "expectedError": "Only numbers are allowed"
+    },
+    {
+        "scenario": "officePhone - Non-numeric characters",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "abc1234",
+        "expectedError": "Only numbers are allowed"
+    },
+    {
+        "scenario": "residentialPhone - Non-numeric characters",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "abc1234",
+        "expectedError": "Only numbers are allowed"
+    },
+    {
+        "scenario": "mobile - More than 21 numeric characters",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "1111111111111111111111",
+        "expectedError": "Maximum 20 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "officePhone - More than 21 numeric characters",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "1111111111111111111111",
+        "expectedError": "Maximum 20 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "residentialPhone - More than 21 numeric characters",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "1111111111111111111111",
+        "expectedError": "Maximum 20 characters allowed",
+        "bypassLength": true
+    },
+    {
+        "scenario": "admission year or year - enter 4 characters anything apart from numbers",
+        "field": "admissionYear",
+        "validationType": "errorMessage",
+        "value": "abcd",
+        "expectedError": "Only numbers are allowed"
+    }
+]
