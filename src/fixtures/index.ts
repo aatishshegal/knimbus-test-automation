@@ -227,12 +227,13 @@ export const test = base.extend<MyFixtures>({
   },
   registrationTestContext: async ({}, use) => {
     await withApiAdminSetup(async (adminApi) => {
-      const allFields = ['Gender', 'Department', 'Degree/Program', 'Designation', 'Batch', 'Nationality', 'ID Document'];
+      await adminApi.updateSecuritySettings({
+        mandatoryFields: { fields: [], isMandatory: false }
+      });
       await adminApi.updateSecuritySettings({
         selfRegistration: true,
         twoFactorAuth: false,
-        automatedVerification: true,
-        mandatoryFields: { fields: allFields, isMandatory: false }
+        automatedVerification: true
       });
     });
     
@@ -277,10 +278,12 @@ export const test = base.extend<MyFixtures>({
 
     await withApiAdminSetup(async (adminApi) => {
       await adminApi.updateSecuritySettings({
+        mandatoryFields: { fields: [], isMandatory: false }
+      });
+      await adminApi.updateSecuritySettings({
         selfRegistration: true,
         twoFactorAuth: true,
-        automatedVerification: true,
-        mandatoryFields: { fields: allFields, isMandatory: false }
+        automatedVerification: true
       });
     });
 
