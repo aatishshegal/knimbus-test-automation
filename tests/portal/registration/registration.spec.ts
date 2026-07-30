@@ -42,7 +42,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     if (process.argv.includes('--headed')) {
       await page.waitForTimeout(2000); // Visual pause
     }
-    
+
     // Submit registration
     await registrationPage.submitRegistration();
 
@@ -71,6 +71,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     const url = process.env.PORTAL_URL;
     if (!url) throw new Error('PORTAL_URL is not defined in .env');
 
+    // Portal Navigation
     await portalLoginPage.navigateTo(url);
 
     // Click "Sign In"
@@ -175,7 +176,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
   });
 
-  test('User signs up with restricted domain and gets error', async ({ 
+  test('User signs up with restricted domain and gets error', async ({
     page,
     portalLoginPage,
     registrationPage
@@ -188,24 +189,24 @@ test.describe('Portal Authentication - Registration Flows', () => {
       domainRestriction: ['yopmail.com']
     });
     await adminApi.close();
-    
+
     // Navigate to portal
     await portalLoginPage.navigateTo(process.env.PORTAL_URL as string);
     await portalLoginPage.clickElement(portalLoginPage.signInPopupTrigger, 'Sign In Popup Trigger');
     await portalLoginPage.clickElement(portalLoginPage.signUpLink, 'Sign Up Link');
-    
+
     // Registration with gmail
     await expect(registrationPage.registrationPageIdentifier).toBeVisible();
-    
+
     const timestamp = Date.now();
     const invalidEmail = `testuser_${timestamp}@gmail.com`;
-    
+
     await registrationPage.fillRegistration(`Test User ${timestamp}`, invalidEmail, 'Test@1234');
     await registrationPage.acceptTermsAndConditions();
-    
+
     // Submit registration
     await registrationPage.submitRegistration();
-    
+
     // Verify error
     const expectedError = "The email address that you have provided does not match with the allowed email provider(s) list for this library.";
     const errorLocator = page.getByText(expectedError);
@@ -221,21 +222,21 @@ test.describe('Portal Authentication - Registration Flows', () => {
     const adminApi = new AdminApiService();
     await adminApi.login();
     await adminApi.updateSecuritySettings({
-        selfRegistration: true,
-        domainRestriction: [], // Clear email domain restrictions
-        authDenyPatterns: {
-            denialPatterns: ["gmail.com"], // Add gmail.com and remove others
-            allowedPatterns: null
-        }
+      selfRegistration: true,
+      domainRestriction: [], // Clear email domain restrictions
+      authDenyPatterns: {
+        denialPatterns: ["gmail.com"], // Add gmail.com and remove others
+        allowedPatterns: null
+      }
     });
     await adminApi.close();
 
     // 2. then open library portal sydneyuniversity.knimbus.com
     await portalLoginPage.navigateTo(process.env.PORTAL_URL!);
-    
+
     // 3. click on sign in
     await portalLoginPage.signInPopupTrigger.click();
-    
+
     // 4. then you will find sign up button
     await portalLoginPage.signUpLink.click();
 
@@ -245,12 +246,12 @@ test.describe('Portal Authentication - Registration Flows', () => {
 
     // Fill registration form
     await registrationPage.fillRegistration('Test Denied', testEmail, 'Password@123');
-    
+
     // Handle T&C if present (optional depending on UI)
     try {
-         await registrationPage.acceptTermsAndConditions();
+      await registrationPage.acceptTermsAndConditions();
     } catch (e) {
-         // Ignore if T&C not present
+      // Ignore if T&C not present
     }
 
     // Click next or continue button
@@ -258,7 +259,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
 
     // 6. here it will remain on this page with said error message
     await expect(page.getByText('Access Denied', { exact: true })).toBeVisible({ timeout: 10000 });
-    
+
     // Verify we are still on the registration page
     await expect(registrationPage.registrationPageIdentifier).toBeVisible();
   });
