@@ -9,8 +9,8 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
   });
 
   test('Empty fields should keep the submit button disabled', async ({ portalLoginPage }) => {
-    const email = process.env.TEST_USER_EMAIL as string;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const email = process.env.NEGATIVE_USER_EMAIL as string;
+    const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
     await portalLoginPage.navigateTo(process.env.PORTAL_URL as string);
     await portalLoginPage.clickElement(portalLoginPage.signInPopupTrigger, 'Sign In Popup Trigger');
@@ -26,7 +26,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
   });
 
   test('Invalid email format should disable the submit button and show an error', async ({ portalLoginPage }) => {
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
     await portalLoginPage.navigateTo(process.env.PORTAL_URL as string);
     await portalLoginPage.clickElement(portalLoginPage.signInPopupTrigger, 'Sign In Popup Trigger');
@@ -40,7 +40,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
 
   test('Unregistered email should show user does not exist error', async ({ portalLoginPage }) => {
     const unregisteredEmail = `${invalidCredentials.unregisteredEmailPrefix}_${Date.now()}@yopmail.com`;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
     await portalLoginPage.login(unregisteredEmail, password);
 
@@ -48,8 +48,8 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
   });
 
   test('Invalid password should show remaining attempts error or lock the account', async ({ portalLoginPage }) => {
-    const email = process.env.TEST_USER_EMAIL as string;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const email = process.env.NEGATIVE_USER_EMAIL as string;
+    const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
     await portalLoginPage.login(email, `${password}${invalidCredentials.invalidPasswordSuffix}`);
 
@@ -63,8 +63,8 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
 
   test('Multiple incorrect passwords should lock the account', async ({ portalLoginPage }) => {
     test.slow();
-    const email = process.env.TEST_USER_EMAIL as string;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const email = process.env.NEGATIVE_USER_EMAIL as string;
+    const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
     await portalLoginPage.navigateTo(process.env.PORTAL_URL as string);
     await portalLoginPage.clickElement(portalLoginPage.signInPopupTrigger, 'Sign In Popup Trigger');

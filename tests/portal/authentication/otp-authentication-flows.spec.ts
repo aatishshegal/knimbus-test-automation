@@ -33,8 +33,8 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await adminApi.updateSecuritySettings({ twoFactorAuth: true });
     await adminApi.close();
 
-    const email = process.env.TEST_USER_EMAIL as string;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const email = process.env.OTP_USER_EMAIL as string;
+    const password = process.env.OTP_USER_PASSWORD as string;
 
     await portalLoginPage.login(email, password);
     
@@ -53,8 +53,8 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await adminApi.updateSecuritySettings({ twoFactorAuth: true });
     await adminApi.close();
 
-    const email = process.env.TEST_USER_EMAIL as string;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const email = process.env.OTP_USER_EMAIL as string;
+    const password = process.env.OTP_USER_PASSWORD as string;
 
     await portalLoginPage.login(email, password);
     await expect(otpPage.otpPageIdentifier).toBeVisible();
@@ -74,8 +74,8 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await adminApi.updateSecuritySettings({ twoFactorAuth: true });
     await adminApi.close();
 
-    const email = process.env.TEST_USER_EMAIL as string;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const email = process.env.OTP_USER_EMAIL as string;
+    const password = process.env.OTP_USER_PASSWORD as string;
 
     await portalLoginPage.login(email, password);
     await expect(otpPage.otpPageIdentifier).toBeVisible();
@@ -121,8 +121,8 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await adminApi.updateSecuritySettings({ twoFactorAuth: true });
     await adminApi.close();
 
-    const email = process.env.TEST_USER_EMAIL as string;
-    const password = process.env.TEST_USER_PASSWORD as string;
+    const email = process.env.OTP_USER_EMAIL as string;
+    const password = process.env.OTP_USER_PASSWORD as string;
 
     await portalLoginPage.login(email, password);
     await expect(otpPage.otpPageIdentifier).toBeVisible();
