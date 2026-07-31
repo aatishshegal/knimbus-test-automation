@@ -6,6 +6,6 @@ export class HomePage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.homePageIdentifier = page.getByText('Sydney University');
+    this.homePageIdentifier = page.getByText(process.env.LIBRARY_NAME as string);
   }
 }
