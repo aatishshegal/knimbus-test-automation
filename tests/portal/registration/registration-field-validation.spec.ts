@@ -28,8 +28,7 @@ test.describe('Registration Form Field Validation', () => {
         const reportData: any[] = [];
         const csvHeader = 'Scenario,Field,Test Value,Expected Error,Result,Details\n';
         
-        await page.waitForTimeout(2000);
-        await page.screenshot({ path: 'registration_page_debug.png', fullPage: true });
+
 
         // Iterate through all validation scenarios
         for (const data of validationData) {
