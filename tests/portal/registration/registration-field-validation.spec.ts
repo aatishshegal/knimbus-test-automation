@@ -14,7 +14,7 @@ test.describe('Registration Form Field Validation', () => {
         await adminApi.close();
     });
 
-    // Increase timeout to 300 seconds to safely allow all 70 data-driven scenarios to finish
+    // Increased timeout to 300 seconds to safely allow all 70 data-driven scenarios to finish
     test.setTimeout(300000);
 
     test('Data-Driven Boundary Validation on Registration Form', async ({ page, portalLoginPage, registrationPage }) => {
@@ -27,7 +27,7 @@ test.describe('Registration Form Field Validation', () => {
         // 3. Prepare CSV Report array
         const reportData: any[] = [];
         const csvHeader = 'Scenario,Field,Test Value,Expected Error,Result,Details\n';
-        
+
 
 
         // Iterate through all validation scenarios
@@ -54,9 +54,9 @@ test.describe('Registration Form Field Validation', () => {
                     }
                     else if (tagName === 'select') {
                         if (data.value === 'BLANK') {
-                            await targetField.selectOption({ index: 0 }, { timeout: 1000 }).catch(() => {});
+                            await targetField.selectOption({ index: 0 }, { timeout: 1000 }).catch(() => { });
                         } else {
-                            await targetField.selectOption(data.value, { timeout: 1000 }).catch(() => {});
+                            await targetField.selectOption(data.value, { timeout: 1000 }).catch(() => { });
                         }
                     }
                     else if (data.bypassLength === true) {
@@ -69,12 +69,12 @@ test.describe('Registration Form Field Validation', () => {
                             await targetField.focus({ timeout: 1000 });
                             await targetField.pressSequentially('a', { timeout: 1000 });
                             await targetField.clear({ timeout: 1000 });
-                            await targetField.blur({ timeout: 1000 }).catch(() => {});
+                            await targetField.blur({ timeout: 1000 }).catch(() => { });
                         } else {
                             await targetField.fill(data.value, { timeout: 1000 });
                         }
                     }
-                    
+
                     await page.locator('body').click({ position: { x: 0, y: 0 }, timeout: 1000 });
 
                     // Assert based on validation type
@@ -107,11 +107,11 @@ test.describe('Registration Form Field Validation', () => {
         const timestamp = istTime.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0] + '_IST';
         const fs = require('fs');
         const reportPath = `tests/reports/Validation_Report_${timestamp}.csv`;
-        
+
         if (!fs.existsSync('tests/reports')) {
             fs.mkdirSync('tests/reports', { recursive: true });
         }
-        
+
         fs.writeFileSync(reportPath, csvHeader + reportData.join(''));
         console.log(`\n✅ CSV Report generated successfully: ${reportPath}\n`);
     });
