@@ -80,12 +80,12 @@ export const test = base.extend<MyFixtures>({
         automatedVerification: true,
         mandatoryFields: { isMandatory: false, fields: [] }
       });
-      await adminApi.changeUserPassword(process.env.TEST_USER_EMAIL as string, process.env.TEST_USER_PASSWORD as string);
+      await adminApi.changeUserPassword(process.env.STANDARD_USER_EMAIL as string, process.env.STANDARD_USER_PASSWORD as string);
     });
 
     await use({
-      email: process.env.TEST_USER_EMAIL as string,
-      password: process.env.TEST_USER_PASSWORD as string
+      email: process.env.STANDARD_USER_EMAIL as string,
+      password: process.env.STANDARD_USER_PASSWORD as string
     });
   },
   otpUser: async ({}, use) => {
@@ -95,13 +95,13 @@ export const test = base.extend<MyFixtures>({
         automatedVerification: true,
         mandatoryFields: { isMandatory: false, fields: [] }
       });
-      await adminApi.changeUserPassword(process.env.TEST_USER_EMAIL as string, process.env.TEST_USER_PASSWORD as string);
+      await adminApi.changeUserPassword(process.env.OTP_USER_EMAIL as string, process.env.OTP_USER_PASSWORD as string);
     });
     
-    await use({ email: process.env.TEST_USER_EMAIL as string, password: process.env.TEST_USER_PASSWORD as string });
+    await use({ email: process.env.OTP_USER_EMAIL as string, password: process.env.OTP_USER_PASSWORD as string });
   },
   mandatoryDetailsUser: async ({}, use) => {
-    const testUserEmail = process.env.TEST_USER_EMAIL as string;
+    const testUserEmail = process.env.STANDARD_USER_EMAIL as string;
 
     await withApiAdminSetup(async (adminApi) => {
       await adminApi.updateSecuritySettings({
@@ -116,7 +116,7 @@ export const test = base.extend<MyFixtures>({
 
     await use({ 
       email: testUserEmail, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
   welcomePageUser: async ({}, use) => {
@@ -126,7 +126,7 @@ export const test = base.extend<MyFixtures>({
 
     await withApiAdminSetup(async (adminApi) => {
       await adminApi.addSingleUser(username, testUserEmail);
-      await adminApi.changeUserPassword(testUserEmail, process.env.TEST_USER_PASSWORD as string);
+      await adminApi.changeUserPassword(testUserEmail, process.env.STANDARD_USER_PASSWORD as string);
       await adminApi.updateSecuritySettings({
         twoFactorAuth: false,
         automatedVerification: true,
@@ -136,7 +136,7 @@ export const test = base.extend<MyFixtures>({
 
     await use({ 
       email: testUserEmail, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
   dynamicMandatoryDetailsUser: async ({}, use) => {
@@ -146,7 +146,7 @@ export const test = base.extend<MyFixtures>({
 
     await withApiAdminSetup(async (adminApi) => {
       await adminApi.addSingleUser(username, testUserEmail);
-      await adminApi.changeUserPassword(testUserEmail, process.env.TEST_USER_PASSWORD as string);
+      await adminApi.changeUserPassword(testUserEmail, process.env.STANDARD_USER_PASSWORD as string);
       await adminApi.updateSecuritySettings({
         mandatoryFields: { isMandatory: false, fields: [] }
       });
@@ -159,7 +159,7 @@ export const test = base.extend<MyFixtures>({
 
     await use({ 
       email: testUserEmail, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
   termsAndConditionUser: async ({}, use) => {
@@ -184,7 +184,7 @@ export const test = base.extend<MyFixtures>({
 
     await withApiAdminSetup(async (adminApi) => {
       await adminApi.addSingleUser(username, testUserEmail);
-      await adminApi.changeUserPassword(testUserEmail, process.env.TEST_USER_PASSWORD as string);
+      await adminApi.changeUserPassword(testUserEmail, process.env.STANDARD_USER_PASSWORD as string);
       
       await adminApi.updateSecuritySettings({
         mandatoryFields: { isMandatory: false, fields: [] }
@@ -198,7 +198,7 @@ export const test = base.extend<MyFixtures>({
 
     await use({ 
       email: testUserEmail, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
   otpAndMandatoryUser: async ({}, use) => {
@@ -208,7 +208,7 @@ export const test = base.extend<MyFixtures>({
 
     await withApiAdminSetup(async (adminApi) => {
       await adminApi.addSingleUser(username, testUserEmail);
-      await adminApi.changeUserPassword(testUserEmail, process.env.TEST_USER_PASSWORD as string);
+      await adminApi.changeUserPassword(testUserEmail, process.env.STANDARD_USER_PASSWORD as string);
       
       await adminApi.updateSecuritySettings({
         mandatoryFields: { isMandatory: false, fields: [] }
@@ -222,7 +222,7 @@ export const test = base.extend<MyFixtures>({
 
     await use({ 
       email: testUserEmail, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
   registrationTestContext: async ({}, use) => {
@@ -241,7 +241,7 @@ export const test = base.extend<MyFixtures>({
     await use({ 
       fullName: `Sign Up User ${timestamp}`,
       email: `signup_${timestamp}@yopmail.com`, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
   registrationWithMandatoryContext: async ({ browser }, use) => {
@@ -268,7 +268,7 @@ export const test = base.extend<MyFixtures>({
     await use({ 
       fullName: `Sign Up User ${timestamp}`,
       email: testUserEmail, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
   registrationOtpWelcomeContext: async ({}, use) => {
@@ -290,7 +290,7 @@ export const test = base.extend<MyFixtures>({
     await use({ 
       fullName: `Test User ${timestamp}`,
       email: testUserEmail, 
-      password: process.env.TEST_USER_PASSWORD as string 
+      password: process.env.STANDARD_USER_PASSWORD as string 
     });
   },
 });
