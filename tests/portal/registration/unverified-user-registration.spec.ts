@@ -99,6 +99,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
             await expect(page.getByText('Account verification in progress', { exact: false })).toBeVisible({ timeout: 15000 });
         });
     });
+    
     test.describe('Scenario 3: Registration when OTP (Two-Factor Auth) is Enabled', () => {
         test('User signs up, enters OTP, and lands on automated verification page', async ({
             page,

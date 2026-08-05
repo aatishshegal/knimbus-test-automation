@@ -55,10 +55,10 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
 
     await portalLoginPage.page.waitForTimeout(2000);
     const isWarningVisible = await portalLoginPage.invalidPasswordError.isVisible();
-    const isGenericErrorVisible = await portalLoginPage.page.getByText('Invalid login credential').isVisible();
+    const isGenericErrorVisible = await portalLoginPage.page.getByText('Invalid login credentials').isVisible();
     const isLockedVisible = await portalLoginPage.accountLockedError.isVisible();
-
     expect(isWarningVisible || isLockedVisible || isGenericErrorVisible).toBeTruthy();
+    
   });
 
   test('Multiple incorrect passwords should lock the account', async ({ portalLoginPage }) => {
