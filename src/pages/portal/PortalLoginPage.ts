@@ -26,7 +26,7 @@ export class PortalLoginPage extends BasePage {
     this.invalidEmailFormatError = page.getByText('Invalid email address');
     this.unregisteredUserError = page.getByText('Incorrect email address or password.', { exact: true })
       .or(page.getByText('User does not exist with the provided login details.', { exact: true }));
-    this.invalidPasswordError = page.getByText(/Incorrect email address or password\. Your remaining attempt is \d+/i)
+    this.invalidPasswordError = page.getByText(/Incorrect email address or password\.\s*Your remaining attempt is \d+/i)
       .or(page.getByText('Invalid login credential', { exact: true }));
     this.accountLockedError = page.getByText(/Your account will remain locked for (the )?next \d+m due to multiple incorrect login attempts/i);
   }
