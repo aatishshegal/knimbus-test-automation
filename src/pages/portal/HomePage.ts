@@ -12,13 +12,16 @@ export class HomePage extends BasePage {
 
   getWidgetContainer(widgetTitle: string) {
     // Finds the main row block for the widget by first finding the title
-    return this.page.locator('div.var-padding.row').filter({
+    return this.page.locator('.row').filter({
       has: this.page.locator('.grp-widget-title', { hasText: widgetTitle })
-    });
+    }).first();
   }
 
   async clickWidgetItem(widgetTitle: string, itemName: string) {
     const widget = this.getWidgetContainer(widgetTitle);
-    await widget.getByTitle(itemName, { exact: true }).or(widget.getByText(itemName, { exact: true })).first().click();
+    await widget.scrollIntoViewIfNeeded();
+    const item = widget.getByTitle(itemName, { exact: true }).or(widget.getByText(itemName, { exact: true })).first();
+    await item.waitFor({ state: 'visible', timeout: 5000 });
+    await item.click();
   }
 }

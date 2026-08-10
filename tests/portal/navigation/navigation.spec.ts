@@ -1,9 +1,9 @@
 import { test, expect } from '../../../src/fixtures';
 
-test.describe('Home Page - Top Navigation Bar', () => {
+test.describe('Global Navigation - Top Navigation Bar', () => {
 
-  test.beforeEach(async ({ portalLoginPage, homePageUser }) => {
-    await portalLoginPage.login(homePageUser.email, homePageUser.password);
+  test.beforeEach(async ({ page }) => {
+    await page.goto(process.env.PORTAL_URL as string);
   });
 
   test('Verify search bar is visible and clickable', async ({ topNavigationBar }) => {

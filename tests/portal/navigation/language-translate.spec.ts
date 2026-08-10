@@ -1,8 +1,8 @@
 import { test, expect } from '../../../src/fixtures';
 
-test.describe('Home Page - Language Translate Validations', () => {
+test.describe('Global Navigation - Language Translate Validations @navigation', () => {
   test.beforeEach(async ({ page, portalLoginPage, homePage, homePageUser, context }) => {
-    await page.goto(process.env.PORTAL_BASE_URL || 'https://sydneyuniversity.knimbus.com');
+    await page.goto(process.env.PORTAL_URL as string);
     
     // Check if the session is already active (via storageState)
     const isAlreadyLoggedIn = await homePage.homePageIdentifier.isVisible({ timeout: 3000 }).catch(() => false);

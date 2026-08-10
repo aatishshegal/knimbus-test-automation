@@ -32,15 +32,29 @@ export default defineConfig({
     // Video on retry is highly recommended to debug why WebKit/Firefox failed
     video: 'on-first-retry',
     viewport: defaultViewport,
-    storageState: storageState,
   },
 
   projects: [
     // Setup project runs exactly ONCE globally before the test suite
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    
+    // Pre-login tests (Authentication, Registration) start completely logged out
     { 
-      name: 'chromium', 
+      name: 'pre-login',
+      testMatch: /.*(authentication|registration).*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: defaultViewport, deviceScaleFactor: undefined },
+    },
+
+    // Post-login tests (Navigation, Home, etc.) inherit the cached session and wait for setup
+    { 
+      name: 'post-login',
+      testIgnore: /.*(authentication|registration|setup).*\.ts/,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined,
+        storageState: storageState 
+      },
       dependencies: ['setup'],
     },
   ],

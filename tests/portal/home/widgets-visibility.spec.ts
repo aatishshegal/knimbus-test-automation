@@ -3,8 +3,8 @@ import homePageData from '../../test-data/home-page-data.json';
 
 test.describe('Home Page - Widgets Visibility', () => {
 
-  test.beforeEach(async ({ portalLoginPage, homePageUser, homePage }) => {
-    await portalLoginPage.login(homePageUser.email, homePageUser.password);
+  test.beforeEach(async ({ page, homePage }) => {
+    await page.goto(process.env.PORTAL_URL as string);
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 

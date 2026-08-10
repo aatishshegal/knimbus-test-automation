@@ -1,20 +1,8 @@
 import { test, expect } from '../../../src/fixtures';
 
-test.describe('Home Page - Notification Icon Validations', () => {
-  test.beforeEach(async ({ page, portalLoginPage, homePage, homePageUser, context }) => {
-    // Navigate to the base URL
-    await page.goto(process.env.PORTAL_BASE_URL || 'https://sydneyuniversity.knimbus.com');
-    
-    // Check if the session is already active (via storageState)
-    const isAlreadyLoggedIn = await homePage.homePageIdentifier.isVisible({ timeout: 3000 }).catch(() => false);
-    
-    if (!isAlreadyLoggedIn) {
-      console.log('Session expired or missing. Performing UI login...');
-      await portalLoginPage.login(homePageUser.email, homePageUser.password);
-      await expect(homePage.homePageIdentifier).toBeVisible();
-      // Save the fresh session state so subsequent test cases can reuse it
-      await context.storageState({ path: '.auth/user.json' });
-    }
+test.describe('Global Navigation - Notification Icon Validations @navigation', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto(process.env.PORTAL_URL as string);
   });
 
   test('Verify notification icon is present and clickable', async ({ topNavigationBar, page }) => {

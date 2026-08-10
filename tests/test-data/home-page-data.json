@@ -20,5 +20,15 @@
   "expectedContentTypes": [
     "eBook",
     "Journal"
-  ]
+  ],
+  "searchBarData": {
+    "expectedPlaceholder": "Search journals, books, articles...",
+    "expectedDropdownOptions": [
+      "Title",
+      "Author",
+      "Everything"
+    ],
+    "invalidSearchTerm": "ab",
+    "validSearchTerm": "abc"
+  }
 }
