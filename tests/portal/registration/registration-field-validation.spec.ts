@@ -17,7 +17,7 @@ test.describe('Registration Form Field Validation', () => {
     // Increase timeout to 300 seconds to safely allow all 70 data-driven scenarios to finish
     test.setTimeout(300000);
 
-    test('Data-Driven Boundary Validation on Registration Form', async ({ page, portalLoginPage, registrationPage }) => {
+    test('Data-Driven Boundary Validation on Registration Form', async ({ page, portalLoginPage, registrationPage }, testInfo) => {
         // 1. Navigate to Registration Form
         await portalLoginPage.navigateTo(process.env.PORTAL_URL!);
         await portalLoginPage.signInPopupTrigger.click();
@@ -106,13 +106,24 @@ test.describe('Registration Form Field Validation', () => {
         const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000)); // Add 5.5 hours for IST
         const timestamp = istTime.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0] + '_IST';
         const fs = require('fs');
-        const reportPath = `tests/reports/Validation_Report_${timestamp}.csv`;
+        const csvContent = csvHeader + reportData.join('');
         
-        if (!fs.existsSync('tests/reports')) {
-            fs.mkdirSync('tests/reports', { recursive: true });
+        // Save to actual report section (test-results directory)
+        const reportDir = 'test-results';
+        const reportPath = `${reportDir}/Validation_Report_${timestamp}.csv`;
+        
+        if (!fs.existsSync(reportDir)) {
+            fs.mkdirSync(reportDir, { recursive: true });
         }
         
-        fs.writeFileSync(reportPath, csvHeader + reportData.join(''));
+        fs.writeFileSync(reportPath, csvContent);
+        
+        // Attach the report to the Playwright HTML report
+        await testInfo.attach('Validation Report', {
+            body: csvContent,
+            contentType: 'text/csv'
+        });
+        
         console.log(`\n✅ CSV Report generated successfully: ${reportPath}\n`);
     });
 });
