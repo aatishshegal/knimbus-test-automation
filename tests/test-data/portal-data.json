@@ -29,6 +29,7 @@
       "Everything"
     ],
     "invalidSearchTerm": "ab",
-    "validSearchTerm": "abc"
+    "validSearchTerm": "abc",
+    "navigationSearchTerm": "System"
   }
 }

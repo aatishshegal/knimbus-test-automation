@@ -1,5 +1,5 @@
 import { test, expect } from '../../../src/fixtures';
-import homePageData from '../../test-data/home-page-data.json';
+import portalData from '../../test-data/portal-data.json';
 
 test.describe('Home Page - Publishers and Databases', () => {
   const widgetTitle = 'Publishers & Databases';
@@ -9,7 +9,7 @@ test.describe('Home Page - Publishers and Databases', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const publisher of homePageData.expectedPublishers) {
+  for (const publisher of portalData.expectedPublishers) {
     test(`Verify ${publisher} is clickable and navigates correctly`, async ({ homePage, page }) => {
       // Scroll widget into view
       const widgetContainer = homePage.getWidgetContainer(widgetTitle);

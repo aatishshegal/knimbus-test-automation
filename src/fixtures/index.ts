@@ -9,6 +9,7 @@ import { HomePage } from '@pages/portal/HomePage';
 import { TopNavigationBar } from '@pages/portal/TopNavigationBar';
 import { TermsAndConditionsModal } from '@pages/portal/TermsAndConditionsModal';
 import { RegistrationPage } from '@pages/portal/RegistrationPage';
+import { SearchResultPage } from '@pages/portal/SearchResultPage';
 import { AdminApiService } from '../api/AdminApiService';
 
 // New API-based helper function to handle Admin Session instantly
@@ -29,6 +30,7 @@ type MyFixtures = {
   topNavigationBar: TopNavigationBar;
   termsAndConditionsModal: TermsAndConditionsModal;
   registrationPage: RegistrationPage;
+  searchResultPage: SearchResultPage;
   standardUser: { email: string, password: string };
   homePageUser: { email: string, password: string };
   otpUser: { email: string, password: string };
@@ -79,6 +81,10 @@ export const test = base.extend<MyFixtures>({
   registrationPage: async ({ page }, use) => {
     const registrationPage = new RegistrationPage(page);
     await use(registrationPage);
+  },
+  searchResultPage: async ({ page }, use) => {
+    const searchResultPage = new SearchResultPage(page);
+    await use(searchResultPage);
   },
   standardUser: async ({}, use) => {
     await withApiAdminSetup(async (adminApi) => {

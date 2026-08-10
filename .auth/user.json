@@ -2,7 +2,7 @@
   "cookies": [
     {
       "name": "GCLB",
-      "value": "\"6830c881067c7aa7\"",
+      "value": "\"cd8415718b7147ce\"",
       "domain": "sydneyuniversity.knimbus.com",
       "path": "/",
       "expires": -1,
@@ -15,7 +15,7 @@
       "value": "hyden_yopmail.com",
       "domain": ".knimbus.com",
       "path": "/",
-      "expires": 1786447543.562152,
+      "expires": 1786465845.464534,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -25,14 +25,14 @@
       "value": "org_80748e62-4963-4709-bd3b-cdc63e02704b",
       "domain": ".knimbus.com",
       "path": "/",
-      "expires": 1786447543.562353,
+      "expires": 1786465845.464709,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "SESSION",
-      "value": "MDMxZTJkMzUtMzg1NC00MGQyLTg1NDctZTc1MTNkYmFiN2Yz",
+      "value": "NDNmMGI2NjYtYzY4ZS00OWNkLTlkYTAtZTNiYTA4MzQ0N2Ux",
       "domain": "sydneyuniversity.knimbus.com",
       "path": "/",
       "expires": -1,

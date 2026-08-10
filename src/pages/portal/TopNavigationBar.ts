@@ -27,12 +27,12 @@ export class TopNavigationBar extends BasePage {
     // General top bar elements
     this.searchInput = page.locator('input[name="globalSerchItem"]');
     // The search button loses its class when active, but the SVG id remains constant
-    this.searchButton = page.locator('button').filter({ has: page.locator('#srcIcon') });
-    this.searchDropdown = page.locator('select.css-fwy7yy').or(page.locator('select').filter({ has: page.locator('option[value="doc_title"]') })).first();
+    this.searchButton = page.locator('button').filter({ has: page.locator('#srcIcon') }).filter({ visible: true });
+    this.searchDropdown = page.locator('select.css-fwy7yy').or(page.locator('select').filter({ has: page.locator('option[value="doc_title"]') })).filter({ visible: true }).first();
     // The actual notification bell icon locator based on the provided HTML
-    this.notificationIcon = page.locator('.notification-badge').first();
-    this.languageSelector = page.locator('#google_translate_element select');
-    this.profileDropdown = page.locator('.profile-dropdwn-toggle');
+    this.notificationIcon = page.locator('.notification-badge').filter({ visible: true }).first();
+    this.languageSelector = page.locator('#google_translate_element select').filter({ visible: true });
+    this.profileDropdown = page.locator('.profile-dropdwn-toggle').filter({ visible: true }).first();
 
     // Menu bar
     this.menuSource = page.locator('a.menu-btn').filter({ hasText: 'Source' });
