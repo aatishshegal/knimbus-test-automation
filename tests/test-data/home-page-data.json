@@ -1,0 +1,24 @@
+{
+  "widgets": [
+    "Browse by Section",
+    "Publishers & Databases",
+    "Academic Subjects",
+    "Content Types",
+    "Course Materials",
+    "Quick Links"
+  ],
+  "expectedPublishers": [
+    "JSTOR",
+    "IEEE",
+    "Springer"
+  ],
+  "expectedSubjects": [
+    "Literature",
+    "History",
+    "Business and Commerce"
+  ],
+  "expectedContentTypes": [
+    "eBook",
+    "Journal"
+  ]
+}
