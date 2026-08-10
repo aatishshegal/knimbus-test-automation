@@ -6,6 +6,7 @@ import { MandatoryDetailsPage } from '@pages/portal/MandatoryDetailsPage';
 import { WelcomePage } from '@pages/portal/WelcomePage';
 import { OtpPage } from '@pages/portal/OtpPage';
 import { HomePage } from '@pages/portal/HomePage';
+import { TopNavigationBar } from '@pages/portal/TopNavigationBar';
 import { TermsAndConditionsModal } from '@pages/portal/TermsAndConditionsModal';
 import { RegistrationPage } from '@pages/portal/RegistrationPage';
 import { AdminApiService } from '../api/AdminApiService';
@@ -25,9 +26,11 @@ type MyFixtures = {
   welcomePage: WelcomePage;
   otpPage: OtpPage;
   homePage: HomePage;
+  topNavigationBar: TopNavigationBar;
   termsAndConditionsModal: TermsAndConditionsModal;
   registrationPage: RegistrationPage;
   standardUser: { email: string, password: string };
+  homePageUser: { email: string, password: string };
   otpUser: { email: string, password: string };
   mandatoryDetailsUser: { email: string, password: string };
   welcomePageUser: { email: string, password: string };
@@ -65,6 +68,10 @@ export const test = base.extend<MyFixtures>({
     const homePage = new HomePage(page);
     await use(homePage);
   },
+  topNavigationBar: async ({ page }, use) => {
+    const topNavigationBar = new TopNavigationBar(page);
+    await use(topNavigationBar);
+  },
   termsAndConditionsModal: async ({ page }, use) => {
     const termsAndConditionsModal = new TermsAndConditionsModal(page);
     await use(termsAndConditionsModal);
@@ -86,6 +93,16 @@ export const test = base.extend<MyFixtures>({
     await use({
       email: process.env.STANDARD_USER_EMAIL as string,
       password: process.env.STANDARD_USER_PASSWORD as string
+    });
+  },
+  homePageUser: async ({}, use) => {
+    // The favorable backend conditions (disabling OTP/mandatory fields) and 
+    // the password update for this user are now managed strictly ONCE globally 
+    // by tests/global.setup.ts, rather than executing before every atomic test.
+
+    await use({
+      email: process.env.HOME_PAGE_USER_EMAIL as string,
+      password: process.env.HOME_PAGE_USER_PASSWORD as string
     });
   },
   otpUser: async ({}, use) => {
