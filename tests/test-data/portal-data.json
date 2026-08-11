@@ -30,6 +30,8 @@
     ],
     "invalidSearchTerm": "ab",
     "validSearchTerm": "abc",
-    "navigationSearchTerm": "System"
+    "navigationSearchTerm": "System",
+    "authorSearchTerm": "peter",
+    "autoSuggestionTerm": "future energy"
   }
 }

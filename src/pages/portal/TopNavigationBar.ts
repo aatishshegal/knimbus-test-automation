@@ -9,6 +9,14 @@ export class TopNavigationBar extends BasePage {
   readonly languageSelector: Locator;
   readonly profileDropdown: Locator;
   
+  // Profile Dropdown items
+  readonly profileName: Locator;
+  readonly profileEmail: Locator;
+  readonly profileMenuProfileLink: Locator;
+  readonly profileMenuMyLibraryLink: Locator;
+  readonly profileMenuLibrarianDashboardLink: Locator;
+  readonly profileMenuLogoutLink: Locator;
+  
   // Menu items
   readonly menuSource: Locator;
   readonly menuSection: Locator;
@@ -33,6 +41,14 @@ export class TopNavigationBar extends BasePage {
     this.notificationIcon = page.locator('.notification-badge').filter({ visible: true }).first();
     this.languageSelector = page.locator('#google_translate_element select').filter({ visible: true });
     this.profileDropdown = page.locator('.profile-dropdwn-toggle').filter({ visible: true }).first();
+    
+    // Profile Dropdown Locators
+    this.profileName = page.locator('.profile-info-name');
+    this.profileEmail = page.locator('.profile-info-email');
+    this.profileMenuProfileLink = page.locator('.profile-item').filter({ hasText: 'Profile' }).first();
+    this.profileMenuMyLibraryLink = page.locator('.profile-item').filter({ hasText: 'My Library' }).first();
+    this.profileMenuLibrarianDashboardLink = page.locator('.profile-item').filter({ hasText: 'Librarian Dashboard' }).first();
+    this.profileMenuLogoutLink = page.locator('.profile-item').filter({ hasText: 'Logout' }).first();
 
     // Menu bar
     this.menuSource = page.locator('a.menu-btn').filter({ hasText: 'Source' });

@@ -5,10 +5,12 @@ test.describe('Global Navigation - Notification Icon Validations @navigation', (
     await page.goto(process.env.PORTAL_URL as string);
   });
 
-  test('Verify notification icon is present and clickable', async ({ topNavigationBar, page }) => {
+  test('Verify notification icon is present', async ({ topNavigationBar }) => {
     // Assert notification icon is visible
     await expect(topNavigationBar.notificationIcon).toBeVisible();
+  });
 
+  test('Verify clicking on notification icon opens a pop-up', async ({ topNavigationBar, page }) => {
     // Google Translate injects overlays that intercept pointer events. Hide it before clicking.
     await page.evaluate(() => {
       const gTranslate = document.getElementById('google_translate_element');
