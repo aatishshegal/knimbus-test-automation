@@ -33,5 +33,36 @@
     "navigationSearchTerm": "System",
     "authorSearchTerm": "peter",
     "autoSuggestionTerm": "future energy"
+  },
+  "searchResultScenarios": {
+    "globalSearch": {
+      "triggerType": "searchBar",
+      "query": "Science",
+      "expectedTabs": ["eCatalog", "Research", "Section", "Multimedia", "Opac"],
+      "defaultSorting": "Best Matched",
+      "defaultView": "Grid View",
+      "innerSearchPlaceholder": "Search within results",
+      "showingTextRegex": "^Showing [\\d,]+ for Science$"
+    },
+    "sortingOptions": [
+      {
+        "option": "Alphabetically",
+        "validatorType": "alphabetical"
+      },
+      {
+        "option": "Newest First",
+        "validatorType": "dateDescending"
+      },
+      {
+        "option": "SJR Rank",
+        "validatorType": "sjrRank"
+      }
+    ]
+  },
+  "translationData": {
+    "targetLanguageLabel": "Hindi",
+    "targetLanguageValue": "hi",
+    "defaultLanguageLabel": "English",
+    "defaultLanguageValue": ""
   }
 }

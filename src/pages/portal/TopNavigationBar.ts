@@ -67,6 +67,10 @@ export class TopNavigationBar extends BasePage {
   async searchFor(query: string) {
     await this.searchInput.fill(query);
     await this.searchButton.click();
+    // Workaround: Aggressively dismiss the auto-suggestion dropdown. 
+    // Escape sometimes fails if the input loses focus during navigation, so we also click a neutral spot.
+    await this.page.keyboard.press('Escape');
+    await this.page.mouse.click(0, 0);
   }
 
   async openProfileMenu() {
