@@ -136,9 +136,16 @@ export const test = base.extend<MyFixtures>({
     await use({ email: process.env.OTP_USER_EMAIL as string, password: process.env.OTP_USER_PASSWORD as string });
   },
   mandatoryDetailsUser: async ({}, use) => {
-    const testUserEmail = process.env.STANDARD_USER_EMAIL as string;
+    const testUserEmail = process.env.MANDATORY_USER_EMAIL as string;
+    const testUserPassword = process.env.MANDATORY_USER_PASSWORD as string;
 
     await withApiAdminSetup(async (adminApi) => {
+      // Ensure the user exists and has the correct password before testing
+      await adminApi.changeUserPassword(testUserEmail, testUserPassword).catch(async () => {
+         await adminApi.addSingleUser("Mandatory Test User", testUserEmail);
+         await adminApi.changeUserPassword(testUserEmail, testUserPassword);
+      });
+
       await adminApi.updateSecuritySettings({
         mandatoryFields: { isMandatory: false, fields: [] }
       });
@@ -146,12 +153,13 @@ export const test = base.extend<MyFixtures>({
         twoFactorAuth: false,
         mandatoryFields: { isMandatory: true, fields: ['Gender', 'Designation', 'Degree/Program'] }
       });
-      await adminApi.clearUserProfileFields(testUserEmail, "Automation User");
+      await adminApi.clearUserProfileFields(testUserEmail, "Mandatory Test User");
     });
 
     await use({ 
       email: testUserEmail, 
-      password: process.env.STANDARD_USER_PASSWORD as string 
+      password: testUserPassword 
+
     });
   },
   welcomePageUser: async ({}, use) => {
