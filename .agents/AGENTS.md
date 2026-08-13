@@ -78,3 +78,6 @@ When configuring admin preconditions for test cases, you MUST NOT use the UI to 
    - Update the local `info` object in the method with the new value.
    - Add the specific `/ws/update...` endpoint you intercepted to the `endpoints` array in `saveElibraryDTO()`. The method will broadcast the DTO to all endpoints in the array.
 5. **Usage in Tests:** Call `adminApi.updateSecuritySettings({...})` in the `beforeAll` block of your test file to instantly set up the required state.
+
+## Temporary Files & Scratch Scripts
+- **Clean Up After Yourself:** If you create any temporary scratch scripts (e.g., to extract DOM elements or test API endpoints), you MUST delete them immediately after use and once the actual test case is confirmed to be working. Do not leave dead code in the repository.
