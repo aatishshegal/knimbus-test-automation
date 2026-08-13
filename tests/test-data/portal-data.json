@@ -1,0 +1,76 @@
+{
+  "widgets": [
+    "Browse by Section",
+    "Publishers & Databases",
+    "Academic Subjects",
+    "Content Types",
+    "Course Materials",
+    "Quick Links"
+  ],
+  "expectedPublishers": [
+    "JSTOR",
+    "IEEE",
+    "Springer"
+  ],
+  "expectedSubjects": [
+    "Literature",
+    "History",
+    "Business and Commerce"
+  ],
+  "expectedContentTypes": [
+    "eBook",
+    "Journal"
+  ],
+  "searchBarData": {
+    "expectedPlaceholder": "Search journals, books, articles...",
+    "expectedDropdownOptions": [
+      "Title",
+      "Author",
+      "Everything"
+    ],
+    "invalidSearchTerm": "ab",
+    "validSearchTerm": "abc",
+    "navigationSearchTerm": "System",
+    "authorSearchTerm": "peter",
+    "autoSuggestionTerm": "future energy"
+  },
+  "searchResultScenarios": {
+    "globalSearch": {
+      "triggerType": "searchBar",
+      "query": "Science",
+      "expectedTabs": ["eCatalog", "Research", "Section", "Multimedia", "Opac"],
+      "defaultSorting": "Best Matched",
+      "defaultView": "Grid View",
+      "innerSearchPlaceholder": "Search within results",
+      "showingTextRegex": "^Showing [\\d,]+ for Science$"
+    },
+    "sortingOptions": [
+      {
+        "option": "Alphabetically",
+        "validatorType": "alphabetical"
+      },
+      {
+        "option": "Newest First",
+        "validatorType": "dateDescending"
+      },
+      {
+        "option": "SJR Rank",
+        "validatorType": "sjrRank"
+      }
+    ],
+    "saveSearchQueries": [
+      "Engineering", "Physics", "Science", "Data", "Robotics", 
+      "Artificial Intelligence", "Computer Science", "Mathematics", 
+      "Chemistry", "Biology", "Mechanical Engineering", 
+      "Electrical Engineering", "Software Engineering", 
+      "Machine Learning", "Data Science", "Cybersecurity", 
+      "Astronomy", "Biotechnology", "Electronics", "Quantum Computing"
+    ]
+  },
+  "translationData": {
+    "targetLanguageLabel": "Hindi",
+    "targetLanguageValue": "hi",
+    "defaultLanguageLabel": "English",
+    "defaultLanguageValue": ""
+  }
+}

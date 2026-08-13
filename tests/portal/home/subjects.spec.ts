@@ -1,5 +1,5 @@
 import { test, expect } from '../../../src/fixtures';
-import homePageData from '../../test-data/home-page-data.json';
+import portalData from '../../test-data/portal-data.json';
 
 test.describe('Home Page - Academic Subjects', () => {
   const widgetTitle = 'Academic Subjects';
@@ -9,7 +9,7 @@ test.describe('Home Page - Academic Subjects', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const subject of homePageData.expectedSubjects) {
+  for (const subject of portalData.expectedSubjects) {
     test(`Verify subject ${subject} is clickable and navigates correctly`, async ({ homePage, page }) => {
       // Scroll widget into view
       const widgetContainer = homePage.getWidgetContainer(widgetTitle);
