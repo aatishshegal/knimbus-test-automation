@@ -67,13 +67,32 @@ export class TopNavigationBar extends BasePage {
   async searchFor(query: string) {
     await this.searchInput.fill(query);
     await this.searchButton.click();
-    // Workaround: Aggressively dismiss the auto-suggestion dropdown. 
-    // Escape sometimes fails if the input loses focus during navigation, so we also click a neutral spot.
+    
+    // Wait for the search results page to begin loading
+    await this.page.waitForURL(/search/i, { timeout: 15000 }).catch(() => {});
+    
+    // Workaround: Aggressively dismiss the auto-suggestion dropdown.
+    // Ensure the input has focus so it catches the Escape key event.
+    await this.searchInput.focus().catch(() => {});
     await this.page.keyboard.press('Escape');
-    await this.page.mouse.click(0, 0);
+    await this.page.waitForTimeout(500);
+    await this.page.keyboard.press('Escape');
+    
+    // Finally, remove focus
+    await this.searchInput.blur().catch(() => {});
+    
+    // Click a neutral spot to ensure any overlay is gone
+    await this.page.mouse.click(10, 10);
   }
 
   async openProfileMenu() {
     await this.profileDropdown.click();
+  }
+
+  async navigateToMyLibrary() {
+    await this.openProfileMenu();
+    await this.profileMenuMyLibraryLink.click();
+    // Removed networkidle wait because it causes flaky timeouts when background requests linger
+    await this.page.waitForURL(/my-library/i, { timeout: 15000 }).catch(() => {});
   }
 }

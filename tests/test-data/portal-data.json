@@ -57,6 +57,14 @@
         "option": "SJR Rank",
         "validatorType": "sjrRank"
       }
+    ],
+    "saveSearchQueries": [
+      "Engineering", "Physics", "Science", "Data", "Robotics", 
+      "Artificial Intelligence", "Computer Science", "Mathematics", 
+      "Chemistry", "Biology", "Mechanical Engineering", 
+      "Electrical Engineering", "Software Engineering", 
+      "Machine Learning", "Data Science", "Cybersecurity", 
+      "Astronomy", "Biotechnology", "Electronics", "Quantum Computing"
     ]
   },
   "translationData": {

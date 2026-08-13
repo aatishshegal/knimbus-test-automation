@@ -9,6 +9,8 @@ export class SearchResultPage extends BasePage {
   readonly innerSearchInput: Locator;
   readonly searchCountText: Locator;
   readonly filtersSidebar: Locator;
+  readonly saveSearchButton: Locator;
+  readonly toastNotification: Locator;
   
   // View Options
   readonly viewOptionList: Locator;
@@ -50,6 +52,10 @@ export class SearchResultPage extends BasePage {
     
     this.activePageIndicator = page.locator('.pagin-active, .pagination .active').first();
     this.nextPageButton = page.locator('.pagination [title="Next"], .pagination [aria-label="Next"]').first();
+    
+    // Save Search & Toast
+    this.saveSearchButton = page.locator('img[alt="Save"], img[title="Save"], .save-search-btn').first();
+    this.toastNotification = page.locator('.toast, .snackbar, #toast-container, .alert, .MuiSnackbar-root, .success-message, .toast-message, [role="alert"]').or(page.locator('text=/Your search has been saved|The search is already saved|You have already saved this search/i')).first();
   }
   
   /**
@@ -101,5 +107,25 @@ export class SearchResultPage extends BasePage {
         return yearMatch ? parseInt(yearMatch[0], 10) : 0;
       }).filter(year => year > 0); // Exclude items without a detectable year
     });
+  }
+  /**
+   * Returns a Locator for a specific search result card by index.
+   * Elements within this locator can be accessed using standard chaining, e.g.:
+   * card.locator('.title')
+   */
+  getSearchResultCard(index: number = 0): Locator {
+    return this.page.locator('.grid-view-card').nth(index);
+  }
+
+  /**
+   * Selects a random search result card from the current page.
+   */
+  async getRandomSearchResultCard(): Promise<Locator> {
+    const count = await this.page.locator('.grid-view-card').count();
+    if (count === 0) {
+      throw new Error('No search result cards found on the page.');
+    }
+    const randomIndex = Math.floor(Math.random() * count);
+    return this.getSearchResultCard(randomIndex);
   }
 }
