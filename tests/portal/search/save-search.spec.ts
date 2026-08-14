@@ -67,25 +67,33 @@ test.describe('Save Search Functionality @search', () => {
     await topNavigationBar.searchFor(randomQuery);
     await expect(searchResultPage.searchCountText).toBeVisible({ timeout: 15000 });
 
-    // 2. Click Save Search
+    // 2. Click Save Search and wait for toast with retry logic
     await expect(searchResultPage.saveSearchButton).toBeVisible();
-    await page.waitForTimeout(2000); // Wait for Javascript listeners to fully attach
-    await searchResultPage.saveSearchButton.click();
     
-    // Wait for a toast
-    const toast = page.locator('text=/search has been saved|already saved/i').last();
-    await expect(toast).toBeVisible({ timeout: 10000 });
+    // Target the actual alert dialog rather than a raw text match which might resolve to hidden elements
+    const toast = page.getByRole('alert').filter({ hasText: /search has been saved|already saved/i }).first();
+    
+    // Playwright is so fast it might click before React attaches the onClick listener.
+    // We use expect.toPass to retry clicking if the toast doesn't appear.
+    await expect(async () => {
+      await searchResultPage.saveSearchButton.click();
+      await expect(toast).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 15000 });
+    
     let toastText = await toast.innerText();
     
     // 3. If it was a fresh save, we need to save it AGAIN to verify the "already saved" logic.
     if (!toastText.toLowerCase().includes('already')) {
-      // Wait for it to disappear
+      // Wait for the previous toast to disappear
       await expect(toast).not.toBeVisible({ timeout: 15000 }).catch(() => {});
-      await page.waitForTimeout(1000);
-      await searchResultPage.saveSearchButton.click();
       
-      const newToast = page.locator('text=/search has been saved|already saved/i').last();
-      await expect(newToast).toBeVisible({ timeout: 10000 });
+      const newToast = page.getByRole('alert').filter({ hasText: /search has been saved|already saved/i }).first();
+      
+      // Retry clicking again until the 'already saved' toast appears
+      await expect(async () => {
+        await searchResultPage.saveSearchButton.click();
+        await expect(newToast).toBeVisible({ timeout: 3000 });
+      }).toPass({ timeout: 15000 });
       toastText = await newToast.innerText();
     }
     

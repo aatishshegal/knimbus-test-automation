@@ -1,5 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../BasePage';
+import { FilterPanelPage } from './FilterPanelPage';
 
 export class SearchResultPage extends BasePage {
   readonly searchResultIdentifier: Locator;
@@ -11,6 +12,7 @@ export class SearchResultPage extends BasePage {
   readonly filtersSidebar: Locator;
   readonly saveSearchButton: Locator;
   readonly toastNotification: Locator;
+  readonly filterPanel: FilterPanelPage;
   
   // View Options
   readonly viewOptionList: Locator;
@@ -56,6 +58,8 @@ export class SearchResultPage extends BasePage {
     // Save Search & Toast
     this.saveSearchButton = page.locator('img[alt="Save"], img[title="Save"], .save-search-btn').first();
     this.toastNotification = page.locator('.toast, .snackbar, #toast-container, .alert, .MuiSnackbar-root, .success-message, .toast-message, [role="alert"]').or(page.locator('text=/Your search has been saved|The search is already saved|You have already saved this search/i')).first();
+    
+    this.filterPanel = new FilterPanelPage(page);
   }
   
   /**
@@ -74,13 +78,20 @@ export class SearchResultPage extends BasePage {
       // Intercept the API call that searches/sorts
       await this.page.waitForResponse(response => 
         response.url().includes('search') && response.status() === 200, 
-        { timeout: 10000 }
+        { timeout: 15000 }
       );
     } catch (error) {
       console.warn('API intercept for search/sort timed out. Assuming DOM updated natively.');
     }
-    // Also wait for the results container to stabilize
-    await this.page.waitForLoadState('networkidle');
+    
+    // Remove flaky networkidle which hangs on analytics/polling APIs
+    // Instead, wait for the actual results DOM to be visible and stable
+    await this.page.waitForTimeout(1000); 
+    
+    // Ensure at least one result card or the 'no results' container is visible.
+    // Do NOT wrap this in a try-catch that swallows the error. If the loader is still spinning,
+    // this will wait up to 15 seconds for the loader to disappear and results to show.
+    await this.page.locator('.grid-view-card, .list-view-card, .detail-container, .no-data').first().waitFor({ state: 'visible', timeout: 15000 });
   }
 
   /**

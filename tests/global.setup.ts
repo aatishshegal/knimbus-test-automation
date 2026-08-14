@@ -4,7 +4,7 @@ import { AdminApiService } from '../src/api/AdminApiService';
 // Force an empty storage state so setup always gets a fresh browser
 setup.use({ storageState: { cookies: [], origins: [] } });
 
-setup('Global Setup - API Preconditions and UI Authentication', async ({ page, portalLoginPage, homePage }) => {
+setup('Global Setup - API Preconditions and UI Authentication', async ({ page, portalLoginPage, homePage, termsAndConditionsModal }) => {
   const adminApi = new AdminApiService();
   await adminApi.login();
 
@@ -34,7 +34,13 @@ setup('Global Setup - API Preconditions and UI Authentication', async ({ page, p
   
   await page.goto(process.env.PORTAL_URL as string);
   await portalLoginPage.login(email, password);
+  
+  // Wait for the home page to load first
   await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
+  
+  // NOW check for the T&C popup (give it a moment to appear via React state if necessary)
+  await page.waitForTimeout(2000);
+  await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
   
   await page.context().storageState({ path: '.auth/user.json' });
   console.log('[Global Setup] Global session cached successfully!');
