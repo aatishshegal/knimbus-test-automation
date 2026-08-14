@@ -31,7 +31,7 @@ test.describe('Registration Form Field Validation', () => {
 
 
         // Iterate through all validation scenarios
-        for (const data of validationData) {
+        for (const data of validationData.scenarios) {
             console.log(`Testing Scenario: ${data.scenario}`);
 
             // Fetch the target locator from the RegistrationPage object dynamically based on the field name in JSON

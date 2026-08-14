@@ -1,27 +1,40 @@
 {
-  "widgets": [
-    "Browse by Section",
-    "Publishers & Databases",
-    "Academic Subjects",
-    "Content Types",
-    "Course Materials",
-    "Quick Links"
-  ],
-  "expectedPublishers": [
-    "JSTOR",
-    "IEEE",
-    "Springer"
-  ],
-  "expectedSubjects": [
-    "Literature",
-    "History",
-    "Business and Commerce"
-  ],
-  "expectedContentTypes": [
-    "eBook",
-    "Journal"
-  ],
+  "widgets": {
+    "_description": "Used in: tests/portal/home/widgets-visibility.spec.ts (Validates presence of widgets on homepage)",
+    "data": [
+      "Browse by Section",
+      "Publishers & Databases",
+      "Academic Subjects",
+      "Content Types",
+      "Course Materials",
+      "Quick Links"
+    ]
+  },
+  "expectedPublishers": {
+    "_description": "Used in: tests/portal/home/publishers.spec.ts (Validates publisher logos/links)",
+    "data": [
+      "JSTOR",
+      "IEEE",
+      "Springer"
+    ]
+  },
+  "expectedSubjects": {
+    "_description": "Used in: tests/portal/home/subjects.spec.ts (Validates academic subject filters)",
+    "data": [
+      "Literature",
+      "History",
+      "Business and Commerce"
+    ]
+  },
+  "expectedContentTypes": {
+    "_description": "Used in: tests/portal/home/content-types.spec.ts (Validates content type filters)",
+    "data": [
+      "eBook",
+      "Journal"
+    ]
+  },
   "searchBarData": {
+    "_description": "Used in: tests/portal/navigation/search-bar.spec.ts",
     "expectedPlaceholder": "Search journals, books, articles...",
     "expectedDropdownOptions": [
       "Title",
@@ -36,9 +49,16 @@
   },
   "searchResultScenarios": {
     "globalSearch": {
+      "_description": "Used in: tests/portal/search/search-results.spec.ts (validates basic search result layout, tabs, defaults)",
       "triggerType": "searchBar",
       "query": "Science",
-      "expectedTabs": ["eCatalog", "Research", "Section", "Multimedia", "Opac"],
+      "expectedTabs": [
+        "eCatalog",
+        "Research",
+        "Section",
+        "Multimedia",
+        "Opac"
+      ],
       "defaultSorting": "Best Matched",
       "defaultView": "Grid View",
       "innerSearchPlaceholder": "Search within results",
@@ -46,6 +66,7 @@
     },
     "sortingOptions": [
       {
+        "_description": "Used in: tests/portal/search/search-results-sorting.spec.ts",
         "option": "Alphabetically",
         "validatorType": "alphabetical"
       },
@@ -59,18 +80,79 @@
       }
     ],
     "saveSearchQueries": [
-      "Engineering", "Physics", "Science", "Data", "Robotics", 
-      "Artificial Intelligence", "Computer Science", "Mathematics", 
-      "Chemistry", "Biology", "Mechanical Engineering", 
-      "Electrical Engineering", "Software Engineering", 
-      "Machine Learning", "Data Science", "Cybersecurity", 
-      "Astronomy", "Biotechnology", "Electronics", "Quantum Computing"
+      "Engineering",
+      "Physics",
+      "Science",
+      "Data",
+      "Robotics",
+      "Artificial Intelligence",
+      "Computer Science",
+      "Mathematics",
+      "Chemistry",
+      "Biology",
+      "Mechanical Engineering",
+      "Electrical Engineering",
+      "Software Engineering",
+      "Machine Learning",
+      "Data Science",
+      "Cybersecurity",
+      "Astronomy",
+      "Biotechnology",
+      "Electronics",
+      "Quantum Computing"
     ]
   },
   "translationData": {
+    "_description": "Used in: tests/portal/navigation/translation.spec.ts",
     "targetLanguageLabel": "Hindi",
     "targetLanguageValue": "hi",
     "defaultLanguageLabel": "English",
     "defaultLanguageValue": ""
-  }
+  },
+  "filterPanelScenarios": [
+    {
+      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Standard filter scenarios: expand, collapse, multiple filters)",
+      "query": "Robotics",
+      "categories": [
+        {
+          "name": "Source",
+          "values": [
+            "IEEE"
+          ]
+        },
+        {
+          "name": "Content",
+          "values": [
+            "Journal"
+          ]
+        }
+      ]
+    },
+    {
+      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Test: should preserve applied filters when switching tabs)",
+      "query": "International",
+      "categories": [
+        {
+          "name": "ABDC Journal Rating",
+          "values": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Test: should reduce result count and show applied chip when using inner search box)",
+      "query": "data",
+      "innerSearchQuery": "Science",
+      "expectedDrilldownText": "Drilldown to: Science",
+      "categories": [
+        {
+          "name": "Content",
+          "values": [
+            "Journal"
+          ]
+        }
+      ]
+    }
+  ]
 }

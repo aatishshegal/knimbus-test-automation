@@ -1,7 +1,7 @@
 import { test, expect } from '../../../src/fixtures';
 import portalData from '../../test-data/portal-data.json';
 
-test.describe('Home Page - Content Types', () => {
+test.describe('Home Page - Content Types Section', () => {
   const widgetTitle = 'Content Types';
 
   test.beforeEach(async ({ page, homePage }) => {
@@ -9,7 +9,7 @@ test.describe('Home Page - Content Types', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const contentType of portalData.expectedContentTypes) {
+  for (const contentType of portalData.expectedContentTypes.data) {
     test(`Verify ${contentType} card is clickable and navigates correctly`, async ({ homePage, page }) => {
       const widgetContainer = homePage.getWidgetContainer(widgetTitle);
       await widgetContainer.scrollIntoViewIfNeeded();

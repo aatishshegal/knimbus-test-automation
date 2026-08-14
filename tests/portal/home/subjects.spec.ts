@@ -9,7 +9,7 @@ test.describe('Home Page - Academic Subjects', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const subject of portalData.expectedSubjects) {
+  for (const subject of portalData.expectedSubjects.data) {
     test(`Verify subject ${subject} is clickable and navigates correctly`, async ({ homePage, page }) => {
       // Scroll widget into view
       const widgetContainer = homePage.getWidgetContainer(widgetTitle);

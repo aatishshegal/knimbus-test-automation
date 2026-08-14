@@ -9,7 +9,7 @@ test.describe('Home Page - Publishers and Databases', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const publisher of portalData.expectedPublishers) {
+  for (const publisher of portalData.expectedPublishers.data) {
     test(`Verify ${publisher} is clickable and navigates correctly`, async ({ homePage, page }) => {
       // Scroll widget into view
       const widgetContainer = homePage.getWidgetContainer(widgetTitle);
