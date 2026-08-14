@@ -52,7 +52,13 @@
       "_description": "Used in: tests/portal/search/search-results.spec.ts (validates basic search result layout, tabs, defaults)",
       "triggerType": "searchBar",
       "query": "Science",
-      "expectedTabs": ["eCatalog", "Research", "Section", "Multimedia", "Opac"],
+      "expectedTabs": [
+        "eCatalog",
+        "Research",
+        "Section",
+        "Multimedia",
+        "Opac"
+      ],
       "defaultSorting": "Best Matched",
       "defaultView": "Grid View",
       "innerSearchPlaceholder": "Search within results",
@@ -74,12 +80,26 @@
       }
     ],
     "saveSearchQueries": [
-      "Engineering", "Physics", "Science", "Data", "Robotics", 
-      "Artificial Intelligence", "Computer Science", "Mathematics", 
-      "Chemistry", "Biology", "Mechanical Engineering", 
-      "Electrical Engineering", "Software Engineering", 
-      "Machine Learning", "Data Science", "Cybersecurity", 
-      "Astronomy", "Biotechnology", "Electronics", "Quantum Computing"
+      "Engineering",
+      "Physics",
+      "Science",
+      "Data",
+      "Robotics",
+      "Artificial Intelligence",
+      "Computer Science",
+      "Mathematics",
+      "Chemistry",
+      "Biology",
+      "Mechanical Engineering",
+      "Electrical Engineering",
+      "Software Engineering",
+      "Machine Learning",
+      "Data Science",
+      "Cybersecurity",
+      "Astronomy",
+      "Biotechnology",
+      "Electronics",
+      "Quantum Computing"
     ]
   },
   "translationData": {
@@ -100,7 +120,12 @@
             "IEEE"
           ]
         },
-        { "name": "Content", "values": ["Journal"] }
+        {
+          "name": "Content",
+          "values": [
+            "Journal"
+          ]
+        }
       ]
     },
     {
@@ -117,10 +142,17 @@
     },
     {
       "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Test: should reduce result count and show applied chip when using inner search box)",
-      "query": "Health",
-      "innerSearchQuery": "Nature",
-      "expectedDrilldownText": "Drilldown to: Nature",
-      "categories": []
+      "query": "data",
+      "innerSearchQuery": "Science",
+      "expectedDrilldownText": "Drilldown to: Science",
+      "categories": [
+        {
+          "name": "Content",
+          "values": [
+            "Journal"
+          ]
+        }
+      ]
     }
   ]
 }
