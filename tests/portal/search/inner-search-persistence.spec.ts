@@ -49,47 +49,7 @@ test.describe('Inner Search Filter Persistence', () => {
 
         // 3. Action 1: Apply Sorting
         try {
-            await searchResultPage.sortingDropdownToggle.click();
-            await page.waitForTimeout(1000); // Wait for dropdown to populate
-
-            // Fetch all available sort options from the dropdown
-            const sortOptionsLocator = searchResultPage.sortOptionsContainer.locator('a, .dropdown-item');
-            const count = await sortOptionsLocator.count();
-            
-            // Collect options and prioritize them
-            const sortOptions: { index: number; text: string }[] = [];
-            for (let i = 0; i < count; i++) {
-                const text = await sortOptionsLocator.nth(i).innerText();
-                sortOptions.push({ index: i, text: text.trim() });
-            }
-            
-            // Move 'Best Matched' to the end of the array
-            const bestMatchedIndex = sortOptions.findIndex(o => o.text.includes('Best Matched'));
-            if (bestMatchedIndex !== -1) {
-                const bestMatchedOption = sortOptions.splice(bestMatchedIndex, 1)[0];
-                sortOptions.push(bestMatchedOption);
-            }
-
-            // Close the dropdown so we can click them cleanly in the loop
-            await searchResultPage.sortingDropdownToggle.click();
-            await page.waitForTimeout(500);
-
-            // Loop and apply each sort option
-            for (const option of sortOptions) {
-                await searchResultPage.sortingDropdownToggle.click();
-                await page.waitForTimeout(500); // Allow dropdown animation
-
-                // Click the option
-                const optionLocator = searchResultPage.sortOptionsContainer.locator('a, .dropdown-item').nth(option.index);
-                await optionLocator.click();
-                
-                // Wait for search results to reload after sorting
-                await searchResultPage.waitForResultsToReload();
-
-                isIntact = await searchResultPage.filterPanel.isInnerSearchFilterApplied(innerQuery);
-                logResult('Apply Sorting', `Filter intact after sorting by ${option.text}`, isIntact, `Drilldown was ${isIntact ? 'intact' : 'lost'} after sorting`);
-                expect.soft(isIntact).toBeTruthy();
-            }
+            await searchResultPage.applyAllSortOptionsAndVerifyPersistence(innerQuery, logResult);
         } catch (e) {
             logResult('Apply Sorting', 'Apply all sorting options', false, `Failed to interact with sorting: ${(e as Error).message}`);
             expect.soft(false, 'Apply Sorting failed').toBeTruthy();

@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../BasePage';
 
 export class RegistrationPage extends BasePage {
@@ -88,5 +88,82 @@ export class RegistrationPage extends BasePage {
   
   async submitRegistration() {
     await this.clickElement(this.continueButton, 'Continue Button');
+  }
+
+  /**
+   * Executes a list of dynamic field validation scenarios.
+   * This logic is encapsulated here to keep the test spec linear and logicless.
+   */
+  async executeValidationScenarios(scenarios: any[], logResultCallback: (data: any, passed: boolean, message: string) => void) {
+    for (const data of scenarios) {
+        console.log(`Testing Scenario: ${data.scenario}`);
+
+        // Fetch the target locator from the RegistrationPage object dynamically based on the field name in JSON
+        const targetField = (this as any)[data.field] as Locator;
+
+        let resultStatus = 'Passed';
+        let resultDetails = '';
+
+        if (targetField) {
+            try {
+                const tagName = await targetField.evaluate((el: HTMLElement) => el.tagName.toLowerCase()).catch(() => 'input');
+                // Always clear the existing value before filling per user requirement, EXCEPT for file inputs and selects
+                if (tagName !== 'select' && data.field !== 'idDocumentFront' && data.field !== 'idDocumentBack') {
+                    await targetField.clear({ timeout: 1000 });
+                }
+
+                if (data.field === 'idDocumentFront' || data.field === 'idDocumentBack') {
+                    const filePath = `tests/test-data/files/${data.value}`;
+                    await targetField.setInputFiles(filePath, { timeout: 1000 });
+                }
+                else if (tagName === 'select') {
+                    if (data.value === 'BLANK') {
+                        await targetField.selectOption({ index: 0 }, { timeout: 1000 }).catch(() => {});
+                    } else {
+                        await targetField.selectOption(data.value, { timeout: 1000 }).catch(() => {});
+                    }
+                }
+                else {
+                    if (data.value !== 'BLANK') {
+                        await targetField.fill(data.value, { timeout: 1000 });
+                        await targetField.blur();
+                    }
+                }
+
+                // Verify Validation State
+                if (data.expectedValidity === 'invalid') {
+                    const validationMessage = await targetField.evaluate((el: HTMLInputElement) => el.validationMessage).catch(() => '');
+                    const isCssInvalid = await targetField.evaluate((el: HTMLElement) => el.classList.contains('is-invalid') || el.classList.contains('ng-invalid')).catch(() => false);
+                    
+                    if (!validationMessage && !isCssInvalid) {
+                        resultStatus = 'Failed';
+                        resultDetails = 'Field accepted invalid input without triggering HTML5 or CSS validation.';
+                    } else {
+                        resultDetails = `Validation triggered successfully. Message: ${validationMessage}`;
+                    }
+                }
+                else if (data.expectedValidity === 'valid') {
+                     const isCssInvalid = await targetField.evaluate((el: HTMLElement) => el.classList.contains('is-invalid')).catch(() => false);
+                     if (isCssInvalid) {
+                         resultStatus = 'Failed';
+                         resultDetails = 'Field incorrectly flagged valid input as invalid.';
+                     } else {
+                         resultDetails = 'Input accepted as valid.';
+                     }
+                }
+
+            } catch (e) {
+                resultStatus = 'Failed';
+                resultDetails = `Error interacting with field: ${(e as Error).message}`;
+            }
+        } else {
+            resultStatus = 'Failed';
+            resultDetails = `Locator for field '${data.field}' not mapped in RegistrationPage.`;
+        }
+
+        const passed = resultStatus === 'Passed';
+        logResultCallback(data, passed, resultDetails);
+        expect.soft(passed, resultDetails).toBeTruthy();
+    }
   }
 }

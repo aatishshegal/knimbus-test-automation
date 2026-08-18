@@ -27,10 +27,7 @@ test.describe('Search Results Validations @search', () => {
     await expect(searchResultPage.searchResultIdentifier).toBeAttached();
 
     // 3. Verify all expected tabs are visible
-    for (const tabName of scenario.expectedTabs) {
-        const tab = searchResultPage.getTabByName(tabName);
-        await expect(tab).toBeVisible({ timeout: 15000 });
-    }
+    await searchResultPage.verifyTabsPresent(scenario.expectedTabs);
   });
 
   test('Verify eCatalog is the default active tab', async ({ topNavigationBar, searchResultPage }) => {
