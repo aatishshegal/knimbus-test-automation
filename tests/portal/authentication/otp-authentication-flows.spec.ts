@@ -96,16 +96,7 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
         console.log(`Attempts remaining detected: ${attemptsLeft}. Locking account...`);
 
         // Loop until it locks using abstract POM methods
-        for (let i = 0; i < attemptsLeft; i++) {
-            await otpPage.submitOtp(INVALID_OTP_FULL);
-
-            // Wait for the UI state to update after clicking verify
-            await expect(otpPage.invalidOtpError.or(otpPage.otpExhaustedError)).toBeVisible();
-            
-            if (await otpPage.otpExhaustedError.isVisible()) {
-                break;
-            }
-        }
+        await otpPage.exhaustInvalidOtpAttempts(attemptsLeft, INVALID_OTP_FULL);
         await expect(otpPage.otpExhaustedError).toBeVisible();
     }
   });
@@ -127,17 +118,9 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await portalLoginPage.login(email, password);
     await expect(otpPage.otpPageIdentifier).toBeVisible();
 
-    // 2. Act & Assert - Loop to hit the limit
+    // 2. Act & Assert - Use POM method to loop and hit the limit
     const maxResends = 3;
-    for (let i = 1; i <= maxResends; i++) {
-        console.log(`Waiting for Resend OTP button to become active (Attempt ${i})...`);
-        // Wait for the resend button to become active (the 60s timer to expire)
-        await otpPage.resendOtpButton.waitFor({ state: 'visible', timeout: 70000 });
-        await otpPage.clickElement(otpPage.resendOtpButton, `Resend OTP Button (Attempt ${i})`);
-        
-        // Short delay to allow the UI/timer to reset
-        await page.waitForTimeout(3000);
-    }
+    await otpPage.exhaustResendOtpLimit(maxResends);
 
     // 3. Assert Limit Exhaustion
     // After 3 resends, the timer counts down one final time. Once it hits 00:00, 

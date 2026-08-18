@@ -31,8 +31,8 @@ When a test fails, the AI MUST NOT guess the fix.
 ## Strict Anti-Pattern Rules (Do NOT Violate)
 - **Strict SRP for POMs:** Agents must create dedicated Page Object files for every distinct page/modal. "God Classes" that combine multiple pages (e.g., Login + OTP) are strictly banned.
 - **No Dynamic Routing:** Agents must write deterministic tests. Page Objects must never use `locator.or()` to guess the landing page.
-- **Data-Driven Testing Required:** Test data must be read from JSON files in the `tests/test-data/` directory. No string manipulation for data generation inside `spec.ts` files.
-- **No Logic in Tests:** Complex control flow (`for` loops, `if/else`) inside test specifications is prohibited. All complex interactions must be encapsulated in Utilities or Page Objects.
+- **STRICT ENFORCEMENT - No Hardcoded Test Inputs:** Under NO circumstances should an agent hardcode search queries, expected array lists (e.g., `['tab1', 'tab2']`), or literal strings inside test specifications. ALL inputs and expected values MUST be extracted dynamically from `tests/test-data/portal-data.json`.
+- **STRICT ENFORCEMENT - Pure POM Encapsulation:** Do NOT use `for` loops, `if/else` conditions, or complex array iteration inside `.spec.ts` files. If a test requires iterating over elements (like verifying multiple tabs, filters, or widgets), you MUST create a single helper method inside the respective Page Object Model (e.g., `verifyTabsPresent(expectedTabs)`) and call that method from the test. Spec files must remain linear and logicless.
 - **Consume Setup State:** If a `global.setup.ts` file generates a `storageState`, fixtures must consume it rather than performing redundant UI logins.
 
 ## Intelligent Debugging & Execution Strategy

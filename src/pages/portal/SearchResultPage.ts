@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../BasePage';
 import { FilterPanelPage } from './FilterPanelPage';
 
@@ -70,23 +70,27 @@ export class SearchResultPage extends BasePage {
   }
 
   /**
+   * Encapsulates the logic of verifying multiple tabs to avoid control flow in test specs
+   */
+  async verifyTabsPresent(expectedTabs: string[]) {
+    for (const tabName of expectedTabs) {
+      console.log(`[DEBUG] Validating presence of tab: ${tabName}`);
+      await expect(this.getTabByName(tabName)).toBeVisible({ timeout: 15000 });
+    }
+  }
+
+  /**
    * Explicitly wait for the backend API to finish sorting/reloading the results.
    * Uses network interception instead of hardcoded timeouts.
    */
   async waitForResultsToReload() {
-    try {
-      // Intercept the API call that searches/sorts
-      await this.page.waitForResponse(response => 
-        response.url().includes('search') && response.status() === 200, 
-        { timeout: 15000 }
-      );
-    } catch (error) {
-      console.warn('API intercept for search/sort timed out. Assuming DOM updated natively.');
-    }
+    await this.page.waitForResponse(
+      response => response.url().includes('search/sort') && response.status() === 200, 
+      { timeout: 5000 }
+    ).catch(() => console.log('API intercept for search/sort timed out. Assuming DOM updated natively.'));
     
-    // Remove flaky networkidle which hangs on analytics/polling APIs
-    // Instead, wait for the actual results DOM to be visible and stable
-    await this.page.waitForTimeout(1000); 
+    // Fallback: wait for the loading spinner (if any) to detach
+    await this.page.locator('.loader, .spinner').first().waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
     
     // Ensure at least one result card or the 'no results' container is visible.
     // Do NOT wrap this in a try-catch that swallows the error. If the loader is still spinning,
@@ -138,5 +142,57 @@ export class SearchResultPage extends BasePage {
     }
     const randomIndex = Math.floor(Math.random() * count);
     return this.getSearchResultCard(randomIndex);
+  }
+  /**
+   * Fetches all available sort options, prioritizing 'Best Matched' to the end.
+   */
+  async getSortOptionsAndPrioritize(): Promise<{ index: number; text: string }[]> {
+      await this.sortingDropdownToggle.click();
+      await this.page.waitForTimeout(1000); // Wait for dropdown to populate
+
+      const sortOptionsLocator = this.sortOptionsContainer.locator('a, .dropdown-item');
+      const count = await sortOptionsLocator.count();
+      
+      const sortOptions: { index: number; text: string }[] = [];
+      for (let i = 0; i < count; i++) {
+          const text = await sortOptionsLocator.nth(i).innerText();
+          sortOptions.push({ index: i, text: text.trim() });
+      }
+      
+      const bestMatchedIndex = sortOptions.findIndex(o => o.text.includes('Best Matched'));
+      if (bestMatchedIndex !== -1) {
+          const bestMatchedOption = sortOptions.splice(bestMatchedIndex, 1)[0];
+          sortOptions.push(bestMatchedOption);
+      }
+
+      await this.sortingDropdownToggle.click();
+      await this.page.waitForTimeout(500);
+      
+      return sortOptions;
+  }
+
+  /**
+   * Applies a sort option by its dropdown index and waits for the results to reload.
+   */
+  async applySortOptionByIndex(index: number) {
+      await this.sortingDropdownToggle.click();
+      await this.page.waitForTimeout(500); // Allow dropdown animation
+
+      const optionLocator = this.sortOptionsContainer.locator('a, .dropdown-item').nth(index);
+      await optionLocator.click();
+      
+      await this.waitForResultsToReload();
+  }
+  /**
+   * Iterates through all available sort options, applies them, and verifies if the inner search drilldown is preserved.
+   */
+  async applyAllSortOptionsAndVerifyPersistence(innerQuery: string, logResultCallback: (action: string, assertion: string, passed: boolean, message: string) => void) {
+      const sortOptions = await this.getSortOptionsAndPrioritize();
+      for (const option of sortOptions) {
+          await this.applySortOptionByIndex(option.index);
+          const isIntact = await this.filterPanel.isInnerSearchFilterApplied(innerQuery);
+          logResultCallback('Apply Sorting', `Filter intact after sorting by ${option.text}`, isIntact, `Drilldown was ${isIntact ? 'intact' : 'lost'} after sorting`);
+          expect.soft(isIntact).toBeTruthy();
+      }
   }
 }

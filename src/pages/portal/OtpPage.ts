@@ -42,4 +42,26 @@ export class OtpPage extends BasePage {
     }
     return -1;
   }
+
+  async exhaustInvalidOtpAttempts(attemptsLeft: number, invalidOtp: string) {
+    for (let i = 0; i < attemptsLeft; i++) {
+        await this.submitOtp(invalidOtp);
+        
+        await this.invalidOtpError.or(this.otpExhaustedError).waitFor({ state: 'visible', timeout: 15000 });
+        
+        if (await this.otpExhaustedError.isVisible()) {
+            break;
+        }
+    }
+  }
+
+  async exhaustResendOtpLimit(maxResends: number) {
+    for (let i = 1; i <= maxResends; i++) {
+        console.log(`Waiting for Resend OTP button to become active (Attempt ${i})...`);
+        await this.resendOtpButton.waitFor({ state: 'visible', timeout: 70000 });
+        await this.clickElement(this.resendOtpButton, `Resend OTP Button (Attempt ${i})`);
+        
+        await this.page.waitForTimeout(3000);
+    }
+  }
 }
