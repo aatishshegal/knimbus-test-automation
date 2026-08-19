@@ -1,6 +1,6 @@
 {
   "widgets": {
-    "_description": "Used in: tests/portal/home/widgets-visibility.spec.ts (Validates presence of widgets on homepage)",
+    "_description": "Used in: tests/portal/home/widgets-visibility.spec.ts (Suite: 'Home Page - Widgets Visibility' -> Test: 'Verify [Widget] section is rendered on the Home Page')",
     "data": [
       "Browse by Section",
       "Publishers & Databases",
@@ -11,7 +11,7 @@
     ]
   },
   "expectedPublishers": {
-    "_description": "Used in: tests/portal/home/publishers.spec.ts (Validates publisher logos/links)",
+    "_description": "Used in: tests/portal/home/publishers.spec.ts (Suite: 'Home Page - Publishers and Databases' -> Test: 'Verify [Publisher] is clickable and navigates correctly')",
     "data": [
       "JSTOR",
       "IEEE",
@@ -19,7 +19,7 @@
     ]
   },
   "expectedSubjects": {
-    "_description": "Used in: tests/portal/home/subjects.spec.ts (Validates academic subject filters)",
+    "_description": "Used in: tests/portal/home/subjects.spec.ts (Suite: 'Home Page - Academic Subjects' -> Test: 'Verify subject [Subject] is clickable and navigates correctly')",
     "data": [
       "Literature",
       "History",
@@ -27,14 +27,14 @@
     ]
   },
   "expectedContentTypes": {
-    "_description": "Used in: tests/portal/home/content-types.spec.ts (Validates content type filters)",
+    "_description": "Used in: tests/portal/home/content-types.spec.ts (Suite: 'Home Page - Content Types Section' -> Test: 'Verify [Type] card is clickable and navigates correctly')",
     "data": [
       "eBook",
       "Journal"
     ]
   },
   "searchBarData": {
-    "_description": "Used in: tests/portal/navigation/search-bar.spec.ts",
+    "_description": "Used in: tests/portal/navigation/search-bar.spec.ts (Used across all tests in Suite: 'Global Navigation - Search Bar Validations @navigation')",
     "expectedPlaceholder": "Search journals, books, articles...",
     "expectedDropdownOptions": [
       "Title",
@@ -49,7 +49,7 @@
   },
   "searchResultScenarios": {
     "globalSearch": {
-      "_description": "Used in: tests/portal/search/search-results.spec.ts (validates basic search result layout, tabs, defaults)",
+      "_description": "Used in 3 files: (1) tests/portal/search/search-results.spec.ts (All tests in Suite: 'Search Results Validations @search'), (2) tests/portal/search/search-results-sorting.spec.ts (All tests in Suite: 'Search Results Sorting Validations'), (3) tests/portal/search/detail-page.spec.ts (Suite: 'Search Detail Page Functionality' -> Test: 'Verify search result landing, tabs... flow')",
       "triggerType": "searchBar",
       "query": "Science",
       "expectedTabs": [
@@ -66,7 +66,7 @@
     },
     "sortingOptions": [
       {
-        "_description": "Used in: tests/portal/search/search-results-sorting.spec.ts",
+        "_description": "Used in: tests/portal/search/search-results-sorting.spec.ts (Suite: 'Search Results Sorting Validations' -> Test: 'Verify sorting functionality for: [Option]')",
         "option": "Alphabetically",
         "validatorType": "alphabetical"
       },
@@ -79,6 +79,7 @@
         "validatorType": "sjrRank"
       }
     ],
+    "_saveSearchQueriesDescription": "Used in 3 files: (1) tests/portal/search/save-search.spec.ts (Suite: 'Save Search Functionality @search'), (2) tests/portal/search/detail-page.spec.ts (Suite: 'Search Detail Page Functionality'), (3) tests/portal/search/search-result-content.spec.ts (Suite: 'Search Result Content Validations @search')",
     "saveSearchQueries": [
       "Engineering",
       "Physics",
@@ -104,7 +105,7 @@
     ]
   },
   "translationData": {
-    "_description": "Used in: tests/portal/navigation/translation.spec.ts",
+    "_description": "Used in: tests/portal/navigation/language-translate.spec.ts (Suite: 'Global Navigation - Language Translate Validations @navigation' -> Test: 'Verify selecting [Target] and switching back to [Default]')",
     "targetLanguageLabel": "Hindi",
     "targetLanguageValue": "hi",
     "defaultLanguageLabel": "English",
@@ -112,7 +113,7 @@
   },
   "filterPanelScenarios": [
     {
-      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Standard filter scenarios: expand, collapse, multiple filters)",
+      "_description": "Used in 2 files: (1) tests/portal/search/filter-panel.spec.ts (All tests in Suites: 'Search Filter Panel Scenarios' & 'Custom Flow Search Scenarios'), (2) tests/portal/search/inner-search-persistence.spec.ts (Suite: 'Inner Search Filter Persistence' -> Test: 'Verify Drilldown Filter remains intact...')",
       "query": "Robotics",
       "categories": [
         {
@@ -155,5 +156,79 @@
         }
       ]
     }
-  ]
+  ],
+  "researchPlus": {
+    "_description": "Used in: tests/portal/research-plus/research-plus.spec.ts (All tests in Suite: 'Research+ Functionality')",
+    "guaranteedResultsQuery": "Science",
+    "guaranteedResultsSources": [
+      "Directory of Open Access Journals (DOAJ)",
+      "IEEE",
+      "Springer Open",
+      "Taylor and Francis Open Access"
+    ],
+    "queryTypeLabel": "Title",
+    "queryTypeValue": "doc_title",
+    "queries": [
+      "test",
+      "Science",
+      "data"
+    ],
+    "resourceTab": "Default",
+    "allowedSources": [
+      "Directory of Open Access Journals (DOAJ)",
+      "IEEE Open access",
+      "Taylor and Francis Open",
+      "Greatest Poems",
+      "National Bureau of Economic Research",
+      "IEEE",
+      "Cs canada",
+      "IEEE CSDL",
+      "Internet Public Library",
+      "AIP Publishing Open Access",
+      "Open Magazine",
+      "Repec",
+      "ManyBooks.net",
+      "American Medical Association (AMA)",
+      "Business Today",
+      "DEFENSE NEWS"
+    ]
+  },
+  "researchPlusAdvancedSearch": {
+    "_description": "Used in: tests/portal/research-plus/advanced-search.spec.ts (All tests in Suite: 'Research+ Advanced Search')",
+    "defaultQueryType": "Title",
+    "defaultMatch": "All",
+    "searchPlaceholder": "Enter search query",
+    "validationError": "Please enter a search query",
+    "pubYearCharLenError": "Atleast 4 characters required",
+    "pubYearNumericError": "Only numbers are allowed",
+    "pubYearRangeError": "From year value can't be greater than To year value",
+    "pubYearFutureError": "Year value can't be greater than current year",
+    "searchBoxRemoveRowError": "Please enter a search query or remove the row",
+    "pubYearMissingFromError": "Please fill From year",
+    "selectResources": {
+      "_description": "Used in: tests/portal/research-plus/advanced-search.spec.ts (Suite: 'Research+ Advanced Search' -> Sub-Suite: 'Select Resources - [Tab] Validations')",
+      "clearAllDisabledMessage": "Please select one or more resources to perform search!",
+      "searchQueries": {
+        "Subscribed": "IEEE",
+        "Open": "CS Canada",
+        "All": "IEEE"
+      }
+    },
+    "formReset": {
+      "_description": "Used in: tests/portal/research-plus/research-form-reset.spec.ts (Suite: 'Research+ Form Reset Validations' -> Test: 'Clicking on Reset All should clear every filled data and reset source to Default')",
+      "query": "Quantum Computing",
+      "queryType": "Author",
+      "fromYear": "2000",
+      "toYear": "2022"
+    },
+    "pubYearValidation": {
+      "_description": "Used in: tests/portal/research-plus/advanced-search.spec.ts (Suite: 'Research+ Advanced Search' -> 7 distinct test cases for pub year validation logic)",
+      "shortYear": "123",
+      "nonNumericYear": "abcd",
+      "validFromYear": "2020",
+      "validToYear": "2020",
+      "invalidGreaterFromYear": "2022",
+      "invalidLesserToYear": "2020"
+    }
+  }
 }

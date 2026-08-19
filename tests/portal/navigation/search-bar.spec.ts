@@ -86,15 +86,15 @@ test.describe('Global Navigation - Search Bar Validations @navigation', () => {
     // Enter query in search box (using data-driven term as requested)
     await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.autoSuggestionTerm, { delay: 150 });
     
-    // Wait for 2 seconds as requested
-    await page.waitForTimeout(2000);
-    
-    // Check auto suggestions are displayed
-    // The auto suggestions container is a div with class 'suggested-result' containing list items
+    // Check auto suggestions container is displayed
     const autoSuggestionBox = page.locator('div.suggested-result').first();
-    await expect(autoSuggestionBox).toBeVisible();
+    await expect(autoSuggestionBox).toBeVisible({ timeout: 10000 });
     
-    // Verify there is at least one suggestion item
+    // Verify there is at least one suggestion item using a web-first assertion (auto-retries until true)
+    const firstSuggestionItem = autoSuggestionBox.locator('li.list-group-item').first();
+    await expect(firstSuggestionItem).toBeVisible({ timeout: 10000 });
+    
+    // Verify count is greater than 0
     const suggestionItemsCount = await autoSuggestionBox.locator('li.list-group-item').count();
     expect(suggestionItemsCount).toBeGreaterThan(0);
     

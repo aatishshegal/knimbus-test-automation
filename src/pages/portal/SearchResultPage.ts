@@ -144,6 +144,13 @@ export class SearchResultPage extends BasePage {
     return this.getSearchResultCard(randomIndex);
   }
   /**
+   * Gets the currently active sorting option text.
+   */
+  async getActiveSortOption(): Promise<string> {
+      return await this.sortingDropdownToggle.innerText();
+  }
+
+  /**
    * Fetches all available sort options, prioritizing 'Best Matched' to the end.
    */
   async getSortOptionsAndPrioritize(): Promise<{ index: number; text: string }[]> {

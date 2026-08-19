@@ -132,6 +132,62 @@ export class FilterPanelPage extends BasePage {
   }
 
   /**
+   * Expands the category, clicks View All if present, and returns all available filter texts.
+   */
+  async getFilterValues(categoryName: string): Promise<string[]> {
+    await this.expandFilter(categoryName);
+    
+    // Find a visible View All link/button
+    const viewAllLinks = this.filtersSidebar.locator('text=/View All/i');
+    const count = await viewAllLinks.count();
+    let clickedViewAll = false;
+    
+    for (let i = count - 1; i >= 0; i--) {
+      const el = viewAllLinks.nth(i);
+      const tagName = await el.evaluate(e => e.tagName.toLowerCase());
+      if (['a', 'button', 'span', 'p', 'div'].includes(tagName)) {
+         if (await el.isVisible()) {
+            await this.clickElement(el, `Open View All for ${categoryName}`);
+            clickedViewAll = true;
+            break;
+         }
+      }
+    }
+    
+    if (clickedViewAll) {
+      // Wait for modal to appear
+      const modal = this.page.getByRole('dialog');
+      await modal.waitFor({ state: 'visible' });
+      
+      const checkboxes = modal.locator('input[type="checkbox"]');
+      const cbCount = await checkboxes.count();
+      const labels: string[] = [];
+      for (let i = 0; i < cbCount; i++) {
+          labels.push(await checkboxes.nth(i).locator('xpath=..').innerText());
+      }
+      
+      // Close the modal
+      const closeBtn = modal.locator('.close, .btn-close, button[aria-label="Close"]').first();
+      await this.clickElement(closeBtn, 'Close View All modal');
+      await modal.waitFor({ state: 'hidden' });
+      
+      return labels.map(l => l.trim()).filter(l => l.length > 0 && /^\d{4}/.test(l));
+    }
+    
+    // Fallback: get all visible checkboxes in the sidebar
+    const visibleCheckboxes = this.filtersSidebar.locator('input[type="checkbox"]');
+    const cbCount = await visibleCheckboxes.count();
+    const labels: string[] = [];
+    for (let i = 0; i < cbCount; i++) {
+        if (await visibleCheckboxes.nth(i).isVisible()) {
+            labels.push(await visibleCheckboxes.nth(i).locator('xpath=..').innerText());
+        }
+    }
+    
+    return labels.map(l => l.trim()).filter(l => l.length > 0 && /^\d{4}/.test(l));
+  }
+
+  /**
    * Helper to get a specific applied filter chip resiliently
    */
   getAppliedFilterChip(valueName: string): Locator {
