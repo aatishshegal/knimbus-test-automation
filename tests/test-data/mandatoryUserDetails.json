@@ -1,4 +1,5 @@
 {
+  "_description": "Used in: tests/portal/registration/unverified-user-registration.spec.ts (Tests dynamic mandatory field completion flow)",
   "gender": "Other",
   "department": "Engineering",
   "degree": "B.Tech",

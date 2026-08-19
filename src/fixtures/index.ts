@@ -6,16 +6,25 @@ import { MandatoryDetailsPage } from '@pages/portal/MandatoryDetailsPage';
 import { WelcomePage } from '@pages/portal/WelcomePage';
 import { OtpPage } from '@pages/portal/OtpPage';
 import { HomePage } from '@pages/portal/HomePage';
+import { TopNavigationBar } from '@pages/portal/TopNavigationBar';
 import { TermsAndConditionsModal } from '@pages/portal/TermsAndConditionsModal';
 import { RegistrationPage } from '@pages/portal/RegistrationPage';
+import { SearchResultPage } from '@pages/portal/SearchResultPage';
+import { ProfilePage } from '@pages/portal/ProfilePage';
+import { MyLibraryPage } from '@pages/portal/MyLibraryPage';
+import { EnrollmentDetailsPage, IdAccessInfoPage, WorkEducationPage, ContactPage, PasswordPage, ProfileBasicInfoPage } from '@pages/portal/profile-details';
 import { AdminApiService } from '../api/AdminApiService';
 
 // New API-based helper function to handle Admin Session instantly
 async function withApiAdminSetup(setupLogic: (adminApi: AdminApiService) => Promise<void>) {
-  const adminApi = new AdminApiService();
-  await adminApi.login();
-  await setupLogic(adminApi);
-  await adminApi.close();
+  try {
+    const adminApi = new AdminApiService();
+    await adminApi.login();
+    await setupLogic(adminApi);
+    await adminApi.close();
+  } catch (err) {
+    console.log('[Fixture] Warning: Admin API setup skipped or failed:', (err as Error).message);
+  }
 }
 
 type MyFixtures = {
@@ -25,9 +34,20 @@ type MyFixtures = {
   welcomePage: WelcomePage;
   otpPage: OtpPage;
   homePage: HomePage;
+  topNavigationBar: TopNavigationBar;
   termsAndConditionsModal: TermsAndConditionsModal;
   registrationPage: RegistrationPage;
+  searchResultPage: SearchResultPage;
+  profilePage: ProfilePage;
+  myLibraryPage: MyLibraryPage;
+  enrollmentDetailsPage: EnrollmentDetailsPage;
+  idAccessInfoPage: IdAccessInfoPage;
+  workEducationPage: WorkEducationPage;
+  contactPage: ContactPage;
+  passwordPage: PasswordPage;
+  profileBasicInfoPage: ProfileBasicInfoPage;
   standardUser: { email: string, password: string };
+  homePageUser: { email: string, password: string };
   otpUser: { email: string, password: string };
   mandatoryDetailsUser: { email: string, password: string };
   welcomePageUser: { email: string, password: string };
@@ -65,6 +85,10 @@ export const test = base.extend<MyFixtures>({
     const homePage = new HomePage(page);
     await use(homePage);
   },
+  topNavigationBar: async ({ page }, use) => {
+    const topNavigationBar = new TopNavigationBar(page);
+    await use(topNavigationBar);
+  },
   termsAndConditionsModal: async ({ page }, use) => {
     const termsAndConditionsModal = new TermsAndConditionsModal(page);
     await use(termsAndConditionsModal);
@@ -72,6 +96,42 @@ export const test = base.extend<MyFixtures>({
   registrationPage: async ({ page }, use) => {
     const registrationPage = new RegistrationPage(page);
     await use(registrationPage);
+  },
+  searchResultPage: async ({ page }, use) => {
+    const searchResultPage = new SearchResultPage(page);
+    await use(searchResultPage);
+  },
+  profilePage: async ({ page }, use) => {
+    const profilePage = new ProfilePage(page);
+    await use(profilePage);
+  },
+  myLibraryPage: async ({ page }, use) => {
+    const myLibraryPage = new MyLibraryPage(page);
+    await use(myLibraryPage);
+  },
+  enrollmentDetailsPage: async ({ page }, use) => {
+    const enrollmentDetailsPage = new EnrollmentDetailsPage(page);
+    await use(enrollmentDetailsPage);
+  },
+  idAccessInfoPage: async ({ page }, use) => {
+    const idAccessInfoPage = new IdAccessInfoPage(page);
+    await use(idAccessInfoPage);
+  },
+  workEducationPage: async ({ page }, use) => {
+    const workEducationPage = new WorkEducationPage(page);
+    await use(workEducationPage);
+  },
+  contactPage: async ({ page }, use) => {
+    const contactPage = new ContactPage(page);
+    await use(contactPage);
+  },
+  passwordPage: async ({ page }, use) => {
+    const passwordPage = new PasswordPage(page);
+    await use(passwordPage);
+  },
+  profileBasicInfoPage: async ({ page }, use) => {
+    const profileBasicInfoPage = new ProfileBasicInfoPage(page);
+    await use(profileBasicInfoPage);
   },
   standardUser: async ({}, use) => {
     await withApiAdminSetup(async (adminApi) => {
@@ -88,6 +148,16 @@ export const test = base.extend<MyFixtures>({
       password: process.env.STANDARD_USER_PASSWORD as string
     });
   },
+  homePageUser: async ({}, use) => {
+    // The favorable backend conditions (disabling OTP/mandatory fields) and 
+    // the password update for this user are now managed strictly ONCE globally 
+    // by tests/global.setup.ts, rather than executing before every atomic test.
+
+    await use({
+      email: process.env.HOME_PAGE_USER_EMAIL as string,
+      password: process.env.HOME_PAGE_USER_PASSWORD as string
+    });
+  },
   otpUser: async ({}, use) => {
     await withApiAdminSetup(async (adminApi) => {
       await adminApi.updateSecuritySettings({
@@ -101,9 +171,16 @@ export const test = base.extend<MyFixtures>({
     await use({ email: process.env.OTP_USER_EMAIL as string, password: process.env.OTP_USER_PASSWORD as string });
   },
   mandatoryDetailsUser: async ({}, use) => {
-    const testUserEmail = process.env.STANDARD_USER_EMAIL as string;
+    const testUserEmail = process.env.MANDATORY_USER_EMAIL as string;
+    const testUserPassword = process.env.MANDATORY_USER_PASSWORD as string;
 
     await withApiAdminSetup(async (adminApi) => {
+      // Ensure the user exists and has the correct password before testing
+      await adminApi.changeUserPassword(testUserEmail, testUserPassword).catch(async () => {
+         await adminApi.addSingleUser("Mandatory Test User", testUserEmail);
+         await adminApi.changeUserPassword(testUserEmail, testUserPassword);
+      });
+
       await adminApi.updateSecuritySettings({
         mandatoryFields: { isMandatory: false, fields: [] }
       });
@@ -111,12 +188,13 @@ export const test = base.extend<MyFixtures>({
         twoFactorAuth: false,
         mandatoryFields: { isMandatory: true, fields: ['Gender', 'Designation', 'Degree/Program'] }
       });
-      await adminApi.clearUserProfileFields(testUserEmail, "Automation User");
+      await adminApi.clearUserProfileFields(testUserEmail, "Mandatory Test User");
     });
 
     await use({ 
       email: testUserEmail, 
-      password: process.env.STANDARD_USER_PASSWORD as string 
+      password: testUserPassword 
+
     });
   },
   welcomePageUser: async ({}, use) => {

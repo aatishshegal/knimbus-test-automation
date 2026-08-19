@@ -1,0 +1,34 @@
+{
+  "profilePageData": {
+    "_description": "Used in: tests/portal/profile/ (Validates profile details display, basic details updates, and image uploads)",
+    "expectedPageTitle": "Profile",
+    "expectedTabs": [
+      "Profile",
+      "Enrollment Details",
+      "Id & Access Info",
+      "Work & Education",
+      "Contact",
+      "Password"
+    ],
+    "basicDetailsUpdate": {
+      "gender": "Male",
+      "summary": "Automated QA Test Engineer Profile Update",
+      "emailSubscribed": true
+    },
+    "updateFields": {
+      "department": "Engineering",
+      "designation": "Software Engineer",
+      "degree": "B.Tech",
+      "phone": "9876543210"
+    },
+    "invalidFields": {
+      "phone": "abc"
+    },
+    "imageUpload": {
+      "validImageRelativePath": "files/image..png",
+      "largeImageRelativePath": "files/large_image.jpg",
+      "invalidFormatRelativePath": "files/invalid_format.pdf"
+    },
+    "successMessage": "Profile updated successfully"
+  }
+}
