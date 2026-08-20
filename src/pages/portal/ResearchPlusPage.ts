@@ -24,6 +24,9 @@ export class ResearchPlusPage extends BasePage {
   // Results Locators
   readonly showingCountIndicator: Locator;
   readonly resultPageTabs: Locator;
+  readonly refreshButton: Locator;
+  readonly getMoreButton: Locator;
+  readonly pollingHourglass: Locator;
 
   // Selected Resources Locators (Tabs and Actions)
   readonly defaultTab: Locator;
@@ -66,6 +69,9 @@ export class ResearchPlusPage extends BasePage {
     
     // Locators for results validation
     this.showingCountIndicator = page.locator('.showing-count').filter({ hasText: 'Showing' });
+    this.refreshButton = page.locator('button.polling-btn:visible', { hasText: 'Refresh' });
+    this.getMoreButton = page.locator('button.polling-btn:visible', { hasText: 'Get More' });
+    this.pollingHourglass = page.locator('svg.hourglass:visible');
     this.resultPageTabs = page.locator('.result-page-tabs, .custom-tabs-container, .tabs-wrapper');
 
     // Locators for Selected Resources component

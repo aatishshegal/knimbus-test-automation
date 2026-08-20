@@ -278,6 +278,18 @@
       "specificSource": ""
     },
     {
+      "testCaseName": "Query Type: Title with Default sources",
+      "queryType": "Title",
+      "queries": [
+        "python",
+        "organic",
+        "microservices",
+        "plant"
+      ],
+      "action": "defaultSources",
+      "specificSource": ""
+    },
+    {
       "testCaseName": "Query Type: DOI with IEEE only",
       "queryType": "DOI",
       "queries": [
@@ -294,6 +306,29 @@
       ],
       "action": "selectSpecific",
       "specificSource": "IEEE"
+    }
+  ],
+  "researchPlusFederatedRefresh": [
+    {
+      "testCaseName": "Query Type: Title - Validate Refresh Button Increments Count",
+      "queryType": "Title",
+      "queries": [
+        "chemical",
+        "organic",
+        "microservices",
+        "plant"
+      ],
+      "action": "defaultSources"
+    },
+    {
+      "testCaseName": "Query Type: Title - Validate Get More Button",
+      "queryType": "Title",
+      "queries": [
+        "chemical",
+        "organic",
+        "plant"
+      ],
+      "action": "defaultSources"
     }
   ]
 }
