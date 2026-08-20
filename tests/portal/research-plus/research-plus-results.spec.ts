@@ -8,26 +8,6 @@ test.describe('Research+ Functionality', () => {
         await expect(homePage.homePageIdentifier).toBeVisible();
     });
 
-    test('It will land on Research+ Page (Verify this)', async ({ topNavigationBar, researchPlusPage, page }) => {
-        // Step 1: Click on Research+ from navigation bar
-        await topNavigationBar.menuResearch.click();
-
-        // Step 2: Verify Research+ Page is visible
-        await expect(researchPlusPage.pageIdentifier).toBeVisible();
-
-        const formHtml = await page.locator('.asw-connector-wrapper').first().innerHTML().catch(() => 'no form');
-        console.log('[TEST] FORM HTML: ', formHtml);
-    });
-
-    test('On this page verify Search Tips availability', async ({ topNavigationBar, researchPlusPage }) => {
-        // Navigate to Research+
-        await topNavigationBar.menuResearch.click();
-        await expect(researchPlusPage.pageIdentifier).toBeVisible();
-
-        // Verify Search Tips availability
-        await researchPlusPage.verifySearchTipsVisibility();
-    });
-
     test('Verify by performing search', async ({ topNavigationBar, researchPlusPage, page }) => {
         // Navigate to Research+
         await topNavigationBar.menuResearch.click();

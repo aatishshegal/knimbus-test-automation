@@ -230,5 +230,105 @@
       "invalidGreaterFromYear": "2022",
       "invalidLesserToYear": "2020"
     }
-  }
+  },
+  "researchPlusQueryTypes": [
+    {
+      "testCaseName": "Query Type: Author with Default sources",
+      "queryType": "Author",
+      "queries": [
+        "peter",
+        "mark",
+        "donald"
+      ],
+      "action": "defaultSources",
+      "specificSource": ""
+    },
+    {
+      "testCaseName": "Query Type: Everything with Default sources",
+      "queryType": "Everything",
+      "queries": [
+        "nanotechnology",
+        "science",
+        "robotics",
+        "processing"
+      ],
+      "action": "defaultSources",
+      "specificSource": ""
+    },
+    {
+      "testCaseName": "Query Type: Publication with IEEE only",
+      "queryType": "Publication",
+      "queries": [
+        "International Conference"
+      ],
+      "action": "selectSpecific",
+      "specificSource": "IEEE"
+    },
+    {
+      "testCaseName": "Query Type: Keyword with Default sources",
+      "queryType": "Keyword",
+      "queries": [
+        "International",
+        "nanotechnology",
+        "science",
+        "robotics",
+        "processing"
+      ],
+      "action": "defaultSources",
+      "specificSource": ""
+    },
+    {
+      "testCaseName": "Query Type: Title with Default sources",
+      "queryType": "Title",
+      "queries": [
+        "python",
+        "organic",
+        "microservices",
+        "plant"
+      ],
+      "action": "defaultSources",
+      "specificSource": ""
+    },
+    {
+      "testCaseName": "Query Type: DOI with IEEE only",
+      "queryType": "DOI",
+      "queries": [
+        "10.1109/TPS.2008.922933"
+      ],
+      "action": "selectSpecific",
+      "specificSource": "IEEE"
+    },
+    {
+      "testCaseName": "Query Type: ISSN with IEEE only",
+      "queryType": "ISSN",
+      "queries": [
+        "0740-7459"
+      ],
+      "action": "selectSpecific",
+      "specificSource": "IEEE"
+    }
+  ],
+  "researchPlusFederatedRefresh": [
+    {
+      "testCaseName": "Query Type: Title - Validate Refresh Button Increments Count",
+      "queryType": "Title",
+      "queries": [
+        "chemical",
+        "organic",
+        "microservices",
+        "plant"
+      ],
+      "action": "defaultSources"
+    },
+    {
+      "testCaseName": "Query Type: Title - Validate Get More Button",
+      "queryType": "Title",
+      "queries": [
+        "chemical",
+        "organic",
+        "plant"
+      ],
+      "action": "defaultSources"
+    }
+  ]
 }
