@@ -120,10 +120,12 @@ test.describe('Research+ Federated Refresh and Get More Scenarios', () => {
         await expect(researchPlusPage.pollingHourglass).toBeHidden({ timeout: 60000 });
         
         // Assert that at least one of the buttons is visible again (Refresh or Get More depending on API response)
-        const isRefreshVisible = await researchPlusPage.refreshButton.isVisible();
-        const isGetMoreVisible = await researchPlusPage.getMoreButton.isVisible();
-        
-        expect(isRefreshVisible || isGetMoreVisible).toBeTruthy();
+        // Wrapped in a toPass block because React might take a moment to paint the button back into the DOM after the hourglass hides
+        await expect(async () => {
+            const isRefreshVisible = await researchPlusPage.refreshButton.isVisible();
+            const isGetMoreVisible = await researchPlusPage.getMoreButton.isVisible();
+            expect(isRefreshVisible || isGetMoreVisible).toBeTruthy();
+        }).toPass({ timeout: 10000 });
     });
 
 });

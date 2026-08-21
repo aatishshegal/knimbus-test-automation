@@ -13,7 +13,8 @@ setup('Global Setup - API Preconditions and UI Authentication', async ({ page, p
     twoFactorAuth: false,
     automatedVerification: true,
     mandatoryFields: { isMandatory: false, fields: [] },
-    domainRestriction: []
+    domainRestriction: [],
+    allFieldsEditable: true
   });
 
   const email = process.env.HOME_PAGE_USER_EMAIL as string;

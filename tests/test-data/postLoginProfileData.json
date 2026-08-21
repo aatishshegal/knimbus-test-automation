@@ -1,0 +1,83 @@
+{
+  "fieldStates": [
+    {
+      "Field": "FullName",
+      "ExpectedState": "enabled"
+    },
+    {
+      "Field": "Gender",
+      "ExpectedState": "enabled"
+    },
+    {
+      "Field": "DOB",
+      "ExpectedState": "enabled"
+    },
+    {
+      "Field": "Summary",
+      "ExpectedState": "enabled"
+    }
+  ],
+  "positiveScenarios": [
+    {
+      "field": "FullName",
+      "scenario": "Valid Single Name",
+      "value": "Hyden",
+      "expectedMessage": "Updated successfully"
+    },
+    {
+      "field": "FullName",
+      "scenario": "Valid First and Last Name",
+      "value": "Mathew Hyden",
+      "expectedMessage": "Updated successfully"
+    },
+    {
+      "field": "Summary",
+      "scenario": "Enter valid summary text",
+      "value": "This is a valid summary text.",
+      "expectedMessage": "Updated successfully"
+    }
+  ],
+  "adminOverrides": {
+    "disabledMessage": "All the fields are set to be non-editable by your institution"
+  },
+  "genderScenarios": {
+    "validOptions": ["Male", "Female", "Other"],
+    "invalidOption": "Alien"
+  },
+  "imageUploadScenarios": [
+    {
+      "FileName": "",
+      "Scenario": "Empty file",
+      "ExpectedMessage": "Please select a file"
+    },
+    {
+      "FileName": "image..png",
+      "Scenario": "More than one dot",
+      "ExpectedMessage": "Invalid file format."
+    },
+    {
+      "FileName": "large_image.jpg",
+      "Scenario": "> 1MB",
+      "ExpectedMessage": "File size exceeded the 1MB maximum limit!"
+    },
+    {
+      "FileName": "invalid_format.pdf",
+      "Scenario": "Invalid format",
+      "ExpectedMessage": "Invalid file format."
+    },
+    {
+      "FileName": "dummy-id.jpg",
+      "Scenario": "Valid image",
+      "ExpectedMessage": "Updated successfully"
+    }
+  ],
+  "dobScenarios": {
+    "expectedSuccessMessage": "Updated successfully"
+  },
+  "summaryScenarios": {
+    "htmlTagsString": "<script>alert('test')</script>",
+    "htmlTagsError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols.",
+    "mandatoryError": "Summary is required (2000 characters)",
+    "maxLengthError": "Maximum 2000 characters allowed"
+  }
+}

@@ -104,6 +104,8 @@ export class AdminApiService {
     domainRestriction?: string[];
     authDenyPatterns?: { denialPatterns: string[], allowedPatterns: string[] | null };
     mandatoryFields?: { fields: string[], isMandatory: boolean };
+    allFieldsEditable?: boolean;
+    editableFields?: { fields: string[], isEditable: boolean };
   }) {
     console.log('[AdminApiService] Fetching current security settings...');
     const dto = await this.getElibraryDTO();
@@ -148,37 +150,80 @@ export class AdminApiService {
       needsSave = true;
     }
 
-    if (settings.mandatoryFields) {
+    if (settings.mandatoryFields || settings.allFieldsEditable !== undefined || settings.editableFields) {
       const customFields = JSON.parse(info.eLibCustomFields || '[]');
       let fieldsChanged = false;
       
       for (const field of customFields) {
-        if (settings.mandatoryFields.isMandatory) {
-          // If fields array is empty, enable ALL fields. Otherwise, only enable the specific ones in the array.
-          const shouldBeMandatory = settings.mandatoryFields.fields.length === 0 ? true : settings.mandatoryFields.fields.includes(field.fieldName);
-          if (field.isMandatory !== shouldBeMandatory) {
-            field.isMandatory = shouldBeMandatory;
-            fieldsChanged = true;
-          }
-        } else {
-          // If isMandatory is false and fields array is empty, disable ALL mandatory fields.
-          // Otherwise, only disable the specific fields in the array.
-          if (settings.mandatoryFields.fields.length === 0) {
-            if (field.isMandatory) {
-              field.isMandatory = false;
-              fieldsChanged = true;
+        if (settings.mandatoryFields) {
+            // NEVER turn off mandatory for Name and Email, they are inherently mandatory.
+            if (field.fieldName === 'Name' || field.fieldName === 'Email') {
+               if (!field.isMandatory) {
+                 field.isMandatory = true;
+                 fieldsChanged = true;
+               }
+            } else {
+                if (settings.mandatoryFields.isMandatory) {
+                  // If fields array is empty, enable ALL fields. Otherwise, only enable the specific ones in the array.
+                  const shouldBeMandatory = settings.mandatoryFields.fields.length === 0 ? true : settings.mandatoryFields.fields.includes(field.fieldName);
+                  if (field.isMandatory !== shouldBeMandatory) {
+                    field.isMandatory = shouldBeMandatory;
+                    fieldsChanged = true;
+                  }
+                } else {
+                  // If isMandatory is false and fields array is empty, disable ALL mandatory fields.
+                  // Otherwise, only disable the specific fields in the array.
+                  if (settings.mandatoryFields.fields.length === 0) {
+                    if (field.isMandatory) {
+                      field.isMandatory = false;
+                      fieldsChanged = true;
+                    }
+                  } else {
+                    if (settings.mandatoryFields.fields.includes(field.fieldName) && field.isMandatory) {
+                      field.isMandatory = false;
+                      fieldsChanged = true;
+                    }
+                  }
+                }
             }
-          } else {
-            if (settings.mandatoryFields.fields.includes(field.fieldName) && field.isMandatory) {
-              field.isMandatory = false;
-              fieldsChanged = true;
+        }
+        
+        if (settings.allFieldsEditable !== undefined) {
+            if (field.isEditable !== settings.allFieldsEditable) {
+                field.isEditable = settings.allFieldsEditable;
+                fieldsChanged = true;
             }
-          }
+        }
+
+        if (settings.editableFields) {
+            if (settings.editableFields.isEditable) {
+                // If fields array is empty, enable ALL fields. Otherwise, only enable the specific ones.
+                const shouldBeEditable = settings.editableFields.fields.length === 0 ? true : settings.editableFields.fields.includes(field.fieldName);
+                if (field.isEditable !== shouldBeEditable) {
+                    field.isEditable = shouldBeEditable;
+                    fieldsChanged = true;
+                }
+            } else {
+                // If isEditable is false and fields array is empty, disable ALL fields.
+                // Otherwise, only disable the specific fields in the array, keeping others enabled.
+                if (settings.editableFields.fields.length === 0) {
+                    if (field.isEditable) {
+                        field.isEditable = false;
+                        fieldsChanged = true;
+                    }
+                } else {
+                    const shouldBeEditable = !settings.editableFields.fields.includes(field.fieldName);
+                    if (field.isEditable !== shouldBeEditable) {
+                        field.isEditable = shouldBeEditable;
+                        fieldsChanged = true;
+                    }
+                }
+            }
         }
       }
       
       if (fieldsChanged) {
-        console.log(`[AdminApiService] Updating Mandatory Fields -> ${settings.mandatoryFields.fields.join(', ')} to ${settings.mandatoryFields.isMandatory}`);
+        console.log(`[AdminApiService] Updating Custom Fields (Mandatory/Editable)`);
         info.eLibCustomFields = JSON.stringify(customFields);
         needsSave = true;
       }
