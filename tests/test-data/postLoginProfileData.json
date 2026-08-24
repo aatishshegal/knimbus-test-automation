@@ -15,6 +15,18 @@
     {
       "Field": "Summary",
       "ExpectedState": "enabled"
+    },
+    {
+      "Field": "department",
+      "ExpectedState": "enabled"
+    },
+    {
+      "Field": "qualification",
+      "ExpectedState": "enabled"
+    },
+    {
+      "Field": "admissionYear",
+      "ExpectedState": "enabled"
     }
   ],
   "positiveScenarios": [
@@ -35,13 +47,35 @@
       "scenario": "Enter valid summary text",
       "value": "This is a valid summary text.",
       "expectedMessage": "Updated successfully"
+    },
+    {
+      "field": "department",
+      "scenario": "Valid Department",
+      "value": "Computer Science",
+      "expectedMessage": "Updated successfully"
+    },
+    {
+      "field": "qualification",
+      "scenario": "Valid Qualification",
+      "value": "Bachelors",
+      "expectedMessage": "Updated successfully"
+    },
+    {
+      "field": "admissionYear",
+      "scenario": "Valid Admission Year",
+      "value": "2022",
+      "expectedMessage": "Updated successfully"
     }
   ],
   "adminOverrides": {
     "disabledMessage": "All the fields are set to be non-editable by your institution"
   },
   "genderScenarios": {
-    "validOptions": ["Male", "Female", "Other"],
+    "validOptions": [
+      "Male",
+      "Female",
+      "Other"
+    ],
     "invalidOption": "Alien"
   },
   "imageUploadScenarios": [
@@ -79,5 +113,388 @@
     "htmlTagsError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols.",
     "mandatoryError": "Summary is required (2000 characters)",
     "maxLengthError": "Maximum 2000 characters allowed"
+  },
+  "enrollmentScenarios": {
+    "positiveData": {
+      "idNumber": "ID999",
+      "college": "Tech University",
+      "department": "Computer Science",
+      "qualification": "Masters",
+      "designation": "Professor",
+      "areaOfStudy": "AI and Robotics",
+      "rank": "1st Class",
+      "batch": "2020",
+      "cadre": "Senior",
+      "admissionYear": "2022",
+      "membershipStatus": "Active",
+      "membershipType": "Premium"
+    },
+    "negativeScenarios": [
+      {
+        "scenario": "Affiliation restricts input to 100 characters max",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 100 characters allowed"
+      },
+      {
+        "scenario": "Department restricts input to 100 characters max",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 100 characters allowed"
+      },
+      {
+        "scenario": "Degree restricts input to 150 characters max",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "bypassLength": true,
+        "expectedError": "Maximum 150 characters allowed"
+      },
+      {
+        "scenario": "Year restricts input to 4 characters max",
+        "field": "admissionYear",
+        "validationType": "errorMessage",
+        "value": "20245",
+        "bypassLength": true,
+        "expectedError": "Maximum 4 characters allowed"
+      },
+      {
+        "scenario": "membershipStatus - Space is entered in front or back",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "membershipType - Space is entered in front or back",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "cadre - Space is entered in front or back",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "batch - Space is entered in front or back",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "rank - Space is entered in front or back",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "designation - Space is entered in front or back",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "areaOfStudy - Space is entered in front or back",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "qualification - Space is entered in front or back",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "department - Space is entered in front or back",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "idNumber - Space is entered in front or back",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "college - Space is entered in front or back",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "scenario": "membershipStatus - HTML is used",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "membershipType - HTML is used",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "cadre - HTML is used",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "batch - HTML is used",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "rank - HTML is used",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "designation - HTML is used",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "areaOfStudy - HTML is used",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "qualification - HTML is used",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "department - HTML is used",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "idNumber - HTML is used",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "college - HTML is used",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "membershipStatus - More than 102 characters",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "membershipType - More than 102 characters",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "cadre - More than 102 characters",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "batch - More than 102 characters",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "rank - More than 102 characters",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "designation - More than 102 characters",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "department - More than 102 characters",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "idNumber - More than 102 characters",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "college - More than 102 characters",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "areaOfStudy - More than 152 characters",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 150 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "qualification - More than 152 characters",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 150 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "membershipType - Blank/Unselected",
+        "field": "membershipType",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Membership Type is required (100 characters)"
+      },
+      {
+        "scenario": "college - Blank/Unselected",
+        "field": "college",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "College / Organization is required (100 characters)"
+      },
+      {
+        "scenario": "idNumber - Blank/Unselected",
+        "field": "idNumber",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "ID Number is required (100 characters)"
+      },
+      {
+        "scenario": "department - Blank/Unselected",
+        "field": "department",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Department is required (100 characters)"
+      },
+      {
+        "scenario": "qualification - Blank/Unselected",
+        "field": "qualification",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Qualification / Degree / Program is required (150 characters)"
+      },
+      {
+        "scenario": "areaOfStudy - Blank/Unselected",
+        "field": "areaOfStudy",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Area of Study / Speciality is required (150 characters)"
+      },
+      {
+        "scenario": "admissionYear - Blank/Unselected",
+        "field": "admissionYear",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Admission Year is required"
+      },
+      {
+        "scenario": "designation - Blank/Unselected",
+        "field": "designation",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Designation is required (100 characters)"
+      },
+      {
+        "scenario": "rank - Blank/Unselected",
+        "field": "rank",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Rank is required (100 characters)"
+      },
+      {
+        "scenario": "batch - Blank/Unselected",
+        "field": "batch",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Batch is required (100 characters)"
+      },
+      {
+        "scenario": "cadre - Blank/Unselected",
+        "field": "cadre",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Cadre is required (100 characters)"
+      },
+      {
+        "scenario": "membershipStatus - Blank/Unselected",
+        "field": "membershipStatus",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Membership Status is required (100 characters)"
+      },
+      {
+        "scenario": "admission year or year - enter 4 characters anything apart from numbers",
+        "field": "admissionYear",
+        "validationType": "errorMessage",
+        "value": "abcd",
+        "expectedError": "Only numbers are allowed"
+      }
+    ]
   }
 }

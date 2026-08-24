@@ -1,10 +1,16 @@
 import { test as setup, expect } from '../src/fixtures';
 import { AdminApiService } from '../src/api/AdminApiService';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Force an empty storage state so setup always gets a fresh browser
 setup.use({ storageState: { cookies: [], origins: [] } });
 
 setup('Global Setup - API Preconditions and UI Authentication', async ({ page, portalLoginPage, homePage, termsAndConditionsModal }) => {
+  // Clean up old CSV reports
+  const csvPath = path.join(__dirname, '..', 'test-results', 'Enrollment_Details_Validation_Report.csv');
+  if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
+
   const adminApi = new AdminApiService();
   await adminApi.login();
 

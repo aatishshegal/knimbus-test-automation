@@ -4,7 +4,7 @@ These are the strict instructions and rules for any AI agent (Gemini, Claude, et
 
 ## 1. Plan (Research & Discovery)
 Before writing any test code, the AI MUST:
-- **Do not assume locators.** Use the **Puppeteer MCP** to navigate to the target page and inspect the live DOM to extract the most resilient selectors (e.g., `getByRole`, `getByText`).
+- **Do not assume locators. Do not work on assumptions when implementing locators or test cases.** Use the **Puppeteer MCP** to navigate to the target page and inspect the live DOM to extract the most resilient selectors (e.g., `getByRole`, `getByText`). If automated DOM extraction fails, you MUST stop and ask the user for the HTML snippet rather than guessing class names or IDs.
 - **Database state check:** Use the **MySQL MCP** to query the database (SELECT ONLY) to verify the preconditions for the test environment. DO NOT execute UPDATE or DELETE operations.
 - Review existing Page Object Models (`src/pages/`) to see if the page or component already exists before creating a new one.
 
