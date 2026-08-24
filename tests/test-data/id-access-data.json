@@ -1,0 +1,23 @@
+{
+  "idDocumentData": {
+    "_description": "Test data for ID Document upload under Id & Access Info tab",
+    "expectedTabName": "Id & Access Info",
+    "expectedSectionHeading": "Id Document",
+    "expectedHelpText1": "Upload an ID such as College ID / Employee ID or any other authentic ID. The image of your document should be bright and clear. Use \"Backside\" if your document has two sides.",
+    "expectedHelpText2": "Note: This information maybe used for user verification, or to grant access to certain services.",
+    "expectedMaxSizeText": "Maximum upload size: 1 MB",
+    "expectedSupportedFormatsText": "Supported file formats: .jpg, .jpeg, .png",
+    "files": {
+      "normalImage": "tests/test-data/files/image..png",
+      "smallImage": "tests/test-data/dummy-id.jpg",
+      "largeImage": "tests/test-data/files/large_image.jpg",
+      "invalidFormat": "tests/test-data/files/invalid_format.pdf"
+    },
+    "messages": {
+      "successToast": "updated successfully",
+      "fileSizeError": "File size exceeds 1 MB",
+      "fileFormatError": "Invalid file format",
+      "pleaseChooseFile": "Please choose a file"
+    }
+  }
+}

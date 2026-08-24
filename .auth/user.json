@@ -1,0 +1,115 @@
+{
+  "cookies": [
+    {
+      "name": "GCLB",
+      "value": "\"85e717db0ea047fb\"",
+      "domain": "qa-qatesting-v2.knimbus.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "userId",
+      "value": "testplaywrite_yopmail.com",
+      "domain": ".knimbus.com",
+      "path": "/",
+      "expires": 1787660863.695535,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "orgId",
+      "value": "org_0c22fb69-ca5a-4672-9b79-285fdbf9606a",
+      "domain": ".knimbus.com",
+      "path": "/",
+      "expires": 1787660863.695768,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "SESSION",
+      "value": "YmQxMzBiN2QtNzZjZC00N2EwLTgwMjUtY2RiMGE2ZTZhNDA3",
+      "domain": "qa-qatesting-v2.knimbus.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://qa-qatesting-v2.knimbus.com",
+      "localStorage": [
+        {
+          "name": "hasLandingPage",
+          "value": "false"
+        },
+        {
+          "name": "userName",
+          "value": ""
+        },
+        {
+          "name": "consortiumIds",
+          "value": "[\"a09dbf68-c4e9-4610-91f4-a55267a17ee3\"]"
+        },
+        {
+          "name": "orgId",
+          "value": "org_0c22fb69-ca5a-4672-9b79-285fdbf9606a"
+        },
+        {
+          "name": "loginId",
+          "value": "testplaywrite_yopmail.com"
+        },
+        {
+          "name": "email",
+          "value": "testplaywrite@yopmail.com"
+        },
+        {
+          "name": "isSignedIn",
+          "value": "TRUE"
+        },
+        {
+          "name": "title",
+          "value": "null"
+        },
+        {
+          "name": "displayNames",
+          "value": "{\"Multimedia\":\"Multimedia Multimedia\",\"Notice\":\"Notice\",\"Content\":\"Content conTent Conntent\",\"eCatalog\":\"eCatalogg\",\"Research\":\"Research Research Research\",\"Course\":\"Course couRsse\",\"Weblinks\":\"Useful links Links\",\"Section\":\"Sectionnnn sectioON Section\",\"Source\":\"Sourcee SouRcce Source\",\"Subject\":\"Subject suBject Subject\"}"
+        },
+        {
+          "name": "isSSOEnabled",
+          "value": "false"
+        },
+        {
+          "name": "profileUrl",
+          "value": "/profile-pic/1/ItrxFcxFPeFgZEiB8RfKnlox7TowWIH2G8Qck9kM58RZhusmqVZOzt8SXzpmWASbDOhTl-3KJNqYKlBQ2z01Eq--tHUSDz2fWUAaujTYMXg?_t=1787128509041?_t=1787131585899?_t=1787131599048?_t=1787131926432?_t=1787131944526?_t=1787133262013?_t=1787133287967?_t=1787133422926?_t=1787133461343?_t=1787146574945?_t=1787146695706?_t=1787146805552?_t=1787147011991?_t=1787147136217?_t=1787147667097?_t=1787147677277?_t=1787147832550?_t=1787198483355?_t=1787232899788?_t=1787554894210?_t=1787555018909?_t=1787555203786"
+        },
+        {
+          "name": "isInCampus",
+          "value": "false"
+        },
+        {
+          "name": "prevUrl",
+          "value": "/v2/default/home"
+        },
+        {
+          "name": "isPublicDiscovery",
+          "value": "false"
+        },
+        {
+          "name": "libraryId",
+          "value": "elib_ff08d23d-0326-43b9-98f5-2e17e9b9918e"
+        },
+        {
+          "name": "eLibInfoDTO",
+          "value": "\"{\\\"headerNavigationLabels\\\":[{\\\"defaultName\\\":\\\"eCatalog\\\",\\\"displayName\\\":\\\"eCatalog\\\",\\\"$$hashKey\\\":\\\"object:952\\\"},{\\\"defaultName\\\":\\\"Explore\\\",\\\"displayName\\\":\\\"Explore\\\",\\\"$$hashKey\\\":\\\"object:953\\\"},{\\\"defaultName\\\":\\\"Research+\\\",\\\"displayName\\\":\\\"Research+\\\",\\\"$$hashKey\\\":\\\"object:954\\\"},{\\\"defaultName\\\":\\\"Off-Campus Access\\\",\\\"displayName\\\":\\\"Off-Campus Access\\\",\\\"$$hashKey\\\":\\\"object:955\\\"},{\\\"defaultName\\\":\\\"Plagiarism Checker\\\",\\\"displayName\\\":\\\"Plagiarism Checker\\\",\\\"$$hashKey\\\":\\\"object:956\\\"},{\\\"defaultName\\\":\\\"Online Classroom\\\",\\\"displayName\\\":\\\"Online Classroom\\\",\\\"$$hashKey\\\":\\\"object:957\\\"},{\\\"defaultName\\\":\\\"Profile\\\",\\\"displayName\\\":\\\"Profile\\\",\\\"$$hashKey\\\":\\\"object:958\\\"},{\\\"defaultName\\\":\\\"My Library\\\",\\\"displayName\\\":\\\"My Library\\\",\\\"$$hashKey\\\":\\\"object:959\\\"},{\\\"defaultName\\\":\\\"Clear Mobile Session\\\",\\\"displayName\\\":\\\"Clear Mobile Session\\\",\\\"$$hashKey\\\":\\\"object:960\\\"},{\\\"defaultName\\\":\\\"Librarian Dashboard\\\",\\\"displayName\\\":\\\"Librarian Dashboard\\\",\\\"$$hashKey\\\":\\\"object:961\\\"},{\\\"defaultName\\\":\\\"Sign In\\\",\\\"displayName\\\":\\\"Sign In\\\",\\\"$$hashKey\\\":\\\"object:962\\\"},{\\\"defaultName\\\":\\\"Sign out\\\",\\\"displayName\\\":\\\"Sign Out\\\",\\\"$$hashKey\\\":\\\"object:963\\\"},{\\\"defaultName\\\":\\\"View All\\\",\\\"displayName\\\":\\\"View All\\\",\\\"$$hashKey\\\":\\\"object:964\\\"}],\\\"searchBoxLabels\\\":[{\\\"defaultName\\\":\\\"Everything\\\",\\\"displayName\\\":\\\"Everything\\\",\\\"$$hashKey\\\":\\\"object:1008\\\"},{\\\"defaultName\\\":\\\"Title\\\",\\\"displayName\\\":\\\"Title\\\",\\\"$$hashKey\\\":\\\"object:1009\\\"},{\\\"defaultName\\\":\\\"Abstract\\\",\\\"displayName\\\":\\\"Abstract\\\",\\\"$$hashKey\\\":\\\"object:1010\\\"},{\\\"defaultName\\\":\\\"Keyword\\\",\\\"displayName\\\":\\\"Keyword\\\",\\\"$$hashKey\\\":\\\"object:1011\\\"},{\\\"defaultName\\\":\\\"Author\\\",\\\"displayName\\\":\\\"Authorr\\\",\\\"$$hashKey\\\":\\\"object:1012\\\"},{\\\"defaultName\\\":\\\"Affiliation\\\",\\\"displayName\\\":\\\"Affiliation\\\",\\\"$$hashKey\\\":\\\"object:1013\\\"},{\\\"defaultName\\\":\\\"Publication\\\",\\\"displayName\\\":\\\"Publication\\\",\\\"$$hashKey\\\":\\\"object:1014\\\"},{\\\"defaultName\\\":\\\"All\\\",\\\"displayName\\\":\\\"All\\\",\\\"$$hashKey\\\":\\\"object:1015\\\"},{\\\"defaultName\\\":\\\"Any\\\",\\\"displayName\\\":\\\"Any\\\",\\\"$$hashKey\\\":\\\"object:1016\\\"},{\\\"defaultName\\\":\\\"Exact\\\",\\\"displayName\\\":\\\"Exact\\\",\\\"$$hashKey\\\":\\\"object:1017\\\"},{\\\"defaultName\\\":\\\"Search Bar Placeholder\\\",\\\"displayName\\\":\\\"Search for title, author etc, Placeholder\\\",\\\"$$hashKey\\\":\\\"object:1018\\\"}],\\\"filterLabels\\\":[{\\\"defaultName\\\":\\\"Access Type\\\",\\\"displayName\\\":\\\"Access Type\\\",\\\"$$hashKey\\\":\\\"object:1056\\\"},{\\\"defaultName\\\":\\\"SJR Rank\\\",\\\"displayName\\\":\\\"SJR Rank\\\",\\\"$$hashKey\\\":\\\"object:1057\\\"},{\\\"defaultName\\\":\\\"Author\\\",\\\"displayName\\\":\\\"Author\\\",\\\"$$hashKey\\\":\\\"object:1058\\\"},{\\\"defaultName\\\":\\\"Publication\\\",\\\"displayName\\\":\\\"Publication_name\\\",\\\"$$hashKey\\\":\\\"object:1059\\\"},{\\\"defaultName\\\":\\\"Publication Year\\\",\\\"displayName\\\":\\\"Publication Year\\\",\\\"$$hashKey\\\":\\\"object:1060\\\"},{\\\"defaultName\\\":\\\"Knimbus Collection\\\",\\\"displayName\\\":\\\"Knimbus Collection\\\",\\\"$$hashKey\\\":\\\"object:1061\\\"},{\\\"defaultName\\\":\\\"Original Source\\\",\\\"displayName\\\":\\\"Original Source\\\",\\\"$$hashKey\\\":\\\"object:1062\\\"},{\\\"defaultName\\\":\\\"Course Duration\\\",\\\"displayName\\\":\\\"Course Duration\\\",\\\"$$hashKey\\\":\\\"object:1063\\\"},{\\\"defaultName\\\":\\\"Description\\\",\\\"displayName\\\":\\\"Description\\\",\\\"$$hashKey\\\":\\\"object:1064\\\"}],\\\"myLibraryLabels\\\":[{\\\"defaultName\\\":\\\"Favourites\\\",\\\"displayName\\\":\\\"Favourites\\\",\\\"$$hashKey\\\":\\\"object:1096\\\"},{\\\"defaultName\\\":\\\"Web Klips\\\",\\\"displayName\\\":\\\"Web Klips\\\",\\\"$$hashKey\\\":\\\"object:1097\\\"},{\\\"defaultName\\\":\\\"Saved Searches\\\",\\\"displayName\\\":\\\"Saved Searches\\\",\\\"$$hashKey\\\":\\\"object:1098\\\"}],\\\"footerNavigationLabels\\\":[{\\\"defaultName\\\":\\\"Terms & Conditions\\\",\\\"displayName\\\":\\\"Terms & Conditions\\\",\\\"$$hashKey\\\":\\\"object:1112\\\"},{\\\"defaultName\\\":\\\"User Guide\\\",\\\"displayName\\\":\\\"User Guide\\\",\\\"$$hashKey\\\":\\\"object:1113\\\"}],\\\"genericLabels\\\":[{\\\"defaultName\\\":\\\"Label 1\\\",\\\"displayName\\\":\\\"Label 1\\\"},{\\\"defaultName\\\":\\\"Label 2\\\",\\\"displayName\\\":\\\"Label 2\\\"},{\\\"defaultName\\\":\\\"Label 3\\\",\\\"displayName\\\":\\\"Label 3\\\"},{\\\"defaultName\\\":\\\"Label 4\\\",\\\"displayName\\\":\\\"Label 4\\\"},{\\\"defaultName\\\":\\\"Label 5\\\",\\\"displayName\\\":\\\"Label 5\\\"},{\\\"defaultName\\\":\\\"Label 6\\\",\\\"displayName\\\":\\\"Label 6\\\"},{\\\"defaultName\\\":\\\"Label 7\\\",\\\"displayName\\\":\\\"Label 7\\\"},{\\\"defaultName\\\":\\\"Label 8\\\",\\\"displayName\\\":\\\"Label 8\\\"},{\\\"defaultName\\\":\\\"Label 9\\\",\\\"displayName\\\":\\\"Label 9\\\"},{\\\"defaultName\\\":\\\"Label 10\\\",\\\"displayName\\\":\\\"Label 10\\\"}]}\""
+        }
+      ]
+    }
+  ]
+}

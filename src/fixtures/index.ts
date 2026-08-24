@@ -8,6 +8,7 @@ import { OtpPage } from '@pages/portal/OtpPage';
 import { HomePage } from '@pages/portal/HomePage';
 import { TopNavigationBar } from '@pages/portal/TopNavigationBar';
 import { TermsAndConditionsModal } from '@pages/portal/TermsAndConditionsModal';
+import { SessionTimeoutModal } from '@pages/portal/SessionTimeoutModal';
 import { RegistrationPage } from '@pages/portal/RegistrationPage';
 import { SearchResultPage } from '@pages/portal/SearchResultPage';
 import { ProfilePage } from '@pages/portal/ProfilePage';
@@ -36,6 +37,7 @@ type MyFixtures = {
   homePage: HomePage;
   topNavigationBar: TopNavigationBar;
   termsAndConditionsModal: TermsAndConditionsModal;
+  sessionTimeoutModal: SessionTimeoutModal;
   registrationPage: RegistrationPage;
   searchResultPage: SearchResultPage;
   profilePage: ProfilePage;
@@ -92,6 +94,10 @@ export const test = base.extend<MyFixtures>({
   termsAndConditionsModal: async ({ page }, use) => {
     const termsAndConditionsModal = new TermsAndConditionsModal(page);
     await use(termsAndConditionsModal);
+  },
+  sessionTimeoutModal: async ({ page }, use) => {
+    const sessionTimeoutModal = new SessionTimeoutModal(page);
+    await use(sessionTimeoutModal);
   },
   registrationPage: async ({ page }, use) => {
     const registrationPage = new RegistrationPage(page);

@@ -1,0 +1,84 @@
+{
+  "enrollmentDetailsData": {
+    "_description": "Data for validating Profile - Enrollment Details tab fields, limits, datalists, updates, negative scenarios, mandatory field rules, and cancel functionality",
+    "tabName": "Enrollment Details",
+    "heading": "Enrollment Details",
+    "helpText": {
+      "staffId": "Example: Membership / Student / Staff ID"
+    },
+    "allFields": [
+      { "id": "staffId", "name": "ID Number", "maxlength": "101", "isMandatory": false, "datalistId": null },
+      { "id": "affiliation", "name": "College / Organization", "maxlength": "101", "isMandatory": false, "datalistId": "affiliation-list" },
+      { "id": "department", "name": "Department", "maxlength": "101", "isMandatory": false, "datalistId": "department-list" },
+      { "id": "degree", "name": "Qualification / Degree / Program", "maxlength": "151", "isMandatory": false, "datalistId": "degree-list" },
+      { "id": "designation", "name": "Designation", "maxlength": "101", "isMandatory": false, "datalistId": "designation-list" },
+      { "id": "speciality", "name": "Area of Study / Speciality", "maxlength": "151", "isMandatory": false, "datalistId": "speciality-list" },
+      { "id": "rank", "name": "Rank", "maxlength": "101", "isMandatory": false, "datalistId": "rank-list" },
+      { "id": "batch", "name": "Batch", "maxlength": "101", "isMandatory": false, "datalistId": "batch-list" },
+      { "id": "cadre", "name": "Cadre", "maxlength": "101", "isMandatory": false, "datalistId": "cadre-list" },
+      { "id": "year", "name": "Admission Year", "minlength": "4", "maxlength": "4", "isMandatory": false, "datalistId": "year-list" },
+      { "id": "membershipStatus", "name": "Membership Status", "maxlength": "101", "isMandatory": false, "datalistId": "membership-status-list" },
+      { "id": "membershipType", "name": "Membership Type", "maxlength": "101", "isMandatory": false, "datalistId": "membership-type-list" }
+    ],
+    "fieldAttributes": {
+      "staffId": { "maxlength": "101", "placeholder": " " },
+      "affiliation": { "maxlength": "101", "placeholder": " " },
+      "department": { "maxlength": "101", "placeholder": " " },
+      "degree": { "maxlength": "151", "placeholder": " " },
+      "designation": { "maxlength": "101", "placeholder": " " },
+      "speciality": { "maxlength": "151", "placeholder": " " },
+      "rank": { "maxlength": "101", "placeholder": " " },
+      "batch": { "maxlength": "101", "placeholder": " " },
+      "cadre": { "maxlength": "101", "placeholder": " " },
+      "year": { "minlength": "4", "maxlength": "4", "placeholder": " " },
+      "membershipStatus": { "maxlength": "101", "placeholder": " " },
+      "membershipType": { "maxlength": "101", "placeholder": " " }
+    },
+    "updateDetails": {
+      "staffId": "EMP-998877",
+      "affiliation": "College A",
+      "department": "Computer Science",
+      "degree": "B.Tech",
+      "designation": "Quality Analyst",
+      "speciality": "Data Science",
+      "rank": "Rank 1",
+      "batch": "Batch 2019-23",
+      "cadre": "A",
+      "year": "2022",
+      "membershipStatus": "test",
+      "membershipType": "mem"
+    },
+    "cancelTestDetails": {
+      "staffId": "TEMP-CANCEL-123",
+      "department": "Temporary Dept"
+    },
+    "boundaryDetails": {
+      "staffId": "ID12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901",
+      "degree": "DEGREE1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901",
+      "year": "2025"
+    },
+    "overflowDetails": {
+      "staffIdOverflow": "ID12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901EXTRA_CHARS_OVERFLOW",
+      "yearOverflow": "2025999"
+    },
+    "invalidYearDetails": {
+      "shortYear": "20"
+    },
+    "specialCharDetails": {
+      "xssPayload": "<script>alert('xss')</script>",
+      "sqlPayload": "' OR '1'='1",
+      "specialChars": "Test & Special #123 (QA)"
+    },
+    "sampleDatalistValues": {
+      "affiliation": ["College A", "College B", "New Horizon College of Engineering"],
+      "department": ["Computer Science", "CSE", "Mathematics", "Physics"],
+      "degree": ["B.Tech", "B.Sc", "M.Tech", "PhD"],
+      "designation": ["Analyst", "Quality Analyst", "Learner"],
+      "speciality": ["AI", "Cybersecurity", "Data Science", "Machine Learning"],
+      "rank": ["Rank 1", "Rank 2", "Rank 3"],
+      "batch": ["Batch 2019-20", "Batch 2019-23", "Batch 2024"],
+      "cadre": ["A", "B", "C", "D"],
+      "year": ["2020", "2021", "2022", "2023", "2024"]
+    }
+  }
+}

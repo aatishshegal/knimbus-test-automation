@@ -26,6 +26,8 @@ export class ProfileBasicInfoPage extends BasePage {
   readonly saveButton: Locator;
   readonly cancelButton: Locator;
   readonly successToast: Locator;
+  readonly toastNotification: Locator;
+  readonly errorToast: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -54,20 +56,24 @@ export class ProfileBasicInfoPage extends BasePage {
     this.emailSubscriptionLabel = page.locator('label[for="Email subscription"]');
 
     // Actions
-    this.saveButton = page.locator('button[type="submit"], button:has-text("Save"), button:has-text("Update"), .btn-save').first();
-    this.cancelButton = page.locator('button:has-text("Cancel")').first();
+    this.saveButton = page.locator('button.btn-primary:has-text("Save"), button[type="submit"], button:has-text("Save"), .btn-save').first();
+    this.cancelButton = page.locator('button.btn-outline-secondary:has-text("Cancel"), button:has-text("Cancel")').first();
     this.successToast = page.locator('.toast-success, .alert-success, [role="alert"]').first();
+    this.toastNotification = page.locator('.toast, .toast-message, .alert, [role="alert"]').first();
+    this.errorToast = page.locator('.toast-error, .alert-danger, .error-message, [role="alert"]').first();
   }
 
   /**
-   * Clicks the Edit button if it is visible.
+   * Clicks the Edit button if fields are not already enabled.
    */
   async clickEdit() {
+    if (await this.summaryTextarea.isEnabled().catch(() => false)) {
+      return;
+    }
     const editBtn = this.page.locator('.profile-form-content-heading-wrapper .edit-btn, .edit-btn').first();
     if (await editBtn.isVisible()) {
       await editBtn.click();
-      await this.summaryTextarea.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
-      await this.page.waitForTimeout(300);
+      await this.page.waitForTimeout(500);
     }
   }
 
@@ -127,6 +133,15 @@ export class ProfileBasicInfoPage extends BasePage {
   async saveChanges() {
     if (await this.saveButton.isVisible() && await this.saveButton.isEnabled()) {
       await this.clickElement(this.saveButton, 'Save Button');
+    }
+  }
+
+  /**
+   * Cancels edit mode without saving changes.
+   */
+  async cancelEdit() {
+    if (await this.cancelButton.isVisible() && await this.cancelButton.isEnabled()) {
+      await this.clickElement(this.cancelButton, 'Cancel Button');
     }
   }
 
