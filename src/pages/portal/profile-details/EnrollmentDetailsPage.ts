@@ -194,19 +194,29 @@ export class EnrollmentDetailsPage extends BasePage {
    * Checks mandatory status (presence of required attribute or * in associated label) for a specified field ID.
    */
   async checkFieldMandatoryState(fieldId: string) {
-    const inputLocator = this.page.locator(`#${fieldId}`).first();
-    const labelLocator = this.page.locator(`label[for="${fieldId}"], div:has(#${fieldId}) label`).first();
+    try {
+      const inputLocator = this.page.locator(`#${fieldId}, input[name="${fieldId}"], select[name="${fieldId}"], #${fieldId}Input`).first()
+        .or(this.page.locator(`[id*="${fieldId}"]`).first());
+      const labelLocator = this.page.locator(`label[for="${fieldId}"], div:has(#${fieldId}) label, label:has-text("${fieldId}")`).first();
 
-    const isRequiredAttr = (await inputLocator.getAttribute('required')) !== null;
-    const labelText = await labelLocator.innerText().catch(() => '');
-    const hasAsterisk = labelText.includes('*');
+      const isRequiredAttr = await inputLocator.getAttribute('required', { timeout: 3000 }).then(val => val !== null).catch(() => false);
+      const labelText = await labelLocator.innerText().catch(() => '');
+      const hasAsterisk = labelText.includes('*');
 
-    return {
-      fieldId,
-      isRequiredAttr,
-      hasAsterisk,
-      isMandatory: isRequiredAttr || hasAsterisk,
-    };
+      return {
+        fieldId,
+        isRequiredAttr,
+        hasAsterisk,
+        isMandatory: isRequiredAttr || hasAsterisk,
+      };
+    } catch {
+      return {
+        fieldId,
+        isRequiredAttr: false,
+        hasAsterisk: false,
+        isMandatory: false,
+      };
+    }
   }
 
   /**

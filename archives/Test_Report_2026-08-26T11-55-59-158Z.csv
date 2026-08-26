@@ -1,0 +1,13 @@
+Module,Path,Test Case Name,Status
+"Unknown","tests\global.setup.ts","Global Setup - API Preconditions and UI Authentication","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC01: Verify navigation to Password tab and visibility of Change Password form header and controls","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC02: Verify validation error messages when submitting an empty Change Password form","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC03: Verify validation error ""Current password is required (5-30 characters)"" when Current Password field is empty","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC04: Verify validation error ""New password is required (5-30 characters)"" when New Password field is empty","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC05: Verify validation error ""Confirm password is required (5-30 characters)"" when Confirm Password field is empty","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC06: Verify validation error ""Atleast 5 characters required"" when password is less than 5 characters","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC07: Verify validation error ""Maximum 30 characters allowed"" when password exceeds 30 characters limit","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC08: Verify validation error ""Space not allowed"" when password contains blank spaces","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC09: Verify validation error ""New password and confirm password should be same"" when passwords do not match","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC10: Verify password visibility toggle when clicking eye icon","passed"
+"Unknown","tests\portal\profile-details\password.spec.ts","TC11: Verify input maxlength attributes for password fields","passed"

@@ -1,0 +1,3 @@
+Module,Path,Test Case Name,Status
+"Unknown","tests\global.setup.ts","Global Setup - API Preconditions and UI Authentication","passed"
+"Unknown","tests\portal\profile-details\id-access-info.spec.ts","TC05: Upload oversized image (>1 MB) for ID Document and verify validation handling (Negative)","passed"

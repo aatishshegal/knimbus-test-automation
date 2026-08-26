@@ -1,0 +1,99 @@
+{
+  "workEducationData": {
+    "_description": "Data for validating Profile - Work & Education tab forms (Work Experience, Education, Field of Studies), field attributes, limits, updates, and validations",
+    "tabName": "Work & Education",
+    "headings": {
+      "workExperience": "Work Experience",
+      "education": "Education",
+      "fieldOfStudies": "Field of Studies"
+    },
+    "fieldAttributes": {
+      "jobTitle": { "id": "jobTitle", "name": "jobTitle", "placeholder": " " },
+      "companyName": { "id": "companyName", "name": "companyName", "placeholder": " " },
+      "workExpFromYr": { "id": "workExpFromYr", "name": "workExpFromYr", "maxlength": "4", "placeholder": " " },
+      "workExpToYr": { "id": "workExpToYr", "name": "workExpToYr", "maxlength": "4", "placeholder": " " },
+      "isCurrentCompany": { "id": "isCurrentCompany", "type": "checkbox" },
+      "institutionName": { "id": "institutionName", "name": "institutionName", "placeholder": " " },
+      "eduDegree": { "id": "eduDegree", "name": "degree", "placeholder": " " },
+      "eduFromYr": { "id": "eduFromYr", "name": "eduFromYr", "maxlength": "4", "placeholder": " " },
+      "eduToYr": { "id": "eduToYr", "name": "eduToYr", "maxlength": "4", "placeholder": " " },
+      "studySub": { "id": "studySub", "name": "studySub", "placeholder": " " }
+    },
+    "workExperienceData": {
+      "valid": {
+        "jobTitle": "Senior Quality Engineer",
+        "companyName": "Tech Solutions Corp",
+        "workExpFromYr": "2020",
+        "workExpToYr": "2024",
+        "isCurrentCompany": false
+      },
+      "currentJob": {
+        "jobTitle": "Lead Test Automation Architect",
+        "companyName": "Knimbus Tech",
+        "workExpFromYr": "2024",
+        "workExpToYr": "",
+        "isCurrentCompany": true
+      },
+      "invalidYear": {
+        "jobTitle": "QA Engineer",
+        "companyName": "Innovate",
+        "workExpFromYr": "202099",
+        "workExpToYr": "ABCD"
+      }
+    },
+    "educationData": {
+      "valid": {
+        "institutionName": "National Institute of Technology",
+        "eduDegree": "Bachelor of Technology",
+        "eduFromYr": "2016",
+        "eduToYr": "2020"
+      },
+      "overflowYear": {
+        "institutionName": "University of Science",
+        "eduDegree": "Master of Science",
+        "eduFromYr": "2016999",
+        "eduToYr": "2020888"
+      }
+    },
+    "fieldOfStudiesData": {
+      "valid": {
+        "studySub": "Computer Science & Engineering"
+      },
+      "specialChar": {
+        "studySub": "Information Technology <script>alert('xss')</script>"
+      }
+    },
+    "messages": {
+      "successToast": "updated successfully",
+      "saveButtonText": "Save",
+      "atLeastFourChars": "Atleast 4 characters required",
+      "onlyNumbersAllowed": "Only numbers are allowed",
+      "yearGreaterThanCurrent": "Year value can't be greater than current year",
+      "jobTitleRequired": "Job title is required",
+      "companyRequired": "Company is required",
+      "fromYearRequired": "From year is required",
+      "toYearRequired": "To year is required",
+      "pleaseFillFromYear": "Please fill From year",
+      "fromYearGreaterThanToYear": "From year value can't be greater than To year value",
+      "deleteConfirmText": "Are you sure you want to delete?",
+      "cancelButtonText": "Cancel",
+      "deleteButtonText": "Delete",
+      "editButtonText": "Edit",
+      "addMoreText": "Add more",
+      "institutionNameRequired": "Institution name is required",
+      "degreeRequired": "Degree is required",
+      "fieldOfStudyRequired": "Field of study is required",
+      "leadingTrailingSpaces": "Leading or trailing spaces not allowed"
+    },
+    "yearValidationData": {
+      "singleChar": "2",
+      "alphaChar": "abcd",
+      "futureFromYear": "2099",
+      "futureToYear": "2099",
+      "invalidFromToYear": {
+        "fromYr": "2024",
+        "toYr": "2020"
+      }
+    }
+  }
+}

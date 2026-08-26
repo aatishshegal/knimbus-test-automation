@@ -1,0 +1,32 @@
+{
+  "contactData": {
+    "_description": "Test data for validating Profile - Contact Details tab fields, dropdowns, limits, and validation messages",
+    "tabName": "Contact",
+    "heading": "Contact Details",
+    "valid": {
+      "mobile": "75757474774",
+      "officePhone": "6743674764373",
+      "residentialPhone": "736774343",
+      "nationality": "India",
+      "officeAddress": "Hadpsar, Pune 411028",
+      "residentialAddress": "Pune"
+    },
+    "fieldAttributes": {
+      "contactNos": { "id": "contactNos", "name": "contactNos", "maxlength": "21", "placeholder": " " },
+      "officePhone": { "id": "officePhone", "name": "officePhone", "maxlength": "21", "placeholder": " " },
+      "residentialPhone": { "id": "residentialPhone", "name": "residentialPhone", "maxlength": "21", "placeholder": " " },
+      "nationality": { "id": "nationality", "name": "nationality" },
+      "officeAddress": { "id": "officeAddress", "name": "officeAddress", "maxlength": "2001", "placeholder": " " },
+      "residentialAddress": { "id": "residentialAddress", "name": "residentialAddress", "maxlength": "2001", "placeholder": " " }
+    },
+    "messages": {
+      "mobileRequired": "Mobile is required (7-20 numbers)",
+      "officePhoneRequired": "Office Phone is required (4-20 numbers)",
+      "residentialPhoneRequired": "Residential Phone is required (4-20 numbers)",
+      "officeAddressRequired": "Office Address is required (2000 characters)",
+      "residentialAddressRequired": "Residential Address is required (2000 characters)",
+      "leadingTrailingSpaces": "Leading or trailing spaces not allowed",
+      "successToast": "updated successfully"
+    }
+  }
+}

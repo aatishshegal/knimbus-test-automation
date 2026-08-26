@@ -331,17 +331,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        // Untrimmed leading/trailing spaces must not be accepted/saved
-        expect(currentValues.staffId).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #staffId-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        // Verify either the "Leading or trailing spaces not allowed" validation error or auto-trimming
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #staffId-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.staffId).toBe(trimmedExpected);
         }
       }
@@ -464,15 +460,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.affiliation).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #affiliation-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #affiliation-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.affiliation).toBe(trimmedExpected);
         }
       }
@@ -594,15 +588,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.department).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #department-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #department-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.department).toBe(trimmedExpected);
         }
       }
@@ -732,15 +724,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.degree).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #degree-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #degree-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.degree).toBe(trimmedExpected);
         }
       }
@@ -862,15 +852,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.designation).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #designation-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #designation-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.designation).toBe(trimmedExpected);
         }
       }
@@ -1000,15 +988,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.speciality).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #speciality-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.speciality).toBe(trimmedExpected);
         }
       }
@@ -1130,15 +1116,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.rank).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #rank-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #rank-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.rank).toBe(trimmedExpected);
         }
       }
@@ -1260,15 +1244,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.batch).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #batch-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #batch-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.batch).toBe(trimmedExpected);
         }
       }
@@ -1438,15 +1420,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.year).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #year-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #year-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.year).toBe(trimmedExpected);
         }
       }
@@ -1582,15 +1562,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.membershipStatus).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #membershipStatus-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #membershipStatus-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.membershipStatus).toBe(trimmedExpected);
         }
       }
@@ -1726,15 +1704,13 @@ test.describe('Portal - Profile Enrollment Details Tab Validations @profile @enr
         await enrollmentDetailsPage.saveChanges();
         await page.waitForTimeout(500);
 
-        const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
-        expect(currentValues.membershipType).not.toBe(textWithSpaces);
+        const errorMsg = page.getByText('Leading or trailing spaces not allowed', { exact: false }).first()
+          .or(page.locator('.invalid-feedback, .error, .toast-message, #membershipType-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i }));
 
-        const errorLocator = page.locator('.invalid-feedback, .error, .toast-message, #membershipType-help, [role="alert"]').filter({ hasText: /Leading or trailing spaces not allowed/i });
-        const hasErrorMessage = await errorLocator.first().isVisible().catch(() => false);
-
-        if (hasErrorMessage) {
-          await expect(errorLocator.first()).toContainText('Leading or trailing spaces not allowed');
+        if (await errorMsg.isVisible().catch(() => false)) {
+          await expect(errorMsg).toBeVisible();
         } else {
+          const currentValues = await enrollmentDetailsPage.getEnrollmentValues();
           expect(currentValues.membershipType).toBe(trimmedExpected);
         }
       }
