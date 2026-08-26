@@ -17,7 +17,7 @@ test.describe('Registration Form Field Validation', () => {
     // Increase timeout to 300 seconds to safely allow all 70 data-driven scenarios to finish
     test.setTimeout(300000);
 
-    test('Data-Driven Boundary Validation on Registration Form', async ({ page, portalLoginPage, registrationPage }, testInfo) => {
+    test('Verify Registration Form fields enforce minimum and maximum character/value boundaries (data-driven test)', async ({ page, portalLoginPage, registrationPage }, testInfo) => {
         // 1. Navigate to Registration Form
         await portalLoginPage.navigateTo(process.env.PORTAL_URL!);
         await portalLoginPage.signInPopupTrigger.click();

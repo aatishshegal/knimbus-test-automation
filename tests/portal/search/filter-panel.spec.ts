@@ -22,7 +22,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     expect(initialResultCount).toBeGreaterThan(0);
   });
 
-  test('should display filter categories and counts in default state', async ({ searchResultPage }) => {
+  test('Verify filter categories and their counts display correctly in the default state', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Validate counts are visible for category "${category1}"`, async () => {
@@ -36,7 +36,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('should expand and collapse filter categories', async ({ searchResultPage }) => {
+  test('Verify filter categories can be expanded and collapsed', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const catBtn = filterPanel.getCategoryButton(category1);
     
@@ -56,7 +56,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('should open View All popup for categories with many filters', async ({ searchResultPage }) => {
+  test('Verify the View All popup opens for categories with many filters', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Open "View All" popup for category "${category1}"`, async () => {
@@ -69,7 +69,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('should not display View All popup for categories with 5 or fewer filters', async ({ searchResultPage }) => {
+  test('Verify the View All popup does not display for categories with 5 or fewer filters', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const categoryName = 'Access Type';
     
@@ -85,7 +85,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('should apply a single filter and update results', async ({ searchResultPage }) => {
+  test('Verify applying a single filter updates the search results', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Apply filter "${category1Values[0]}" in category "${category1}"`, async () => {
@@ -103,7 +103,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('should remove an applied filter and revert results', async ({ searchResultPage }) => {
+  test('Verify removing an applied filter reverts the search results', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Setup: Apply a filter first`, async () => {
@@ -126,7 +126,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('should clear all applied filters at once', async ({ searchResultPage }) => {
+  test('Verify clearing all applied filters at once works correctly', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Setup: Apply multiple filters`, async () => {
@@ -150,7 +150,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('should support applying multiple filters across different categories with strict count validation', async ({ searchResultPage }) => {
+  test('Verify applying multiple filters across different categories updates the result count correctly', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     let expectedCountCategory1 = 0;
     let expectedCountCategory2 = 0;
@@ -208,7 +208,7 @@ test.describe('Custom Flow Search Scenarios', () => {
     await page.goto(process.env.PORTAL_URL as string);
   });
 
-  test('should preserve applied filters when switching tabs', async ({ topNavigationBar, searchResultPage }) => {
+  test('Verify applied filters are preserved when switching tabs', async ({ topNavigationBar, searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const scenarioData2 = portalData.filterPanelScenarios[1];
     const customQuery = scenarioData2.query;
@@ -245,7 +245,7 @@ test.describe('Custom Flow Search Scenarios', () => {
     });
   });
 
-  test('should reduce result count and show applied chip when using inner search box', async ({ topNavigationBar, searchResultPage }) => {
+  test('Verify using the inner search box reduces the result count and shows an applied chip', async ({ topNavigationBar, searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const scenarioData3 = portalData.filterPanelScenarios[2];
     const baseQuery = scenarioData3.query;

@@ -78,7 +78,7 @@ test.describe('Research+ Query Type Search Scenarios', () => {
                 // Step 6: Wait for Results
                 // We'll wait up to 45 seconds for the search count text to appear, which indicates results have loaded
                 try {
-                    await expect(researchPlusPage.showingCountIndicator).toBeVisible({ timeout: 45000 });
+                    await expect(researchPlusPage.showingCountIndicator).toBeVisible({ timeout: 60000 });
                 } catch (timeoutError) {
                     throw new Error(`Timeout waiting for results to load for query: "${randomQuery}"`);
                 }

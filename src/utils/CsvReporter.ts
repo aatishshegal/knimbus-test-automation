@@ -41,24 +41,31 @@ export default class CsvReporter implements Reporter {
     if (match && match[1]) {
       moduleName = match[1];
     }
+    
+    let testType = 'Positive';
+    const fullPathTitle = test.titlePath().join(' ').toLowerCase();
+    if (fullPathTitle.includes('negative')) {
+        testType = 'Negative';
+    }
 
     this.results.push({
       module: moduleName,
       path: path.relative(process.cwd(), testPath),
       name: test.title,
+      type: testType,
       status: result.status,
-    });
+    } as any);
   }
 
   onEnd() {
     if (this.results.length === 0) return;
 
     // Generate CSV content
-    const header = 'Module,Path,Test Case Name,Status\n';
-    const rows = this.results.map((r) => {
+    const header = 'Module,Path,Test Case Name,Test Case Type,Status\n';
+    const rows = this.results.map((r: any) => {
       // Escape quotes and commas in CSV fields
       const escapeCsv = (str: string) => `"${str.replace(/"/g, '""')}"`;
-      return `${escapeCsv(r.module)},${escapeCsv(r.path)},${escapeCsv(r.name)},${escapeCsv(r.status)}`;
+      return `${escapeCsv(r.module)},${escapeCsv(r.path)},${escapeCsv(r.name)},${escapeCsv(r.type)},${escapeCsv(r.status)}`;
     });
 
     const csvContent = header + rows.join('\n');

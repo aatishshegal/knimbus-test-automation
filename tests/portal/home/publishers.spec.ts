@@ -9,19 +9,8 @@ test.describe('Home Page - Publishers and Databases', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const publisher of portalData.expectedPublishers.data) {
-    test(`Verify ${publisher} is clickable and navigates correctly`, async ({ homePage, page }) => {
-      // Scroll widget into view
-      const widgetContainer = homePage.getWidgetContainer(widgetTitle);
-      await widgetContainer.scrollIntoViewIfNeeded();
-
-      // Click the publisher
-      await homePage.clickWidgetItem(widgetTitle, publisher);
-      
-      // Since it navigates, wait for URL change or search results
-      await page.waitForLoadState('networkidle');
-      // Assert that we are on a search/results page
-      await expect(page).toHaveURL(/.*search|.*browse/i);
-    });
-  }
+  test('Verify all publisher cards are clickable and navigate correctly', async ({ homePage }) => {
+    // Calling the helper method to handle loop iteration inside the POM
+    await homePage.verifyWidgetItemsClickable(widgetTitle, portalData.expectedPublishers.data);
+  });
 });

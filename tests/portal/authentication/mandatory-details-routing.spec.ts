@@ -2,7 +2,7 @@ import { test, expect } from '../../../src/fixtures';
 
 test.describe('Portal Authentication - Mandatory Details Routing', () => {
 
-  test('An existing user whose profile data was cleared should be routed to the mandatory details form', 
+  test('Verify an existing user whose profile data was cleared is routed to the Mandatory Details form', 
     async ({ portalLoginPage, mandatoryDetailsPage, mandatoryDetailsUser }) => {
     
     // 1. Arrange & Act
@@ -15,7 +15,7 @@ test.describe('Portal Authentication - Mandatory Details Routing', () => {
     await expect(mandatoryDetailsPage.mandatoryDetailsIdentifier).toBeVisible();
   });
 
-  test('A new user missing mandatory details should be routed to the mandatory details form', 
+  test('Verify a new user missing mandatory details is routed to the Mandatory Details form', 
     async ({ portalLoginPage, mandatoryDetailsPage, dynamicMandatoryDetailsUser }) => {
     
     // 1. Arrange & Act

@@ -4,7 +4,7 @@ import { YopmailPage } from '../../../src/pages/portal/YopmailPage';
 
 test.describe('OTP and Mandatory Profile Flow', () => {
 
-  test('User should navigate from Login -> OTP -> Mandatory Details -> Welcome', async ({
+  test('Verify user navigates through the Login -> OTP -> Mandatory Details -> Welcome flow', async ({
     portalLoginPage,
     otpPage,
     termsAndConditionsModal,

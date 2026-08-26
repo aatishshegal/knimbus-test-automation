@@ -3,7 +3,7 @@ import path from 'path';
 
 test.describe('Portal Authentication - Successful Login Flows', () => {
 
-  test('A existing standard user with NO mandatory fields and NO OTP enabled should be routed directly to the Home Page',
+  test('An existing standard user with no pending mandatory fields and OTP disabled should be routed directly to the Home Page',
     async ({ portalLoginPage, homePage, termsAndConditionUser }) => {
 
       // 1. Arrange & Act
@@ -16,7 +16,7 @@ test.describe('Portal Authentication - Successful Login Flows', () => {
       await expect(homePage.homePageIdentifier).toBeVisible();
     });
 
-  test('User should navigate from Login -> Mandatory Details -> Welcome -> Home (with T&C optional)', async ({
+  test('Verify user navigates through the Login -> Mandatory Details -> Welcome -> Home flow (T&C optional)', async ({
     portalLoginPage,
     mandatoryDetailsPage,
     welcomePage,
