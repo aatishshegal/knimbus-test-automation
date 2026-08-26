@@ -6,7 +6,7 @@ import * as path from 'path';
 test.describe('Unverified User Registration (Automated Verification Disabled)', () => {
 
     test.describe('Scenario 1: Registration when Mandatory Fields are Disabled', () => {
-        test('User signs up and lands on automated user verification page', async ({
+        test('Verify a user who signs up lands on the Automated User Verification page', async ({
             page,
             portalLoginPage,
             registrationPage
@@ -32,7 +32,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
             const timestamp = Date.now();
             const testEmail = `test_verification_${timestamp}@yopmail.com`;
 
-            await registrationPage.fillRegistration('Test Verification', testEmail, 'Password@123');
+            await registrationPage.fillRegistration('Test Verification', testEmail, process.env.DEFAULT_PASSWORD as string);
             await registrationPage.acceptTermsAndConditions();
             await registrationPage.submitRegistration();
 
@@ -41,7 +41,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
     });
 
     test.describe('Scenario 2: Registration when Mandatory Fields are Enabled', () => {
-        test('User signs up, fills mandatory fields on registration page, and lands on automated verification page', async ({
+        test('Verify a user who signs up and fills mandatory registration fields lands on the Automated Verification page', async ({
             page,
             portalLoginPage,
             registrationPage,
@@ -71,7 +71,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
             const timestamp = Date.now();
             const testEmail = `test_verif_mand_${timestamp}@yopmail.com`;
 
-            await registrationPage.fillRegistration('Test Verif Mand', testEmail, 'Password@123');
+            await registrationPage.fillRegistration('Test Verif Mand', testEmail, process.env.DEFAULT_PASSWORD as string);
             await registrationPage.acceptTermsAndConditions();
 
             // When automatedVerification is false, the mandatory fields are appended to the registration form itself!
@@ -100,7 +100,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
         });
     });
     test.describe('Scenario 3: Registration when OTP (Two-Factor Auth) is Enabled', () => {
-        test('User signs up, enters OTP, and lands on automated verification page', async ({
+        test('Verify a user who signs up and enters OTP lands on the Automated Verification page', async ({
             page,
             context,
             portalLoginPage,
@@ -128,7 +128,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
             const timestamp = Date.now();
             const testEmail = `test_verif_otp_${timestamp}@yopmail.com`;
 
-            await registrationPage.fillRegistration('Test Verif OTP', testEmail, 'Password@123');
+            await registrationPage.fillRegistration('Test Verif OTP', testEmail, process.env.DEFAULT_PASSWORD as string);
             await registrationPage.acceptTermsAndConditions();
             await registrationPage.submitRegistration();
 

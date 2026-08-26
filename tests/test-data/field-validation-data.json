@@ -6,7 +6,7 @@
       "field": "FullName",
       "validationType": "errorMessage",
       "value": "",
-      "expectedError": "Full name is required (3-100 characters)"
+      "expectedError": "Full Name is required (3-100 characters)"
     },
     {
       "scenario": "Full Name - Enter only 2 char",

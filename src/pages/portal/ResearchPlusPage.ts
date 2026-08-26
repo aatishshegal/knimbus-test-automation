@@ -224,4 +224,31 @@ export class ResearchPlusPage extends BasePage {
     // It has a desktop and mobile version. We target the desktop version specifically.
     return this.page.locator('span.d-md-inline-block > a[title*="emove"]').first();
   }
+
+  async verifyAllResourcesChecked() {
+    const totalResources = await this.allResourcesList.count();
+    for (let i = 0; i < totalResources; i++) {
+        await expect(this.allResourcesList.nth(i)).toHaveClass(/asw-checkbox-checked/);
+    }
+  }
+
+  async verifyResourcesPartiallyChecked() {
+    const totalResources = await this.allResourcesList.count();
+    let hasUnselected = false;
+    for (let i = 0; i < totalResources; i++) {
+        const classAttr = await this.allResourcesList.nth(i).getAttribute('class');
+        if (!classAttr?.includes('asw-checkbox-checked')) {
+            hasUnselected = true;
+            break;
+        }
+    }
+    expect(hasUnselected).toBeTruthy();
+  }
+
+  async verifyNoResourcesChecked() {
+    const totalResources = await this.allResourcesList.count();
+    for (let i = 0; i < totalResources; i++) {
+        await expect(this.allResourcesList.nth(i)).not.toHaveClass(/asw-checkbox-checked/);
+    }
+  }
 }

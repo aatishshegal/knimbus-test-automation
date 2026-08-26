@@ -148,14 +148,6 @@ test.describe('Research+ Functionality', () => {
         expect(yearLabels.length, 'There should be at least one publication year returned to validate the filter').toBeGreaterThan(0);
 
         // Verify that all extracted years are within the provided range
-        for (const label of yearLabels) {
-            // Label might look like "2020 (15)" or just "2020"
-            const yearMatch = label.match(/\b(19|20)\d{2}\b/);
-            if (yearMatch) {
-                const year = parseInt(yearMatch[0], 10);
-                expect.soft(year).toBeGreaterThanOrEqual(fromYear);
-                expect.soft(year).toBeLessThanOrEqual(toYear);
-            }
-        }
+        await filterPanelPage.verifyYearLabelsWithinRange(yearLabels, fromYear, toYear);
     });
 });

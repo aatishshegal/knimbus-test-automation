@@ -84,7 +84,7 @@ test.describe('Search Results Sorting Validations @search @sorting', () => {
     });
   }
 
-  test('Verify sort order is preserved across pagination @search @sorting @pagination', async ({ topNavigationBar, searchResultPage, page }, testInfo) => {
+  test('Verify sort order is preserved across pagination', async ({ topNavigationBar, searchResultPage, page }, testInfo) => {
     // Navigate to search results
     await topNavigationBar.searchFor(scenario.query);
     await expect(searchResultPage.searchResultIdentifier).toBeAttached();
@@ -133,7 +133,7 @@ test.describe('Search Results Sorting Validations @search @sorting', () => {
     expect(isValid, 'Pagination breaks alphabetical sorting.').toBeTruthy();
   });
 
-  test('Verify switching sort options mid-session preserves state @search @sorting', async ({ topNavigationBar, searchResultPage, page }) => {
+  test('Verify switching sort options mid-session preserves the selected sort state', async ({ topNavigationBar, searchResultPage, page }) => {
     await topNavigationBar.searchFor(scenario.query);
     await expect(searchResultPage.searchResultIdentifier).toBeAttached();
     await page.waitForTimeout(3000);

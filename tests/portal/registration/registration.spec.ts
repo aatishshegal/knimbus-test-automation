@@ -5,7 +5,7 @@ import path from 'path';
 
 test.describe('Portal Authentication - Registration Flows', () => {
 
-  test('User registers without OTP, sees welcome page, and lands on home', async ({
+  test('Verify a user can register without OTP, view the Welcome page, and land on Home', async ({
     page,
     portalLoginPage,
     registrationPage,
@@ -56,7 +56,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
   });
 
-  test('User registers, verifies via OTP, sees welcome page, and lands on home', async ({
+  test('Verify a user can register, verify via OTP, view the Welcome page, and land on Home', async ({
     portalLoginPage,
     registrationPage,
     otpPage,
@@ -113,7 +113,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
   });
 
-  test('User registers, lands on mandatory page, fills it, sees welcome page, and lands on home', async ({
+  test('Verify a user can register, complete the Mandatory Details page, view the Welcome page, and land on Home', async ({
     portalLoginPage,
     registrationPage,
     mandatoryDetailsPage,
@@ -176,7 +176,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
   });
 
-  test('User signs up with restricted domain and gets error', async ({
+  test('Verify signing up with a restricted email domain shows an error', async ({
     page,
     portalLoginPage,
     registrationPage
@@ -213,7 +213,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(errorLocator).toBeVisible({ timeout: 10000 });
   });
 
-  test('User signs up with restricted domain and gets Access Denied error', async ({
+  test('Verify signing up with a restricted email domain shows an Access Denied error', async ({
     page,
     portalLoginPage,
     registrationPage
@@ -245,7 +245,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     const testEmail = `test_denied_${timestamp}@gmail.com`;
 
     // Fill registration form
-    await registrationPage.fillRegistration('Test Denied', testEmail, 'Password@123');
+    await registrationPage.fillRegistration('Test Denied', testEmail, process.env.DEFAULT_PASSWORD as string);
 
     // Handle T&C if present (optional depending on UI)
     try {

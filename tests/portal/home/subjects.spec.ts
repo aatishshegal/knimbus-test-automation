@@ -9,19 +9,8 @@ test.describe('Home Page - Academic Subjects', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const subject of portalData.expectedSubjects.data) {
-    test(`Verify subject ${subject} is clickable and navigates correctly`, async ({ homePage, page }) => {
-      // Scroll widget into view
-      const widgetContainer = homePage.getWidgetContainer(widgetTitle);
-      await widgetContainer.scrollIntoViewIfNeeded();
-
-      // Click the subject
-      await homePage.clickWidgetItem(widgetTitle, subject);
-      
-      // Navigate
-      await page.waitForLoadState('networkidle');
-      // Assert that we are on a search/results page
-      await expect(page).toHaveURL(/.*search|.*browse/i);
-    });
-  }
+  test('Verify all academic subjects are clickable and navigate correctly', async ({ homePage }) => {
+    // Calling the helper method to handle loop iteration inside the POM
+    await homePage.verifyWidgetItemsClickable(widgetTitle, portalData.expectedSubjects.data);
+  });
 });

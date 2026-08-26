@@ -10,7 +10,7 @@ test.describe('Research+ Form Reset Validations', () => {
         await expect(researchPlusPage.pageIdentifier).toBeVisible();
     });
 
-    test('Clicking on Reset All should clear every filled data and reset source to Default', async ({ researchPlusPage, page }) => {
+    test('Clicking Reset All should clear all entered data and reset the source selection to Default', async ({ researchPlusPage, page }) => {
         // 1. Enter random query
         await researchPlusPage.searchBarInput1.fill(resetData.query);
         

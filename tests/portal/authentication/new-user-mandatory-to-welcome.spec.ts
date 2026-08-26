@@ -3,7 +3,7 @@ import path from 'path';
 
 test.describe('Mandatory Profile Fields Flow', () => {
 
-  test('A freshly registered user should be forced to fill out all mandatory profile fields upon first login', async ({
+  test('Verify a freshly registered user is forced to fill out all mandatory profile fields on first login', async ({
     portalLoginPage,
     mandatoryDetailsPage,
     welcomePage,

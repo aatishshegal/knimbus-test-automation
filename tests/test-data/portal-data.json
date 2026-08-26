@@ -131,7 +131,7 @@
       ]
     },
     {
-      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Test: should preserve applied filters when switching tabs)",
+      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Test: Verify applied filters are preserved when switching tabs)",
       "query": "International",
       "categories": [
         {
@@ -143,7 +143,7 @@
       ]
     },
     {
-      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Test: should reduce result count and show applied chip when using inner search box)",
+      "_description": "Used in: tests/portal/search/filter-panel.spec.ts (Test: Verify using the inner search box reduces the result count and shows an applied chip)",
       "query": "data",
       "innerSearchQuery": "Science",
       "expectedDrilldownText": "Drilldown to: Science",
@@ -215,7 +215,7 @@
       }
     },
     "formReset": {
-      "_description": "Used in: tests/portal/research-plus/research-form-reset.spec.ts (Suite: 'Research+ Form Reset Validations' -> Test: 'Clicking on Reset All should clear every filled data and reset source to Default')",
+      "_description": "Used in: tests/portal/research-plus/research-form-reset.spec.ts (Suite: 'Research+ Form Reset Validations' -> Test: 'Clicking Reset All should clear all entered data and reset the source selection to Default')",
       "query": "Quantum Computing",
       "queryType": "Author",
       "fromYear": "2000",
@@ -233,7 +233,7 @@
   },
   "researchPlusQueryTypes": [
     {
-      "testCaseName": "Query Type: Author with Default sources",
+      "testCaseName": "Verify Research+ search results for Query Type 'Author' using Default sources",
       "queryType": "Author",
       "queries": [
         "peter",
@@ -244,7 +244,7 @@
       "specificSource": ""
     },
     {
-      "testCaseName": "Query Type: Everything with Default sources",
+      "testCaseName": "Verify Research+ search results for Query Type 'Everything' using Default sources",
       "queryType": "Everything",
       "queries": [
         "nanotechnology",
@@ -256,7 +256,7 @@
       "specificSource": ""
     },
     {
-      "testCaseName": "Query Type: Publication with IEEE only",
+      "testCaseName": "Verify Research+ search results for Query Type 'Publication' using IEEE source only",
       "queryType": "Publication",
       "queries": [
         "International Conference"
@@ -265,7 +265,7 @@
       "specificSource": "IEEE"
     },
     {
-      "testCaseName": "Query Type: Keyword with Default sources",
+      "testCaseName": "Verify Research+ search results for Query Type 'Keyword' using Default sources",
       "queryType": "Keyword",
       "queries": [
         "International",
@@ -278,7 +278,7 @@
       "specificSource": ""
     },
     {
-      "testCaseName": "Query Type: Title with Default sources",
+      "testCaseName": "Verify Research+ search results for Query Type 'Title' using Default sources",
       "queryType": "Title",
       "queries": [
         "python",
@@ -290,7 +290,7 @@
       "specificSource": ""
     },
     {
-      "testCaseName": "Query Type: DOI with IEEE only",
+      "testCaseName": "Verify Research+ search results for Query Type 'DOI' using IEEE source only",
       "queryType": "DOI",
       "queries": [
         "10.1109/TPS.2008.922933"
@@ -299,7 +299,7 @@
       "specificSource": "IEEE"
     },
     {
-      "testCaseName": "Query Type: ISSN with IEEE only",
+      "testCaseName": "Verify Research+ search results for Query Type 'ISSN' using IEEE source only",
       "queryType": "ISSN",
       "queries": [
         "0740-7459"
@@ -310,7 +310,7 @@
   ],
   "researchPlusFederatedRefresh": [
     {
-      "testCaseName": "Query Type: Title - Validate Refresh Button Increments Count",
+      "testCaseName": "Verify the Refresh button increments the result count for Query Type 'Title' (Research+)",
       "queryType": "Title",
       "queries": [
         "chemical",
@@ -321,7 +321,7 @@
       "action": "defaultSources"
     },
     {
-      "testCaseName": "Query Type: Title - Validate Get More Button",
+      "testCaseName": "Verify the Get More button loads additional results for Query Type 'Title' (Research+)",
       "queryType": "Title",
       "queries": [
         "chemical",

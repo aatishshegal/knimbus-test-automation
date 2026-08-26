@@ -104,6 +104,8 @@ export class AdminApiService {
     domainRestriction?: string[];
     authDenyPatterns?: { denialPatterns: string[], allowedPatterns: string[] | null };
     mandatoryFields?: { fields: string[], isMandatory: boolean };
+    allFieldsEditable?: boolean;
+    editableFields?: { fields: string[], isEditable: boolean };
   }) {
     console.log('[AdminApiService] Fetching current security settings...');
     const dto = await this.getElibraryDTO();
@@ -148,37 +150,80 @@ export class AdminApiService {
       needsSave = true;
     }
 
-    if (settings.mandatoryFields) {
+    if (settings.mandatoryFields || settings.allFieldsEditable !== undefined || settings.editableFields) {
       const customFields = JSON.parse(info.eLibCustomFields || '[]');
       let fieldsChanged = false;
       
       for (const field of customFields) {
-        if (settings.mandatoryFields.isMandatory) {
-          // If fields array is empty, enable ALL fields. Otherwise, only enable the specific ones in the array.
-          const shouldBeMandatory = settings.mandatoryFields.fields.length === 0 ? true : settings.mandatoryFields.fields.includes(field.fieldName);
-          if (field.isMandatory !== shouldBeMandatory) {
-            field.isMandatory = shouldBeMandatory;
-            fieldsChanged = true;
-          }
-        } else {
-          // If isMandatory is false and fields array is empty, disable ALL mandatory fields.
-          // Otherwise, only disable the specific fields in the array.
-          if (settings.mandatoryFields.fields.length === 0) {
-            if (field.isMandatory) {
-              field.isMandatory = false;
-              fieldsChanged = true;
+        if (settings.mandatoryFields) {
+            // NEVER turn off mandatory for Name and Email, they are inherently mandatory.
+            if (field.fieldName === 'Name' || field.fieldName === 'Email') {
+               if (!field.isMandatory) {
+                 field.isMandatory = true;
+                 fieldsChanged = true;
+               }
+            } else {
+                if (settings.mandatoryFields.isMandatory) {
+                  // If fields array is empty, enable ALL fields. Otherwise, only enable the specific ones in the array.
+                  const shouldBeMandatory = settings.mandatoryFields.fields.length === 0 ? true : settings.mandatoryFields.fields.includes(field.fieldName);
+                  if (field.isMandatory !== shouldBeMandatory) {
+                    field.isMandatory = shouldBeMandatory;
+                    fieldsChanged = true;
+                  }
+                } else {
+                  // If isMandatory is false and fields array is empty, disable ALL mandatory fields.
+                  // Otherwise, only disable the specific fields in the array.
+                  if (settings.mandatoryFields.fields.length === 0) {
+                    if (field.isMandatory) {
+                      field.isMandatory = false;
+                      fieldsChanged = true;
+                    }
+                  } else {
+                    if (settings.mandatoryFields.fields.includes(field.fieldName) && field.isMandatory) {
+                      field.isMandatory = false;
+                      fieldsChanged = true;
+                    }
+                  }
+                }
             }
-          } else {
-            if (settings.mandatoryFields.fields.includes(field.fieldName) && field.isMandatory) {
-              field.isMandatory = false;
-              fieldsChanged = true;
+        }
+        
+        if (settings.allFieldsEditable !== undefined) {
+            if (field.isEditable !== settings.allFieldsEditable) {
+                field.isEditable = settings.allFieldsEditable;
+                fieldsChanged = true;
             }
-          }
+        }
+
+        if (settings.editableFields) {
+            if (settings.editableFields.isEditable) {
+                // If fields array is empty, enable ALL fields. Otherwise, only enable the specific ones.
+                const shouldBeEditable = settings.editableFields.fields.length === 0 ? true : settings.editableFields.fields.includes(field.fieldName);
+                if (field.isEditable !== shouldBeEditable) {
+                    field.isEditable = shouldBeEditable;
+                    fieldsChanged = true;
+                }
+            } else {
+                // If isEditable is false and fields array is empty, disable ALL fields.
+                // Otherwise, only disable the specific fields in the array, keeping others enabled.
+                if (settings.editableFields.fields.length === 0) {
+                    if (field.isEditable) {
+                        field.isEditable = false;
+                        fieldsChanged = true;
+                    }
+                } else {
+                    const shouldBeEditable = !settings.editableFields.fields.includes(field.fieldName);
+                    if (field.isEditable !== shouldBeEditable) {
+                        field.isEditable = shouldBeEditable;
+                        fieldsChanged = true;
+                    }
+                }
+            }
         }
       }
       
       if (fieldsChanged) {
-        console.log(`[AdminApiService] Updating Mandatory Fields -> ${settings.mandatoryFields.fields.join(', ')} to ${settings.mandatoryFields.isMandatory}`);
+        console.log(`[AdminApiService] Updating Custom Fields (Mandatory/Editable)`);
         info.eLibCustomFields = JSON.stringify(customFields);
         needsSave = true;
       }
@@ -218,6 +263,32 @@ export class AdminApiService {
     const res = await context.post('/ws/addNewUser', { data: payload });
     if (!res.ok()) throw new Error(`Failed to add user via API: ${res.status()}`);
     console.log(`[AdminApiService] User ${email} created successfully.`);
+  }
+
+  /**
+   * Declines the Off-Campus Access (OCA) request for a specific user.
+   */
+  async declineOcaRequest(email: string) {
+    console.log(`[AdminApiService] Declining OCA request for ${email}...`);
+    const context = this.getContext();
+    const userId = email.replace('@', '_');
+    
+    // The user provided endpoint is https://product.knimbus.com/ws/declineRaRequest?userId=...
+    // The base URL is already configured in the context, so we use relative path.
+    // Use GET as the user instructions implied and as POST returns 500 error.
+    const res = await context.get(`/ws/declineRaRequest?userId=${userId}`);
+    
+    if (!res.ok()) throw new Error(`Failed to decline OCA request via API: ${res.status()}`);
+    
+    const bodyText = await res.text();
+    console.log(`[AdminApiService] Decline response body: ${bodyText}`);
+    
+    // Check for logical errors inside a 200 OK response
+    if (bodyText.includes('"responseCode":101') || bodyText.includes('"responseCode":500') || bodyText.toLowerCase().includes('error')) {
+      throw new Error(`Failed to decline OCA request (API returned logical error): ${bodyText}`);
+    }
+    
+    console.log(`[AdminApiService] OCA request for ${email} declined successfully.`);
   }
 
   /**

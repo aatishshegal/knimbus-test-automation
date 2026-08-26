@@ -5,7 +5,7 @@ const INVALID_OTP_FORMAT = '1';
 const INVALID_OTP_FULL = '111111';
 
 test.describe('Portal Authentication - OTP Positive Flow', () => {
-  test('A user with OTP enabled should be routed to the OTP Verification Page', 
+  test('Verify a user with OTP enabled is routed to the OTP Verification Page', 
     async ({ portalLoginPage, otpPage, otpUser }) => {
     
     // 1. Arrange & Act
@@ -26,7 +26,7 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await page.waitForTimeout(2000);
   });
 
-  test('Empty OTP field should keep verify button disabled', async ({ portalLoginPage, otpPage }) => {
+  test("Verify the 'Verify' button remains disabled when the OTP field is empty", async ({ portalLoginPage, otpPage }) => {
     // 1. Arrange - Setup Admin preconditions via API
     const adminApi = new AdminApiService();
     await adminApi.login();
@@ -46,7 +46,7 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await expect(otpPage.verifyOtpButton).toBeDisabled();
   });
 
-  test('Invalid OTP format should show error', async ({ portalLoginPage, otpPage }) => {
+  test('Verify an invalid OTP format shows a validation error', async ({ portalLoginPage, otpPage }) => {
     // 1. Arrange - Setup Admin preconditions via API
     const adminApi = new AdminApiService();
     await adminApi.login();
@@ -67,7 +67,7 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     await expect(otpPage.verifyOtpButton).toBeDisabled();
   });
 
-  test('Invalid 6-digit OTP should show remaining attempts error or lock the account', async ({ portalLoginPage, otpPage }) => {
+  test('Verify an invalid 6-digit OTP shows a remaining-attempts error or locks the account', async ({ portalLoginPage, otpPage }) => {
     // 1. Arrange - Setup Admin preconditions via API
     const adminApi = new AdminApiService();
     await adminApi.login();
@@ -101,7 +101,7 @@ test.describe('Portal Authentication - OTP Negative Scenarios', () => {
     }
   });
 
-  test('Resend OTP limit should disable the resend button', async ({ portalLoginPage, otpPage, page }) => {
+  test('Verify the Resend OTP button gets disabled after reaching the resend limit', async ({ portalLoginPage, otpPage, page }) => {
     // This test takes a long time because it has to wait ~60s between each resend click (3 minutes total) 
     // PLUS one final 60s wait at the end. We explicitly give it over 5 minutes.
     test.setTimeout(320000); 

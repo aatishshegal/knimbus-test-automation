@@ -8,10 +8,8 @@ test.describe('Home Page - Widgets Visibility', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const widgetTitle of portalData.widgets.data) {
-    test(`Verify ${widgetTitle} section is rendered on the Home Page`, async ({ homePage }) => {
-      const widgetContainer = homePage.getWidgetContainer(widgetTitle);
-      await expect(widgetContainer).toBeVisible();
-    });
-  }
+  test('Verify all configured widgets are rendered on the Home Page', async ({ homePage }) => {
+    // Calling the helper method to handle loop iteration inside the POM
+    await homePage.verifyWidgetsVisibility(portalData.widgets.data);
+  });
 });
