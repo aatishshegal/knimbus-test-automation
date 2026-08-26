@@ -6,7 +6,7 @@ import * as path from 'path';
 test.describe('Unverified User Registration (Automated Verification Disabled)', () => {
 
     test.describe('Scenario 1: Registration when Mandatory Fields are Disabled', () => {
-        test('User signs up and lands on automated user verification page', async ({
+        test('Verify a user who signs up lands on the Automated User Verification page', async ({
             page,
             portalLoginPage,
             registrationPage
@@ -41,7 +41,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
     });
 
     test.describe('Scenario 2: Registration when Mandatory Fields are Enabled', () => {
-        test('User signs up, fills mandatory fields on registration page, and lands on automated verification page', async ({
+        test('Verify a user who signs up and fills mandatory registration fields lands on the Automated Verification page', async ({
             page,
             portalLoginPage,
             registrationPage,
@@ -100,7 +100,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
         });
     });
     test.describe('Scenario 3: Registration when OTP (Two-Factor Auth) is Enabled', () => {
-        test('User signs up, enters OTP, and lands on automated verification page', async ({
+        test('Verify a user who signs up and enters OTP lands on the Automated Verification page', async ({
             page,
             context,
             portalLoginPage,

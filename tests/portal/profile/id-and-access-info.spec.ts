@@ -43,7 +43,7 @@ test.describe('Id & Access Info Suite', () => {
         await expect(idAccessPage.pageHeading).toBeVisible();
     });
 
-    test('Execute all Id Document validation scenarios sequentially in one session', async ({ page }) => {
+    test('Verify all Id Document upload validation scenarios (Id & Access Info page) run correctly within a single session', async ({ page }) => {
         const dataDir = path.resolve(__dirname, '../../../tests/test-data');
         const filesDir = path.resolve(__dirname, '../../../tests/test-data/files');
         

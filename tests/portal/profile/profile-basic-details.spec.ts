@@ -82,7 +82,7 @@ test.describe('Profile - Basic Details & Image Upload Validations', () => {
       if (page) await page.close();
   });
 
-  test('Positive & Negative Data Entry Validation', async ({}, testInfo) => {
+  test('Verify Basic Details form accepts valid data and correctly rejects invalid data', async ({}, testInfo) => {
       console.log('\n--- Starting: Positive & Negative Data Entry Validation ---');
       try {
           // Full Name Validation
@@ -107,7 +107,7 @@ test.describe('Profile - Basic Details & Image Upload Validations', () => {
   });
 
   test.describe('Admin Overrides / Preconditions', () => {
-      test('[Negative] Verify user cannot change Full Name when it is disabled by Admin precondition', async () => {
+      test('Verify user cannot change Full Name when the field is disabled by Admin', async () => {
           // Disable editing for ONLY Full Name (which in API is 'Name')
           await adminApi.updateSecuritySettings({ editableFields: { fields: ['Name'], isEditable: false } });
           await page.reload();
@@ -129,7 +129,7 @@ test.describe('Profile - Basic Details & Image Upload Validations', () => {
           await adminApi.updateSecuritySettings({ allFieldsEditable: true });
       });
 
-      test('[Negative] Verify user cannot change Summary when it is disabled by Admin precondition', async () => {
+      test('Verify user cannot change Summary when the field is disabled by Admin', async () => {
           // Disable editing for ONLY the Summary field
           await adminApi.updateSecuritySettings({ editableFields: { fields: ['Summary'], isEditable: false } });
           await page.reload();
@@ -150,7 +150,7 @@ test.describe('Profile - Basic Details & Image Upload Validations', () => {
           await adminApi.updateSecuritySettings({ allFieldsEditable: true });
       });
   
-      test('[Negative] Verify error when Summary is enabled, Mandatory, and left blank', async () => {
+      test('Verify an error is shown when the mandatory Summary field is enabled and left blank', async () => {
           // Make Summary mandatory.
           await adminApi.updateSecuritySettings({ mandatoryFields: { fields: ['Summary'], isMandatory: true } });
           await page.reload();

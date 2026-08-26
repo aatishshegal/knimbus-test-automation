@@ -8,7 +8,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     await page.waitForTimeout(2000);
   });
 
-  test('Empty fields should keep the submit button disabled', async ({ portalLoginPage }) => {
+  test('Verify the submit button stays disabled when login fields are empty', async ({ portalLoginPage }) => {
     const email = process.env.NEGATIVE_USER_EMAIL as string;
     const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
@@ -25,7 +25,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     expect(await portalLoginPage.isSubmitButtonDisabled()).toBe(true);
   });
 
-  test('Invalid email format should disable the submit button and show an error', async ({ portalLoginPage }) => {
+  test('Verify an invalid email format disables the submit button and shows an error', async ({ portalLoginPage }) => {
     const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
     await portalLoginPage.navigateTo(process.env.PORTAL_URL as string);
@@ -38,7 +38,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     await expect(portalLoginPage.invalidEmailFormatError).toBeVisible();
   });
 
-  test('Unregistered email should show user does not exist error', async ({ portalLoginPage }) => {
+  test("Verify an unregistered email shows a 'user does not exist' error", async ({ portalLoginPage }) => {
     const unregisteredEmail = `${invalidCredentials.unregisteredEmailPrefix}_${Date.now()}@yopmail.com`;
     const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
@@ -47,7 +47,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     await expect(portalLoginPage.unregisteredUserError).toBeVisible({ timeout: 15000 });
   });
 
-  test('Invalid password should show remaining attempts error or lock the account', async ({ portalLoginPage }) => {
+  test('Verify an invalid password shows a remaining-attempts error or locks the account', async ({ portalLoginPage }) => {
     const email = process.env.LOCKED_USER_EMAIL as string;
     const password = process.env.LOCKED_USER_PASSWORD as string;
 
@@ -61,7 +61,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     expect(isWarningVisible || isLockedVisible || isGenericErrorVisible).toBeTruthy();
   });
 
-  test('Multiple incorrect passwords should lock the account', async ({ portalLoginPage }) => {
+  test('Verify multiple incorrect password attempts lock the account', async ({ portalLoginPage }) => {
     test.slow();
     const email = process.env.LOCKED_USER_EMAIL as string;
     const password = process.env.LOCKED_USER_PASSWORD as string;

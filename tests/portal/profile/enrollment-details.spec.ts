@@ -78,7 +78,7 @@ test.describe('Enrollment Details Suite', () => {
         if (page) await page.close();
     });
 
-    test('Positive Data Entry for all fields', async ({}, testInfo) => {
+    test('Verify all Enrollment Details fields accept valid data and save successfully', async ({}, testInfo) => {
         console.log('\n--- Starting: Positive Data Entry for all fields ---');
         const { positiveData } = (postLoginData as any).enrollmentScenarios;
         try {
@@ -95,7 +95,7 @@ test.describe('Enrollment Details Suite', () => {
         }
     });
 
-    test('Blank Entry Validation', async ({}, testInfo) => {
+    test('Verify Enrollment Details fields show a validation error when submitted blank', async ({}, testInfo) => {
         console.log('\n--- Starting: Blank Entry Validation ---');
         await adminApi.updateSecuritySettings({ mandatoryFields: { fields: [], isMandatory: true } });
         await page.reload();
@@ -119,25 +119,25 @@ test.describe('Enrollment Details Suite', () => {
         await page.getByRole('tab', { name: /Enrollment Details/i }).click();
     });
 
-    test('Leading and Trailing Spaces Validation', async ({}, testInfo) => {
+    test('Verify Enrollment Details fields correctly handle leading and trailing spaces entered in the value', async ({}, testInfo) => {
         console.log('\n--- Starting: Leading and Trailing Spaces Validation ---');
         const scenarios = (postLoginData as any).enrollmentScenarios.negativeScenarios.filter((s: any) => s.scenario.includes('Space'));
         await enrollmentPage.verifyNegativeScenarios(scenarios, logToCsv);
     });
 
-    test('Maximum Character Limits Validation', async ({}, testInfo) => {
+    test('Verify Enrollment Details fields enforce their maximum character limits', async ({}, testInfo) => {
         console.log('\n--- Starting: Maximum Character Limits Validation ---');
         const scenarios = (postLoginData as any).enrollmentScenarios.negativeScenarios.filter((s: any) => s.scenario.includes('More than') || s.scenario.includes('restricts input'));
         await enrollmentPage.verifyNegativeScenarios(scenarios, logToCsv);
     });
 
-    test('HTML Tags and Invalid Data Entry Validation', async ({}, testInfo) => {
+    test('Verify Enrollment Details fields reject HTML tags and other invalid characters', async ({}, testInfo) => {
         console.log('\n--- Starting: HTML Tags and Invalid Data Entry Validation ---');
         const scenarios = (postLoginData as any).enrollmentScenarios.negativeScenarios.filter((s: any) => s.scenario.includes('HTML') || s.scenario.includes('apart from numbers'));
         await enrollmentPage.verifyNegativeScenarios(scenarios, logToCsv);
     });
 
-    test('Auto-suggestion triggers on double click', async ({}, testInfo) => {
+    test('Verify Enrollment Details field shows auto-suggestions when double-clicked', async ({}, testInfo) => {
         console.log('\n--- Starting: Auto-suggestion triggers on double click ---');
         try {
             await expect(enrollmentPage.editBtn).toBeVisible({ timeout: 5000 }).catch(()=>null);
@@ -153,7 +153,7 @@ test.describe('Enrollment Details Suite', () => {
         }
     });
 
-    test('Auto-suggestion triggers on typing', async ({}, testInfo) => {
+    test('Verify Enrollment Details field shows auto-suggestions while typing', async ({}, testInfo) => {
         console.log('\n--- Starting: Auto-suggestion triggers on typing ---');
         try {
             await expect(enrollmentPage.editBtn).toBeVisible({ timeout: 5000 }).catch(()=>null);
@@ -169,7 +169,7 @@ test.describe('Enrollment Details Suite', () => {
         }
     });
 
-    test('Admin Override: All fields non-editable', async ({}, testInfo) => {
+    test('Verify all Enrollment Details fields become read-only when Admin disables editing for all fields', async ({}, testInfo) => {
         console.log('\n--- Starting: Admin Override (All fields non-editable) ---');
         try {
             await adminApi.updateSecuritySettings({ allFieldsEditable: false });
@@ -188,7 +188,7 @@ test.describe('Enrollment Details Suite', () => {
         }
     });
 
-    test('Admin Override: Individual fields non-editable', async ({}, testInfo) => {
+    test('Verify individual Enrollment Details fields become read-only when Admin disables editing for that specific field', async ({}, testInfo) => {
         console.log('\n--- Starting: Admin Override (Individual fields non-editable) ---');
         try {
             await enrollmentPage.verifyAdminOverrideIndividualFields(enrollmentFields, backendFieldMap, adminApi, logToCsv);
