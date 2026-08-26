@@ -261,4 +261,16 @@ export class FilterPanelPage extends BasePage {
     // We wait up to 15s instead of swallowing the timeout, so tests don't fail later on random elements.
     await this.page.locator('.grid-view-card, .list-view-card, .detail-container, .no-data').first().waitFor({ state: 'visible', timeout: 15000 });
   }
+
+  async verifyYearLabelsWithinRange(yearLabels: string[], fromYear: number, toYear: number) {
+      for (const label of yearLabels) {
+          // Label might look like "2020 (15)" or just "2020"
+          const yearMatch = label.match(/\b(19|20)\d{2}\b/);
+          if (yearMatch) {
+              const year = parseInt(yearMatch[0], 10);
+              expect.soft(year).toBeGreaterThanOrEqual(fromYear);
+              expect.soft(year).toBeLessThanOrEqual(toYear);
+          }
+      }
+  }
 }

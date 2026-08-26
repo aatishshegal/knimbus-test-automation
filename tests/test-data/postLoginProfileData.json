@@ -496,5 +496,71 @@
         "expectedError": "Only numbers are allowed"
       }
     ]
-  }
+  },
+  "idDocumentScenarios": [
+    {
+      "ScenarioType": "Positive",
+      "Side": "Frontside",
+      "FileName1": "dummy-id.jpg",
+      "FileName2": "",
+      "Scenario": "Valid Frontside Upload",
+      "ExpectedMessage": "Id updated successfully"
+    },
+    {
+      "ScenarioType": "Positive",
+      "Side": "Both",
+      "FileName1": "dummy-id.jpg",
+      "FileName2": "dummy-id.jpg",
+      "Scenario": "Valid Both Sides Upload",
+      "ExpectedMessage": "Id updated successfully"
+    },
+    {
+      "ScenarioType": "Negative",
+      "Side": "Backside",
+      "FileName1": "",
+      "FileName2": "dummy-id.jpg",
+      "Scenario": "Backside without Frontside",
+      "ExpectedMessage": "Please choose a file"
+    },
+    {
+      "ScenarioType": "Negative",
+      "Side": "Frontside",
+      "FileName1": "large_image.jpg",
+      "FileName2": "",
+      "Scenario": "> 1MB Limit Frontside",
+      "ExpectedMessage": "File size exceeded the 1MB maximum limit!"
+    },
+    {
+      "ScenarioType": "Negative",
+      "Side": "Frontside",
+      "FileName1": "invalid_format.pdf",
+      "FileName2": "",
+      "Scenario": "Invalid Format Frontside",
+      "ExpectedMessage": "Invalid file format."
+    },
+    {
+      "ScenarioType": "Negative",
+      "Side": "Backside",
+      "FileName1": "dummy-id.jpg",
+      "FileName2": "invalid_format.pdf",
+      "Scenario": "Invalid Format Backside",
+      "ExpectedMessage": "Invalid file format."
+    },
+    {
+      "ScenarioType": "Positive",
+      "Side": "Frontside",
+      "FileName1": "dummy.png",
+      "FileName2": "",
+      "Scenario": "Valid .png Upload",
+      "ExpectedMessage": "Id updated successfully"
+    },
+    {
+      "ScenarioType": "Positive",
+      "Side": "Frontside",
+      "FileName1": "dummy.jpeg",
+      "FileName2": "",
+      "Scenario": "Valid .jpeg Upload",
+      "ExpectedMessage": "Id updated successfully"
+    }
+  ]
 }

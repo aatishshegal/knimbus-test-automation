@@ -266,6 +266,32 @@ export class AdminApiService {
   }
 
   /**
+   * Declines the Off-Campus Access (OCA) request for a specific user.
+   */
+  async declineOcaRequest(email: string) {
+    console.log(`[AdminApiService] Declining OCA request for ${email}...`);
+    const context = this.getContext();
+    const userId = email.replace('@', '_');
+    
+    // The user provided endpoint is https://product.knimbus.com/ws/declineRaRequest?userId=...
+    // The base URL is already configured in the context, so we use relative path.
+    // Use GET as the user instructions implied and as POST returns 500 error.
+    const res = await context.get(`/ws/declineRaRequest?userId=${userId}`);
+    
+    if (!res.ok()) throw new Error(`Failed to decline OCA request via API: ${res.status()}`);
+    
+    const bodyText = await res.text();
+    console.log(`[AdminApiService] Decline response body: ${bodyText}`);
+    
+    // Check for logical errors inside a 200 OK response
+    if (bodyText.includes('"responseCode":101') || bodyText.includes('"responseCode":500') || bodyText.toLowerCase().includes('error')) {
+      throw new Error(`Failed to decline OCA request (API returned logical error): ${bodyText}`);
+    }
+    
+    console.log(`[AdminApiService] OCA request for ${email} declined successfully.`);
+  }
+
+  /**
    * Changes the password for a given user via API.
    */
   async changeUserPassword(email: string, newPassword: string) {

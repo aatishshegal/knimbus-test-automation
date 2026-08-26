@@ -84,33 +84,13 @@ test.describe('Enrollment Details Suite', () => {
         try {
             if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
             
-            for (const field of enrollmentFields) {
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
-                if (locator && positiveData[field]) {
-                    await locator.fill(positiveData[field]);
-                    console.log(`Filled positive data for ${field}: ${positiveData[field]}`);
-                }
-            }
-            await enrollmentPage.clickSave();
-            await expect(page.getByRole('heading', { name: /Updated successfully/i }).first()).toBeVisible({ timeout: 5000 });
-            for (const field of enrollmentFields) {
-                if (positiveData[field]) {
-                    logToCsv('Positive Data Entry Validation', 'Positive Data Entry', field, positiveData[field], 'Pass');
-                }
-            }
+            await enrollmentPage.fillAndVerifyAllFields(positiveData, enrollmentFields, logToCsv);
         } catch (e: any) {
             failTest(e, testInfo);
-            for (const field of enrollmentFields) {
-                if (positiveData[field]) {
-                    logToCsv('Positive Data Entry Validation', 'Positive Data Entry', field, positiveData[field], 'Fail', e.message);
-                }
-            }
+            await enrollmentPage.logFailureToCsv(positiveData, enrollmentFields, logToCsv, e.message);
         } finally {
             if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-            for (const field of enrollmentFields) {
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
-                if (locator) await locator.fill('');
-            }
+// Cleanups are handled in the helper method now
             if (await enrollmentPage.cancelBtn.isVisible().catch(()=>false)) try { await enrollmentPage.clickCancel(); } catch(e){}
         }
     });
@@ -127,34 +107,7 @@ test.describe('Enrollment Details Suite', () => {
 
         const { positiveData } = (postLoginData as any).enrollmentScenarios;
 
-        for (const field of enrollmentFields) {
-            try {
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
-                if (!locator) continue;
-                
-                // Ensure field has data first
-                if (positiveData[field]) {
-                    await locator.fill(positiveData[field]);
-                }
-                
-                // Clear the field reliably by filling a space and hitting Backspace to trigger frontend events
-                await locator.fill(' ');
-                await locator.focus(); // Ensure it's focused before pressing key
-                await page.keyboard.press('Backspace');
-                await locator.blur();
-                
-                await expect(page.getByText(/is required/i).first()).toBeVisible({ timeout: 2000 });
-                logToCsv('Blank Entry Validation', 'Blank Validation', field, '', 'Pass');
-                
-                // Restore the data so we can continue to the next field without form errors blocking us
-                if (positiveData[field]) {
-                    await locator.fill(positiveData[field]);
-                }
-            } catch (e: any) {
-                failTest(e, testInfo);
-                logToCsv('Blank Entry Validation', 'Blank Validation', field, '', 'Fail', e.message);
-            }
-        }
+        await enrollmentPage.verifyBlankEntry(positiveData, enrollmentFields, logToCsv);
 
         // Cancel out of Edit mode at the end
         if (await enrollmentPage.cancelBtn.isVisible().catch(()=>false)) {
@@ -169,82 +122,19 @@ test.describe('Enrollment Details Suite', () => {
     test('Leading and Trailing Spaces Validation', async ({}, testInfo) => {
         console.log('\n--- Starting: Leading and Trailing Spaces Validation ---');
         const scenarios = (postLoginData as any).enrollmentScenarios.negativeScenarios.filter((s: any) => s.scenario.includes('Space'));
-        for (const s of scenarios) {
-            try {
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                const locator = (enrollmentPage as any)[`${s.field}Input`] || (enrollmentPage as any)[`${s.field}Dropdown`];
-                if (!locator) continue;
-                
-                await locator.fill(s.value);
-                await enrollmentPage.clickSave();
-                await expect(page.getByText(s.expectedError).first()).toBeVisible({ timeout: 3000 });
-                logToCsv('Negative Scenario Validation', s.scenario, s.field, s.value, 'Pass');
-            } catch (e: any) {
-                failTest(e, testInfo);
-                logToCsv('Negative Scenario Validation', s.scenario, s.field, s.value, 'Fail', e.message);
-            } finally {
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                const locator = (enrollmentPage as any)[`${s.field}Input`] || (enrollmentPage as any)[`${s.field}Dropdown`];
-                try { await locator.fill(''); } catch(e){}
-                if (await enrollmentPage.cancelBtn.isVisible().catch(()=>false)) try { await enrollmentPage.clickCancel(); } catch(e){}
-            }
-        }
+        await enrollmentPage.verifyNegativeScenarios(scenarios, logToCsv);
     });
 
     test('Maximum Character Limits Validation', async ({}, testInfo) => {
         console.log('\n--- Starting: Maximum Character Limits Validation ---');
         const scenarios = (postLoginData as any).enrollmentScenarios.negativeScenarios.filter((s: any) => s.scenario.includes('More than') || s.scenario.includes('restricts input'));
-        for (const s of scenarios) {
-            try {
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                const locator = (enrollmentPage as any)[`${s.field}Input`] || (enrollmentPage as any)[`${s.field}Dropdown`];
-                if (!locator) continue;
-                
-                await locator.fill(s.value);
-                await enrollmentPage.clickSave();
-                
-                if (s.field === 'admissionYear') {
-                    // User confirmed admissionYear natively trims to the exact limit and doesn't throw error
-                    logToCsv('Negative Scenario Validation', s.scenario, s.field, s.value, 'Pass', 'UI natively restricted input length (No error thrown)');
-                } else {
-                    await expect(page.getByText(s.expectedError).first()).toBeVisible({ timeout: 3000 });
-                    logToCsv('Negative Scenario Validation', s.scenario, s.field, s.value, 'Pass');
-                }
-            } catch (e: any) {
-                failTest(e, testInfo);
-                logToCsv('Negative Scenario Validation', s.scenario, s.field, s.value, 'Fail', e.message);
-            } finally {
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                const locator = (enrollmentPage as any)[`${s.field}Input`] || (enrollmentPage as any)[`${s.field}Dropdown`];
-                try { await locator.fill(''); } catch(e){}
-                if (await enrollmentPage.cancelBtn.isVisible().catch(()=>false)) try { await enrollmentPage.clickCancel(); } catch(e){}
-            }
-        }
+        await enrollmentPage.verifyNegativeScenarios(scenarios, logToCsv);
     });
 
     test('HTML Tags and Invalid Data Entry Validation', async ({}, testInfo) => {
         console.log('\n--- Starting: HTML Tags and Invalid Data Entry Validation ---');
         const scenarios = (postLoginData as any).enrollmentScenarios.negativeScenarios.filter((s: any) => s.scenario.includes('HTML') || s.scenario.includes('apart from numbers'));
-        for (const s of scenarios) {
-            try {
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                const locator = (enrollmentPage as any)[`${s.field}Input`] || (enrollmentPage as any)[`${s.field}Dropdown`];
-                if (!locator) continue;
-                
-                await locator.fill(s.value);
-                await enrollmentPage.clickSave();
-                await expect(page.getByText(s.expectedError).first()).toBeVisible({ timeout: 3000 });
-                logToCsv('Negative Scenario Validation', s.scenario, s.field, s.value, 'Pass');
-            } catch (e: any) {
-                failTest(e, testInfo);
-                logToCsv('Negative Scenario Validation', s.scenario, s.field, s.value, 'Fail', e.message);
-            } finally {
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                const locator = (enrollmentPage as any)[`${s.field}Input`] || (enrollmentPage as any)[`${s.field}Dropdown`];
-                try { await locator.fill(''); } catch(e){}
-                if (await enrollmentPage.cancelBtn.isVisible().catch(()=>false)) try { await enrollmentPage.clickCancel(); } catch(e){}
-            }
-        }
+        await enrollmentPage.verifyNegativeScenarios(scenarios, logToCsv);
     });
 
     test('Auto-suggestion triggers on double click', async ({}, testInfo) => {
@@ -254,20 +144,7 @@ test.describe('Enrollment Details Suite', () => {
             if (await enrollmentPage.editBtn.isVisible().catch(()=>false)) await enrollmentPage.clickEdit();
             await expect(enrollmentPage.cancelBtn).toBeVisible({ timeout: 5000 });
             
-            for (const field of enrollmentFields) {
-                if (field === 'idNumber') continue;
-                
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
-                if (!locator) continue;
-                
-                const listId = await locator.getAttribute('list');
-                if (listId) {
-                    await locator.scrollIntoViewIfNeeded(); await locator.click({ force: true }); await page.waitForTimeout(200); await locator.dblclick({ force: true });
-                    const datalist = page.locator(`datalist#${listId}`);
-                    await expect(datalist).toBeAttached();
-                    logToCsv('Auto-suggestion Validation', `Auto-suggestion on double click (${field})`, field === 'college' ? 'Affiliation' : field, 'Double Click', 'Pass');
-                }
-            }
+            await enrollmentPage.verifyAutoSuggestion(enrollmentFields, logToCsv, true);
         } catch (e: any) {
             failTest(e, testInfo);
             logToCsv('Auto-suggestion Validation', 'Auto-suggestion on double click', 'multiple', 'Double Click', 'Fail', e.message);
@@ -283,21 +160,7 @@ test.describe('Enrollment Details Suite', () => {
             if (await enrollmentPage.editBtn.isVisible().catch(()=>false)) await enrollmentPage.clickEdit();
             await expect(enrollmentPage.cancelBtn).toBeVisible({ timeout: 5000 });
             
-            for (const field of enrollmentFields) {
-                if (field === 'idNumber') continue;
-                
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
-                if (!locator) continue;
-                
-                const listId = await locator.getAttribute('list');
-                if (listId) {
-                    await locator.fill('');
-                    await locator.pressSequentially('a', { delay: 100 });
-                    const datalist = page.locator(`datalist#${listId}`);
-                    await expect(datalist).toBeAttached();
-                    logToCsv('Auto-suggestion Validation', `Auto-suggestion on typing (${field})`, field === 'college' ? 'Affiliation' : field, 'a', 'Pass');
-                }
-            }
+            await enrollmentPage.verifyAutoSuggestion(enrollmentFields, logToCsv, false);
         } catch (e: any) {
             failTest(e, testInfo);
             logToCsv('Auto-suggestion Validation', 'Auto-suggestion on typing', 'multiple', 'a', 'Fail', e.message);
@@ -328,21 +191,7 @@ test.describe('Enrollment Details Suite', () => {
     test('Admin Override: Individual fields non-editable', async ({}, testInfo) => {
         console.log('\n--- Starting: Admin Override (Individual fields non-editable) ---');
         try {
-            for (const field of enrollmentFields) {
-                const backendName = backendFieldMap[field];
-                if (!backendName) continue;
-                
-                await adminApi.updateSecuritySettings({ editableFields: { fields: [backendName], isEditable: false } });
-                await page.reload();
-                await page.getByRole('tab', { name: /Enrollment Details/i }).click();
-                await enrollmentPage.clickEdit();
-
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
-                if (locator) {
-                    await expect(locator).toBeDisabled({ timeout: 5000 });
-                    logToCsv('Admin Override Validation', 'Admin Override: Individual field non-editable', field, 'N/A', 'Pass');
-                }
-            }
+            await enrollmentPage.verifyAdminOverrideIndividualFields(enrollmentFields, backendFieldMap, adminApi, logToCsv);
         } catch (e: any) {
             failTest(e, testInfo);
             logToCsv('Admin Override Validation', 'Admin Override: Individual field non-editable', 'multiple', 'N/A', 'Fail', e.message);

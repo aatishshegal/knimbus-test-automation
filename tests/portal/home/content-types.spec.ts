@@ -9,17 +9,8 @@ test.describe('Home Page - Content Types Section', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  for (const contentType of portalData.expectedContentTypes.data) {
-    test(`Verify ${contentType} card is clickable and navigates correctly`, async ({ homePage, page }) => {
-      const widgetContainer = homePage.getWidgetContainer(widgetTitle);
-      await widgetContainer.scrollIntoViewIfNeeded();
-      
-      // Click the content type card
-      await homePage.clickWidgetItem(widgetTitle, contentType);
-      
-      await page.waitForLoadState('networkidle');
-      // Assert that navigation took place
-      await expect(page).toHaveURL(/.*search|.*browse/i);
-    });
-  }
+  test('Verify all content type cards are clickable and navigate correctly', async ({ homePage }) => {
+    // Calling the helper method to handle loop iteration inside the POM
+    await homePage.verifyWidgetItemsClickable(widgetTitle, portalData.expectedContentTypes.data);
+  });
 });

@@ -8,8 +8,11 @@ setup.use({ storageState: { cookies: [], origins: [] } });
 
 setup('Global Setup - API Preconditions and UI Authentication', async ({ page, portalLoginPage, homePage, termsAndConditionsModal }) => {
   // Clean up old CSV reports
-  const csvPath = path.join(__dirname, '..', 'test-results', 'Enrollment_Details_Validation_Report.csv');
-  if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
+  const enrollmentCsvPath = path.join(__dirname, '..', 'test-results', 'Enrollment_Details_Validation_Report.csv');
+  if (fs.existsSync(enrollmentCsvPath)) fs.unlinkSync(enrollmentCsvPath);
+
+  const idAccessCsvPath = path.join(__dirname, '..', 'test-results', 'Id_Access_Info_Validation_Report.csv');
+  if (fs.existsSync(idAccessCsvPath)) fs.unlinkSync(idAccessCsvPath);
 
   const adminApi = new AdminApiService();
   await adminApi.login();

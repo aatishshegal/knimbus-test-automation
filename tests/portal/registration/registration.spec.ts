@@ -245,7 +245,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     const testEmail = `test_denied_${timestamp}@gmail.com`;
 
     // Fill registration form
-    await registrationPage.fillRegistration('Test Denied', testEmail, 'Password@123');
+    await registrationPage.fillRegistration('Test Denied', testEmail, process.env.DEFAULT_PASSWORD as string);
 
     // Handle T&C if present (optional depending on UI)
     try {

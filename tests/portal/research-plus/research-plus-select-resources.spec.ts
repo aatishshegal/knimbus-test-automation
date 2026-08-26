@@ -29,11 +29,7 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
                 
                 // Ensure the list is populated and checkboxes are checked
                 await expect(researchPlusPage.allResourcesList.first()).toBeVisible();
-                const totalResources = await researchPlusPage.allResourcesList.count();
-                for (let i = 0; i < totalResources; i++) {
-                    // Check if the checked class is present
-                    await expect(researchPlusPage.allResourcesList.nth(i)).toHaveClass(/asw-checkbox-checked/);
-                }
+                await researchPlusPage.verifyAllResourcesChecked();
 
                 await expect(researchPlusPage.defaultButton).toBeVisible();
                 await expect(researchPlusPage.selectAllButton).toBeHidden();
@@ -48,16 +44,7 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
                 
                 // Ensure some are selected and some are not (default state)
                 // We just verify that not ALL of them are selected anymore.
-                const totalResources = await researchPlusPage.allResourcesList.count();
-                let hasUnselected = false;
-                for (let i = 0; i < totalResources; i++) {
-                    const classAttr = await researchPlusPage.allResourcesList.nth(i).getAttribute('class');
-                    if (!classAttr?.includes('asw-checkbox-checked')) {
-                        hasUnselected = true;
-                        break;
-                    }
-                }
-                expect(hasUnselected).toBeTruthy();
+                await researchPlusPage.verifyResourcesPartiallyChecked();
             });
 
             test(`Verify presence of Clear All button in ${tab} tab`, async ({ researchPlusPage }) => {
@@ -72,10 +59,7 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
                 await researchPlusPage.clearAllButton.click();
                 
                 // Verify no sources selected
-                const totalResources = await researchPlusPage.allResourcesList.count();
-                for (let i = 0; i < totalResources; i++) {
-                    await expect(researchPlusPage.allResourcesList.nth(i)).not.toHaveClass(/asw-checkbox-checked/);
-                }
+                await researchPlusPage.verifyNoResourcesChecked();
 
                 // Verify clear all is disabled and message is shown
                 await expect(researchPlusPage.clearAllButton).toBeDisabled();

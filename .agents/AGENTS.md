@@ -35,6 +35,23 @@ When a test fails, the AI MUST NOT guess the fix.
 - **STRICT ENFORCEMENT - Pure POM Encapsulation:** Do NOT use `for` loops, `if/else` conditions, or complex array iteration inside `.spec.ts` files. If a test requires iterating over elements (like verifying multiple tabs, filters, or widgets), you MUST create a single helper method inside the respective Page Object Model (e.g., `verifyTabsPresent(expectedTabs)`) and call that method from the test. Spec files must remain linear and logicless.
 - **Consume Setup State:** If a `global.setup.ts` file generates a `storageState`, fixtures must consume it rather than performing redundant UI logins.
 
+## Data-Driven & Session Optimization Rules (NEW)
+To maintain extremely fast test execution times and robust reporting, Agents must adhere to the following when testing multiple scenarios (like boundary value testing for input fields):
+
+1. **Consolidated Session Validations:**
+   - Do NOT generate dozens of individual `test()` blocks if they all validate fields on the same page. This forces Playwright to reload the browser/page from scratch for every single validation, taking massive amounts of time.
+   - Instead, consolidate parameterized data validations into a **Single Browser Session** (`test('Positive & Negative Data Entry Validation')`).
+   - Iterate over the JSON data internally within a single Page Object Model (POM) helper method (e.g., `profilePage.validateFullNameScenarios(negativeData, positiveData, logToCsv)`).
+
+2. **Robust CSV Logging & Soft Failures:**
+   - When executing consolidated session validations, a single field failure should **never** crash the entire test.
+   - Use `try/catch` blocks around the individual validation steps inside the POM helper method. 
+   - Inject and utilize a custom `logToCsv` function (as seen in `enrollment-details.spec.ts`) to log the Pass/Fail result and exact Error Message for every single scenario directly to the `test-results/` directory.
+
+3. **Admin Preconditions State Maintenance:**
+   - Always use `allFieldsEditable: true` in your Admin API payload when preparing a form for validation, unless explicitly testing a disabled field state.
+   - Always guarantee teardown and reset of the Tenant Admin State inside `finally` blocks or at the end of a test to ensure subsequent tests are not poisoned by dirty backend state.
+
 ## Intelligent Debugging & Execution Strategy
 - **Mandatory Cross-Module Testing:** If you modify ANY existing shared code (e.g., a shared Page Object Model file, utility, or fixture) while creating or fixing a test case, you MUST identify and execute ALL other test suites that rely on that shared file to ensure your changes did not introduce regressions or side-effects in other modules.
 - **Targeted Test Execution:** When a file contains multiple test cases and you only need to fix one failing test, do NOT re-run the entire file while debugging. Use the Playwright grep flag (`-g "Test Name"`) to isolate and run only the failing test to save time. Once the fix is verified, run the entire file one last time to ensure your changes did not inadvertently break the other passing tests.
