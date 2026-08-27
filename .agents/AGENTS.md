@@ -35,22 +35,29 @@ When a test fails, the AI MUST NOT guess the fix.
 - **STRICT ENFORCEMENT - Pure POM Encapsulation:** Do NOT use `for` loops, `if/else` conditions, or complex array iteration inside `.spec.ts` files. If a test requires iterating over elements (like verifying multiple tabs, filters, or widgets), you MUST create a single helper method inside the respective Page Object Model (e.g., `verifyTabsPresent(expectedTabs)`) and call that method from the test. Spec files must remain linear and logicless.
 - **Consume Setup State:** If a `global.setup.ts` file generates a `storageState`, fixtures must consume it rather than performing redundant UI logins.
 
-## Data-Driven & Session Optimization Rules (NEW)
-To maintain extremely fast test execution times and robust reporting, Agents must adhere to the following when testing multiple scenarios (like boundary value testing for input fields):
+## Data-Driven & Granular Test Architecture Rules (UPDATED)
+To maintain Playwright as the single source of truth for test reporting, Agents must adhere to the following when testing multiple scenarios:
 
-1. **Consolidated Session Validations:**
-   - Do NOT generate dozens of individual `test()` blocks if they all validate fields on the same page. This forces Playwright to reload the browser/page from scratch for every single validation, taking massive amounts of time.
-   - Instead, consolidate parameterized data validations into a **Single Browser Session** (`test('Positive & Negative Data Entry Validation')`).
-   - Iterate over the JSON data internally within a single Page Object Model (POM) helper method (e.g., `profilePage.validateFullNameScenarios(negativeData, positiveData, logToCsv)`).
+1. **Granular Test Blocks Grouped by Precondition:**
+   - Do NOT consolidate all field validations into a single massive `test()` block with internal loops. This hides individual test outcomes from the Playwright HTML/CSV reports.
+   - Instead, group test cases logically using `test.describe('Precondition Group')` blocks (e.g., `test.describe('Profile Field Validation - Editable ON')`).
+   - Setup the exact `AdminApiService` precondition state once in `test.beforeAll()` for the group.
+   - Within that group, create an INDEPENDENT `test()` block for every single Field + Rule combination (e.g., `test('TC_FullName_RejectMaxLengthExceed_EditableON - shows error beyond char limit')`).
 
-2. **Robust CSV Logging & Soft Failures:**
-   - When executing consolidated session validations, a single field failure should **never** crash the entire test.
-   - Use `try/catch` blocks around the individual validation steps inside the POM helper method. 
-   - Inject and utilize a custom `logToCsv` function (as seen in `enrollment-details.spec.ts`) to log the Pass/Fail result and exact Error Message for every single scenario directly to the `test-results/` directory.
+2. **No Custom CSV Loggers Needed:**
+   - Because every field validation is an independent Playwright `test()` block, Playwright will automatically generate granular reports. Do not use custom `logToCsv` logic inside test loops unless specifically requested for a highly complex edge case.
 
 3. **Admin Preconditions State Maintenance:**
    - Always use `allFieldsEditable: true` in your Admin API payload when preparing a form for validation, unless explicitly testing a disabled field state.
-   - Always guarantee teardown and reset of the Tenant Admin State inside `finally` blocks or at the end of a test to ensure subsequent tests are not poisoned by dirty backend state.
+   - Always guarantee teardown and reset of the Tenant Admin State inside `finally` or `test.afterAll` blocks to ensure subsequent tests are not poisoned by dirty backend state.
+
+4. **Readable Test Naming Convention:**
+   - Test names should be highly readable. Avoid using superfluous words like "Positive" or "Negative" in the test names. 
+   - Retain natural spaces for readability. E.g., Use `TC_Enrollment_college_Affiliation restricts input to 100 characters max` instead of removing spaces.
+
+5. **Test Data Reporting via Annotations:**
+   - If a test validates specific input data from a JSON file, push that data to the test context using Playwright annotations so custom reporters (like `CsvReporter.ts`) can extract and log it in a "Test Data" column.
+   - Example: `test.info().annotations.push({ type: 'testData', description: String(value) });`
 
 ## Intelligent Debugging & Execution Strategy
 - **Mandatory Cross-Module Testing:** If you modify ANY existing shared code (e.g., a shared Page Object Model file, utility, or fixture) while creating or fixing a test case, you MUST identify and execute ALL other test suites that rely on that shared file to ensure your changes did not introduce regressions or side-effects in other modules.

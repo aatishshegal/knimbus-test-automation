@@ -532,6 +532,14 @@
     },
     {
       "ScenarioType": "Negative",
+      "Side": "Backside",
+      "FileName1": "dummy-id.jpg",
+      "FileName2": "large_image.jpg",
+      "Scenario": "1MB Limit Backsideside",
+      "ExpectedMessage": "File size exceeded the 1MB maximum limit!"
+    },
+    {
+      "ScenarioType": "Negative",
       "Side": "Frontside",
       "FileName1": "invalid_format.pdf",
       "FileName2": "",

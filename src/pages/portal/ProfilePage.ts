@@ -64,7 +64,7 @@ export class ProfilePage extends BasePage {
     this.cancelBtn = page.getByRole('button', { name: 'Cancel' });
     
     // Image Upload
-    this.imageUploadInput = page.locator('input[type="file"]');
+    this.imageUploadInput = page.locator('input[type="file"]').first();
     this.profileImgEditIcon = page.locator('.profile-img-cicon-wrapper');
     this.imageModalSaveBtn = page.locator('.modal-footer button.btn-primary').filter({ hasText: 'Save' });
     this.profileImage = page.locator('.profile-img');
@@ -213,6 +213,7 @@ export class ProfilePage extends BasePage {
       try {
           if (await this.editBtn.isVisible({ timeout: 2000 }).catch(() => false)) await this.clickEdit();
           await this.dobInput.click();
+          await this.calendarYearDropdown.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
           await this.calendarYearDropdown.selectOption({ label: (new Date().getFullYear() + 1).toString() }).catch(() => {});
           const selectedYear = await this.calendarYearDropdown.inputValue();
           expect(parseInt(selectedYear)).toBeLessThanOrEqual(new Date().getFullYear());
