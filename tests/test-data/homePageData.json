@@ -1,0 +1,65 @@
+{
+  "widgetNames": {
+    "source": "Source",
+    "section": "SECTION",
+    "subject": "Subject",
+    "content": "Content",
+    "course": "Course",
+    "usefulLinks": "Useful Links"
+  },
+  "homePageExpectedWidgets": [
+    "Publishers & Databases",
+    "Browse by Section",
+    "Academic Subjects",
+    "Content Types",
+    "Course Materials",
+    "Quick Links"
+  ],
+  "sectionWidgetExpectedCards": [
+    "Pharmacy",
+    "Cybersecurity",
+    "IR data add",
+    "profile Section",
+    "Library Holding Prompt"
+  ],
+  "sourceWidgetExpectedCards": [
+    "Knimbus Open ebooks",
+    "Fiction eBooks",
+    "Knimbus Open Journals",
+    "IEEE",
+    "JSTOR",
+    "Project Muse",
+    "Springer",
+    "World Scientific"
+  ],
+  "subjectWidgetExpectedCards": [
+    "Literature",
+    "World Literature",
+    "Engineering and Technology",
+    "History",
+    "Medical and Health Sciences",
+    "Business and Commerce",
+    "World History"
+  ],
+  "contentWidgetExpectedCards": [
+    "Case Study",
+    "Course Material",
+    "Database",
+    "eBook",
+    "Journal"
+  ],
+  "courseWidgetExpectedCards": [
+    "Introducing Modern Western Art Movements and Artists",
+    "Introduction on Intellectual Property to Engineers and Technologists",
+    "Introduction to Advanced Cognitive Processes",
+    "Introduction to Basic Cognitive Processes",
+    "Introduction to Basic Spoken Sanskrit"
+  ],
+  "usefulLinksExpectedCards": [
+    "Link image AI Photo Editor",
+    "Google DeepMind",
+    "DeepLearning.AI: Start or Advance Your Career in AI",
+    "INDIAai | Pillars",
+    "DeepAI"
+  ]
+}

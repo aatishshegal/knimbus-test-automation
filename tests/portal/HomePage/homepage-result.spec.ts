@@ -39,7 +39,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 1. HOME PAGE - ALL WIDGETS
     // ============================================================
 
-    test('TC_HP_Knimbus_001 - Should display all configured Home Page widgets @smoke @regression', async () => {
+    test('TC_HomePage_001 - Should display all configured Home Page widgets @smoke @regression', async () => {
 
         await homePage.verifySourceWidget();
         await homePage.verifySectionWidget();
@@ -54,7 +54,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 2. SOURCE WIDGET
     // ============================================================
 
-    test('TC_HP_Knimbus_002 - Should display valid cards in Source widget @regression', async () => {
+    test('TC_HomePage_002 - Should display valid cards in Source widget @regression', async () => {
 
         const sourceCards = await homePage.getWidgetCards('Source');
 
@@ -71,7 +71,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HP_Knimbus_003 - Should display specific Source cards as configured in env @regression', async () => {
+    test('TC_HomePage_003 - Should display specific Source cards as configured in env @regression', async () => {
         const envCards = process.env.SOURCE_WIDGET_EXPECTED_CARDS || '';
         const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
 
@@ -82,7 +82,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     });
 
 
-    test('TC_HP_Knimbus_004 - Should navigate correctly when clicking a Source card @regression', async () => {
+    test('TC_HomePage_004 - Should navigate correctly when clicking a Source card @regression', async () => {
 
         const sourceCard = await homePage.getFirstWidgetCard('Source');
 
@@ -100,7 +100,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 3. SECTION WIDGET
     // ============================================================
 
-    test('TC_HP_Knimbus_005 - Should display valid cards in Section widget @regression', async () => {
+    test('TC_HomePage_005 - Should display valid cards in Section widget @regression', async () => {
 
         const sectionCards = await homePage.getWidgetCards('SECTION');
 
@@ -115,7 +115,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HP_Knimbus_006 - Should display specific Section cards as configured in env @regression', async () => {
+    test('TC_HomePage_006 - Should display specific Section cards as configured in env @regression', async () => {
         const envCards = process.env.SECTION_WIDGET_EXPECTED_CARDS || '';
         const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
 
@@ -126,7 +126,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     });
 
 
-    test('TC_HP_Knimbus_007 - Should navigate correctly when clicking a Section card @regression', async () => {
+    test('TC_HomePage_007 - Should navigate correctly when clicking a Section card @regression', async () => {
 
         const sectionCard = await homePage.getFirstWidgetCard('SECTION');
 
@@ -144,7 +144,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 4. SUBJECT WIDGET
     // ============================================================
 
-    test('TC_HP_Knimbus_008 - Should display valid cards in Subject widget @regression', async () => {
+    test('TC_HomePage_008 - Should display valid cards in Subject widget @regression', async () => {
 
         const subjectCards = await homePage.getWidgetCards('Subject');
 
@@ -159,7 +159,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HP_Knimbus_009 - Should display specific Subject cards as configured in env @regression', async () => {
+    test('TC_HomePage_009 - Should display specific Subject cards as configured in env @regression', async () => {
         const envCards = process.env.SUBJECT_WIDGET_EXPECTED_CARDS || '';
         const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
 
@@ -171,7 +171,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
 
 
 
-    test('TC_HP_Knimbus_010 - Should navigate correctly when clicking a Subject card @regression', async () => {
+    test('TC_HomePage_010 - Should navigate correctly when clicking a Subject card @regression', async () => {
 
         const subjectCard = await homePage.getFirstWidgetCard('Subject');
 
@@ -189,7 +189,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 5. CONTENT WIDGET
     // ============================================================
 
-    test('TC_HP_Knimbus_011 - Should display all configured Content types @regression', async () => {
+    test('TC_HomePage_011 - Should display all configured Content types @regression', async () => {
 
         const contentCards = await homePage.getWidgetCards('Content');
 
@@ -203,7 +203,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HP_Knimbus_012 - Should display specific Content cards as configured in env @regression', async () => {
+    test('TC_HomePage_012 - Should display specific Content cards as configured in env @regression', async () => {
         const envCards = process.env.CONTENT_WIDGET_EXPECTED_CARDS || '';
         const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
 
@@ -214,7 +214,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     });
 
 
-    test('TC_HP_Knimbus_013 - Should display valid numeric count for Content cards @regression', async () => {
+    test('TC_HomePage_013 - Should display valid numeric count for Content cards @regression', async () => {
 
         const contentCards = await homePage.getWidgetCards('Content');
 
@@ -227,7 +227,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     });
 
 
-    test('TC_HP_Knimbus_014 - Should navigate correctly when clicking a Content card @regression', async () => {
+    test('TC_HomePage_014 - Should navigate correctly when clicking a Content card @regression', async () => {
 
         const contentCard = await homePage.getFirstWidgetCard('Content');
 
@@ -245,7 +245,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 6. COURSE WIDGET
     // ============================================================
 
-    test('TC_HP_Knimbus_015 - Should display valid cards in Course widget @regression', async () => {
+    test('TC_HomePage_015 - Should display valid cards in Course widget @regression', async () => {
 
         const courseCards = await homePage.getWidgetCards('Course');
 
@@ -260,7 +260,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HP_Knimbus_016 - Should display specific Course cards as configured in env @regression', async () => {
+    test('TC_HomePage_016 - Should display specific Course cards as configured in env @regression', async () => {
         const envCards = process.env.COURSE_WIDGET_EXPECTED_CARDS || '';
         const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
 
@@ -271,7 +271,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     });
 
 
-    test('TC_HP_Knimbus_017 - Should navigate correctly when clicking a Course card @regression', async () => {
+    test('TC_HomePage_017 - Should navigate correctly when clicking a Course card @regression', async () => {
 
         const courseCard = await homePage.getFirstWidgetCard('Course');
 
@@ -289,7 +289,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 7. USEFUL LINKS WIDGET
     // ============================================================
 
-    test('TC_HP_Knimbus_018 - Should display valid Useful Links cards @regression', async () => {
+    test('TC_HomePage_018 - Should display valid Useful Links cards @regression', async () => {
 
         const usefulLinks = await homePage.getWidgetCards('Useful Links');
 
@@ -305,7 +305,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     });
 
 
-    test('TC_HP_Knimbus_019 - Should have valid target URL for Useful Links @regression', async () => {
+    test('TC_HomePage_019 - Should have valid target URL for Useful Links @regression', async () => {
 
         const usefulLinks = await homePage.getWidgetCards('Useful Links');
 
@@ -318,7 +318,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HP_Knimbus_020 - Should display specific Useful Links cards as configured in env @regression', async () => {
+    test('TC_HomePage_020 - Should display specific Useful Links cards as configured in env @regression', async () => {
         const envCards = process.env.USEFUL_LINKS_EXPECTED_CARDS || '';
         const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
 
@@ -333,7 +333,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 8. VIEW ALL
     // ============================================================
 
-    test('TC_HP_Knimbus_021 - Should navigate to View All pages and return to Home Page @regression', async () => {
+    test('TC_HomePage_021 - Should navigate to View All pages and return to Home Page @regression', async () => {
 
         const widgetsWithViewAll = [
             'Source',
@@ -358,7 +358,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 9. WIDGET ORDER
     // ============================================================
 
-    test('TC_HP_Knimbus_022 - Should display Home Page widgets in configured order @regression', async () => {
+    test('TC_HomePage_022 - Should display Home Page widgets in configured order @regression', async () => {
         // Expected order configured via Admin API and verified through .env parameterization
         const envWidgets = process.env.HOME_PAGE_EXPECTED_WIDGETS || 'Publishers & Databases,Browse by Section,Academic Subjects,Content Types,Course Materials,Quick Links';
         const expectedWidgets = envWidgets.split(',').map(w => w.trim());
@@ -376,7 +376,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 10. WIDGET CARD DUPLICATION
     // ============================================================
 
-    test('TC_HP_Knimbus_023 - Should not display duplicate cards within widgets @regression', async () => {
+    test('TC_HomePage_023 - Should not display duplicate cards within widgets @regression', async () => {
 
         const widgets = [
             'Source',
@@ -403,7 +403,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 11. WIDGET CARD TITLE VALIDATION
     // ============================================================
 
-    test('TC_HP_Knimbus_024 - Should display non-empty title for every widget card @regression', async () => {
+    test('TC_HomePage_024 - Should display non-empty title for every widget card @regression', async () => {
 
         const widgets = [
             'Source',
@@ -432,7 +432,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 12. HOME PAGE STATE AFTER NAVIGATION
     // ============================================================
 
-    test('TC_HP_Knimbus_025 - Should retain Home Page widget visibility after returning from widget page @regression', async () => {
+    test('TC_HomePage_025 - Should retain Home Page widget visibility after returning from widget page @regression', async () => {
 
         await homePage.clickFirstWidgetCard('Source');
 
@@ -455,11 +455,11 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
     // 13. ADDITIONAL HOME PAGE VERIFICATIONS
     // ============================================================
 
-    test('TC_HP_Knimbus_026 - Should display the home page banner @regression', async () => {
+    test('TC_HomePage_026 - Should display the home page banner @regression', async () => {
         await homePage.verifyBanner();
     });
 
-    test('TC_HP_Knimbus_027 - Should display widget section names and view all buttons @regression', async () => {
+    test('TC_HomePage_027 - Should display widget section names and view all buttons @regression', async () => {
         const envWidgets = process.env.HOME_PAGE_EXPECTED_WIDGETS || 'Publishers & Databases,Browse by Section,Academic Subjects,Content Types,Course Materials,Quick Links';
         const expectedWidgets = envWidgets.split(',').map(w => w.trim());
 
@@ -480,7 +480,7 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HP_Knimbus_028 - Should navigate correctly when clicking View All button for all widgets @regression', async () => {
+    test('TC_HomePage_028 - Should navigate correctly when clicking View All button for all widgets @regression', async () => {
         const internalWidgets = [
             'Source',
             'SECTION',
