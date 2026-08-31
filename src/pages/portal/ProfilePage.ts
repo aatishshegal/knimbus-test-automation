@@ -83,11 +83,20 @@ export class ProfilePage extends BasePage {
   }
 
   async clickEdit() {
+    await this.editBtn.waitFor({ state: 'visible', timeout: 5000 });
     await this.editBtn.click();
   }
 
   async clickSave() {
     await this.saveBtn.click();
+  }
+
+  getLocator(fieldName: string): Locator {
+    const fieldMap: Record<string, Locator> = {
+      'fullName': this.fullNameInput,
+      'summary': this.summaryTextarea
+    };
+    return fieldMap[fieldName] as Locator;
   }
 
   async verifyFieldStates(fieldStates: any[]) {

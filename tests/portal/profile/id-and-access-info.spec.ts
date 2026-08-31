@@ -8,7 +8,7 @@ import * as path from 'path';
 // Load post-login profile data
 const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
-const idDocumentScenarios = postLoginData.idDocumentScenarios || [];
+const idDocumentScenarios = postLoginData.idDocumentScenarios?.data || postLoginData.idDocumentScenarios || [];
 
 test.describe('Id & Access Info Suite', () => {
     let topNav: TopNavigationBar;

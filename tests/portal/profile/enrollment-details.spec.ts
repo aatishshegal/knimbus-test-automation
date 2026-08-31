@@ -50,6 +50,22 @@ test.describe('Enrollment Details Suite', () => {
         await page.getByRole('tab', { name: /Enrollment Details/i }).click();
     });
 
+    test('TC_Enrollment_Cancel_Discards_Changes', async ({ page }) => {
+        const enrollmentPage = new EnrollmentDetailsPage(page);
+        await enrollmentPage.clickEdit();
+        
+        const locator = enrollmentPage.getLocator('idNumber');
+        if (!locator) return;
+        const originalId = await locator.inputValue();
+        
+        await locator.fill('TEMP-ID-123');
+        await enrollmentPage.clickCancel();
+        
+        const revertedId = await locator.inputValue();
+        expect(revertedId).toBe(originalId);
+        expect(revertedId).not.toBe('TEMP-ID-123');
+    });
+
     test.describe('Positive Scenarios', () => {
         for (const field of enrollmentFields) {
             const value = enrollmentScenarios.positiveData[field];
@@ -59,7 +75,7 @@ test.describe('Enrollment Details Suite', () => {
                     const enrollmentPage = new EnrollmentDetailsPage(page);
                     if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
                     
-                    const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
+                    const locator = enrollmentPage.getLocator(field);
                     await locator.fill(value);
                     await enrollmentPage.clickSave();
                     await expect(page.getByRole('heading', { name: /Updated successfully/i }).first()).toBeVisible({ timeout: 5000 });
@@ -83,7 +99,7 @@ test.describe('Enrollment Details Suite', () => {
                 const enrollmentPage = new EnrollmentDetailsPage(page);
                 if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
                 
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
+                const locator = enrollmentPage.getLocator(field);
                 if (!locator) return;
                 
                 if (enrollmentScenarios.positiveData[field]) {
@@ -108,10 +124,16 @@ test.describe('Enrollment Details Suite', () => {
                 const enrollmentPage = new EnrollmentDetailsPage(page);
                 if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
                 
-                const locator = (enrollmentPage as any)[`${s.field}Input`] || (enrollmentPage as any)[`${s.field}Dropdown`];
+                const locator = enrollmentPage.getLocator(s.field);
                 if (!locator) return;
 
-                await locator.fill(s.value);
+                const isNativeTruncationCheck = (s.field === 'admissionYear' && s.scenario.includes('restricts input'));
+                
+                if (s.bypassLength && !isNativeTruncationCheck) {
+                    await locator.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
+                }
+                await locator.fill(String(s.value));
+                await locator.blur();
                 await enrollmentPage.clickSave();
                 
                 if (s.field === 'admissionYear' && s.scenario.includes('restricts input')) {
@@ -154,7 +176,7 @@ test.describe('Enrollment Details Suite', () => {
 
                 const enrollmentPage = new EnrollmentDetailsPage(page);
                 await enrollmentPage.clickEdit();
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
+                const locator = enrollmentPage.getLocator(field);
                 if (locator) {
                     await expect(locator).toBeDisabled({ timeout: 5000 });
                 }
@@ -173,7 +195,7 @@ test.describe('Enrollment Details Suite', () => {
                 const enrollmentPage = new EnrollmentDetailsPage(page);
                 if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
                 
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
+                const locator = enrollmentPage.getLocator(field);
                 if (!locator) return;
                 
                 const listId = await locator.getAttribute('list');
@@ -190,7 +212,7 @@ test.describe('Enrollment Details Suite', () => {
                 const enrollmentPage = new EnrollmentDetailsPage(page);
                 if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
                 
-                const locator = (enrollmentPage as any)[`${field}Input`] || (enrollmentPage as any)[`${field}Dropdown`];
+                const locator = enrollmentPage.getLocator(field);
                 if (!locator) return;
                 
                 const listId = await locator.getAttribute('list');

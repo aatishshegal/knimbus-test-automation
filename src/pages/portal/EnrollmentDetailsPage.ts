@@ -62,4 +62,22 @@ export class EnrollmentDetailsPage extends BasePage {
   async clickCancel() {
     await this.cancelBtn.click();
   }
+
+  getLocator(fieldName: string): Locator {
+    const fieldMap: Record<string, Locator> = {
+      'idNumber': this.idNumberInput,
+      'college': this.collegeInput,
+      'department': this.departmentInput,
+      'qualification': this.qualificationInput,
+      'designation': this.designationInput,
+      'areaOfStudy': this.areaOfStudyInput,
+      'rank': this.rankInput,
+      'batch': this.batchInput,
+      'cadre': this.cadreInput,
+      'admissionYear': this.admissionYearInput,
+      'membershipStatus': this.membershipStatusDropdown,
+      'membershipType': this.membershipTypeDropdown
+    };
+    return fieldMap[fieldName] as Locator;
+  }
 }
