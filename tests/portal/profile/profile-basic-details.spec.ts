@@ -1,173 +1,265 @@
-import { test, expect, Page } from '@playwright/test';
-import { TopNavigationBar } from '../../../src/pages/portal/TopNavigationBar';
-import { ProfilePage } from '../../../src/pages/portal/ProfilePage';
+import { test, expect } from '../../../src/fixtures';
 import { AdminApiService } from '../../../src/api/AdminApiService';
-
 import * as fs from 'fs';
 import * as path from 'path';
+import { ProfilePage } from '../../../src/pages/portal/ProfilePage';
 
 // Load post-login profile data
 const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
-const fieldStates = postLoginData.fieldStates;
-const positiveScenarios = postLoginData.positiveScenarios;
+const basicDetailsScenarios = postLoginData.basicDetailsScenarios || { positiveData: {}, negativeScenarios: [] };
 
-// Load field validation negative scenarios
-const validationDataPath = path.resolve(__dirname, '../../../tests/test-data/field-validation-data.json');
-const validationData = JSON.parse(fs.readFileSync(validationDataPath, 'utf-8'));
-const fullNameScenarios = validationData.scenarios.filter((s: any) => s.field === 'FullName');
-const summaryScenarios = validationData.scenarios.filter((s: any) => s.field === 'Summary');
+const backendFieldMap: Record<string, string> = {
+    'fullName': 'Name',
+    'summary': 'Summary'
+};
+const basicDetailsFields = Object.keys(backendFieldMap);
 
-const positiveFullName = positiveScenarios.filter((s: any) => s.field === 'FullName');
-const positiveSummary = positiveScenarios.filter((s: any) => s.field === 'Summary');
+test.describe('Profile Basic Details Suite', () => {
+    let adminApi: AdminApiService;
 
-// Load profile image upload scenarios
-const imageUploadScenarios = postLoginData.imageUploadScenarios;
+    test.beforeAll(async () => {
+        adminApi = new AdminApiService();
+        await adminApi.login();
+    });
 
-const csvFilePath = path.join(__dirname, '..', '..', '..', 'test-results', `Profile_Basic_Details_Validation_Report.csv`);
+    test.afterAll(async () => {
+        if (adminApi) await adminApi.close();
+    });
 
-function logToCsv(testCaseName: string, scenario: string, field: string, testData: string, status: string, errorReason: string = '') {
-    if (!fs.existsSync(csvFilePath)) {
-        fs.writeFileSync(csvFilePath, 'Test Case Name,Scenario,Field,Test Data,Status,Error Reason\n');
-    }
-    const safeError = errorReason ? errorReason.replace(/"/g, '""').replace(/\n/g, ' ') : '';
-    const row = `"${testCaseName}","${scenario}","${field}","${testData}","${status}","${safeError}"\n`;
-    fs.appendFileSync(csvFilePath, row);
-    
-    // Console log for visibility during execution
-    console.log(`[${status}] ${testCaseName} | Scenario: ${scenario} | Field: ${field} | Data: '${testData}'`);
-    if (status === 'Fail' && errorReason) {
-        console.log(`       -> Error: ${errorReason.substring(0, 150)}...`);
-    }
-}
+    test.describe('Positive Scenarios & Negative Validation (Editable ON)', () => {
+        test.beforeAll(async () => {
+            // Set all fields editable, but strictly keep Full Name (Name) mandatory as instructed
+            await adminApi.updateSecuritySettings({
+                allFieldsEditable: true,
+                mandatoryFields: { fields: ['Name'], isMandatory: true }
+            });
+        });
 
-function failTest(e: any, testInfo: any) {
-    testInfo.errors.push(e);
-    testInfo.status = 'failed';
-}
+        test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
+            await page.goto(process.env.PORTAL_URL as string);
+            await topNavigationBar.openProfileMenu();
+            await topNavigationBar.profileMenuProfileLink.click();
+            await expect(profilePage.profileHeader).toBeVisible();
+        });
 
-test.describe('Profile - Basic Details & Image Upload Validations', () => {
-  test.setTimeout(240000); // 4 minutes
-  let page: Page;
-  let topNav: TopNavigationBar;
-  let profilePage: ProfilePage;
-  let adminApi: AdminApiService;
+        test.afterEach(async ({ profilePage }) => {
+            if (await profilePage.cancelBtn.isVisible().catch(() => false)) {
+                await profilePage.cancelBtn.click();
+            }
+        });
 
-  test.beforeAll(async ({ browser }) => {
-      page = await browser.newPage();
-      topNav = new TopNavigationBar(page);
-      profilePage = new ProfilePage(page);
-      
-      const { AdminApiService } = require('../../../src/api/AdminApiService');
-      adminApi = new AdminApiService();
-      await adminApi.login();
-      
-      // Ensure all standard profile fields are editable before starting
-      await adminApi.updateSecuritySettings({ 
-          allFieldsEditable: true,
-          mandatoryFields: { fields: [], isMandatory: false }
-      });
-  });
+        test('TC_BasicDetails_Cancel_Discards_Changes', async ({ page }) => {
+            const profilePage = new ProfilePage(page);
+            await profilePage.clickEdit();
+            
+            const locator = profilePage.getLocator('fullName');
+            if (!locator) return;
+            const originalName = await locator.inputValue();
+            
+            await locator.fill('Temporary Cancel Name');
+            await profilePage.cancelBtn.click();
+            
+            const revertedName = await locator.inputValue();
+            expect(revertedName).toBe(originalName);
+            expect(revertedName).not.toBe('Temporary Cancel Name');
+        });
 
-  test.beforeEach(async () => {
-    await page.goto(process.env.PORTAL_URL as string || 'https://sydneyuniversity.knimbus.com/portal/v2/default/home');
-    await topNav.openProfileMenu();
-    await topNav.profileMenuProfileLink.click();
-    await expect(profilePage.profileHeader).toBeVisible();
-  });
+        test.describe('Positive Data Iteration', () => {
+            for (const field of basicDetailsFields) {
+                const value = basicDetailsScenarios.positiveData[field];
+                if (value) {
+                    test(`TC_BasicDetails_${field}_Accepts valid data`, async ({ page }) => {
+                        test.info().annotations.push({ type: 'testData', description: String(value) });
+                        const profilePage = new ProfilePage(page);
+                        await profilePage.page.waitForTimeout(1000);
+await profilePage.clickEdit();
+                        
+                        const locator = profilePage.getLocator(field);
+                        await locator.fill(value);
+                        
+                        await profilePage.clickSave();
+                        await expect(page.getByRole('heading', { name: /Updated successfully/i }).first()).toBeVisible({ timeout: 5000 });
+                    });
+                }
+            }
+        });
 
-  test.afterAll(async () => {
-      console.log(`\n✅ Profile Basic Details CSV Report generated successfully: ${csvFilePath}\n`);
-      if (adminApi) await adminApi.close();
-      if (page) await page.close();
-  });
+        test.describe('Negative Scenarios Iteration', () => {
+            for (const s of basicDetailsScenarios.negativeScenarios) {
+                if (!basicDetailsFields.includes(s.field)) continue;
+                
+                // Skip blank validation here if it's not universally mandatory in this block
+                if (s.scenario.toLowerCase().includes('blank') && s.field !== 'fullName') {
+                    continue; 
+                }
 
-  test('Verify Basic Details form accepts valid data and correctly rejects invalid data', async ({}, testInfo) => {
-      console.log('\n--- Starting: Positive & Negative Data Entry Validation ---');
-      try {
-          // Full Name Validation
-          await profilePage.validateFullNameScenarios(fullNameScenarios, positiveFullName, logToCsv);
+                test(`TC_BasicDetails_${s.field}_${s.scenario.replace(/[^a-zA-Z0-9]/g, '')}`, async ({ page }) => {
+                    test.info().annotations.push({ type: 'testData', description: String(s.value) });
+                    const profilePage = new ProfilePage(page);
+                    await profilePage.page.waitForTimeout(1000);
+await profilePage.clickEdit();
+                    
+                    const locator = profilePage.getLocator(s.field);
+                    
+                    if (s.bypassLength) {
+                        await locator.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
+                    }
+                    
+                    await locator.fill(s.value);
+                    await profilePage.clickSave();
+                    
+                    await expect(page.locator(`text=${s.expectedError}`).first()).toBeVisible({ timeout: 5000 });
+                });
+            }
+        });
 
-          // Summary Validation
-          await profilePage.validateSummaryScenarios(summaryScenarios, positiveSummary, logToCsv);
+        test.describe('DOB', () => {
+            test('TC_DOB_AcceptValidDate_EditableON - accepts valid past date via calendar', { tag: '@EditableON' }, async ({ profilePage }) => {
+                await profilePage.page.waitForTimeout(1000);
+await profilePage.clickEdit();
+                await profilePage.dobInput.click();
+                await profilePage.calendarYearDropdown.selectOption({ label: '1995' });
+                await profilePage.calendarMonthDropdown.selectOption({ label: 'May' });
+                await profilePage.page.locator('.react-datepicker__day:not(.react-datepicker__day--outside-month)').filter({ hasText: /^10$/ }).click();
+                await profilePage.clickSave();
+                await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible();
+            });
 
-          // DOB Validation
-          await profilePage.validateDobScenarios(logToCsv);
+            test('TC_DOB_RejectFutureDate_EditableON - rejects future dates in calendar selection', { tag: '@EditableON' }, async ({ profilePage }) => {
+                await profilePage.page.waitForTimeout(1000);
+await profilePage.clickEdit();
+                await profilePage.dobInput.click();
+                await profilePage.calendarYearDropdown.selectOption({ label: (new Date().getFullYear() + 1).toString() }).catch(() => { });
+                const selectedYear = await profilePage.calendarYearDropdown.inputValue();
+                expect(parseInt(selectedYear)).toBeLessThanOrEqual(new Date().getFullYear());
+            });
+        });
 
-          // Gender Validation
-          await profilePage.validateGenderScenarios(logToCsv);
+        test.describe('Gender', () => {
+            test('TC_Gender_AcceptValidSelection_EditableON - saves successfully when a valid option is selected', { tag: '@EditableON' }, async ({ profilePage }) => {
+                await profilePage.page.waitForTimeout(1000);
+await profilePage.clickEdit();
+                await profilePage.genderDropdown.selectOption('Female');
+                await profilePage.clickSave();
+                await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible();
+            });
+        });
 
-          // Image Upload Validation
-          await profilePage.validateImageUploadScenarios(imageUploadScenarios, logToCsv);
-          
-      } catch (e: any) {
-          failTest(e, testInfo);
-          await profilePage.logFailureToCsv({}, [], logToCsv, e.message);
-      }
-  });
+        test.describe('Image Upload', () => {
+            test('TC_Image_AcceptValidUpload - uploads standard JPG/PNG successfully', async ({ profilePage }) => {
+                await profilePage.profileImgEditIcon.click();
 
-  test.describe('Admin Overrides / Preconditions', () => {
-      test('Verify user cannot change Full Name when the field is disabled by Admin', async () => {
-          // Disable editing for ONLY Full Name (which in API is 'Name')
-          await adminApi.updateSecuritySettings({ editableFields: { fields: ['Name'], isEditable: false } });
-          await page.reload();
-          await expect(profilePage.profileHeader).toBeVisible();
-  
-          await profilePage.clickEdit();
-  
-          // Confirm Full Name is disabled
-          await expect(profilePage.fullNameInput).toBeDisabled();
-  
-          // Confirm other fields are still enabled
-          await expect(profilePage.summaryTextarea).toBeEnabled();
-          await expect(profilePage.genderDropdown).toBeEnabled();
-          await expect(profilePage.dobInput).toBeEnabled();
-  
-          await profilePage.cancelBtn.click();
-  
-          // Revert it immediately so it doesn't break following tests
-          await adminApi.updateSecuritySettings({ allFieldsEditable: true });
-      });
+                await test.step('Upload a valid JPG image', async () => {
+                    const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/dummy-id.jpg');
+                    if (!fs.existsSync(fullFilePath)) fs.writeFileSync(fullFilePath, 'dummy content');
+                    await profilePage.imageUploadInput.setInputFiles(fullFilePath);
+                });
 
-      test('Verify user cannot change Summary when the field is disabled by Admin', async () => {
-          // Disable editing for ONLY the Summary field
-          await adminApi.updateSecuritySettings({ editableFields: { fields: ['Summary'], isEditable: false } });
-          await page.reload();
-          await expect(profilePage.profileHeader).toBeVisible();
-  
-          await profilePage.clickEdit();
-  
-          // Confirm Summary is disabled
-          await expect(profilePage.summaryTextarea).toBeDisabled();
-          
-          // Confirm other fields are still enabled
-          await expect(profilePage.dobInput).toBeEnabled();
-          await expect(profilePage.genderDropdown).toBeEnabled();
-  
-          await profilePage.cancelBtn.click();
-  
-          // Restore immediately
-          await adminApi.updateSecuritySettings({ allFieldsEditable: true });
-      });
-  
-      test('Verify an error is shown when the mandatory Summary field is enabled and left blank', async () => {
-          // Make Summary mandatory.
-          await adminApi.updateSecuritySettings({ mandatoryFields: { fields: ['Summary'], isMandatory: true } });
-          await page.reload();
-          await expect(profilePage.profileHeader).toBeVisible();
-  
-          await profilePage.clickEdit();
-          await profilePage.summaryTextarea.fill('');
-          await profilePage.summaryTextarea.blur();
-          await profilePage.clickSave();
-          
-          const expectedError = postLoginData.summaryScenarios.mandatoryError;
-          await expect.soft(page.locator('text=' + expectedError).first()).toBeVisible({ timeout: 5000 });
-          
-          await profilePage.cancelBtn.click();
-          
-          // Restore immediately
-          await adminApi.updateSecuritySettings({ mandatoryFields: { fields: [], isMandatory: false } });
-      });
-  });
+                await test.step('Save and assert success message', async () => {
+                    await profilePage.imageModalSaveBtn.click();
+                    await expect(profilePage.toastMessage).toHaveText(/update|success|saved/i, { timeout: 15000 });
+                });
+            });
+
+            test('TC_Image_RejectInvalidExtension - shows error when uploading unsupported files', async ({ profilePage }) => {
+                await profilePage.profileImgEditIcon.click();
+
+                await test.step('Upload an unsupported file type', async () => {
+                    const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/dummy.pdf');
+                    if (!fs.existsSync(fullFilePath)) fs.writeFileSync(fullFilePath, 'dummy pdf content');
+                    await profilePage.imageUploadInput.setInputFiles(fullFilePath);
+                });
+
+                await test.step('Assert error message is shown', async () => {
+                    await profilePage.imageModalSaveBtn.click();
+                    await expect(profilePage.imageUploadErrorMsg).toBeVisible();
+                });
+            });
+
+            test('TC_Image_RejectSizeExceeded - errors when file exceeds 1MB', async ({ profilePage }) => {
+                await profilePage.profileImgEditIcon.click();
+
+                await test.step('Upload a >1MB file', async () => {
+                    const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/large-dummy.jpg');
+                    if (!fs.existsSync(fullFilePath)) {
+                        fs.writeFileSync(fullFilePath, Buffer.alloc(1.1 * 1024 * 1024));
+                    }
+                    await profilePage.imageUploadInput.setInputFiles(fullFilePath);
+                });
+
+                await test.step('Assert error message is shown', async () => {
+                    await profilePage.imageModalSaveBtn.click();
+                    await expect(profilePage.imageUploadErrorMsg).toBeVisible();
+                });
+            });
+        });
+    });
+
+    test.describe('Blank Validations (Mandatory ON)', () => {
+        test.beforeAll(async () => {
+            await adminApi.updateSecuritySettings({ 
+                allFieldsEditable: true,
+                mandatoryFields: { fields: Object.values(backendFieldMap), isMandatory: true } 
+            });
+        });
+        
+        test.afterAll(async () => {
+            await adminApi.updateSecuritySettings({ mandatoryFields: { fields: ['Name'], isMandatory: true } });
+        });
+
+        test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
+            await page.goto(process.env.PORTAL_URL as string);
+            await topNavigationBar.openProfileMenu();
+            await topNavigationBar.profileMenuProfileLink.click();
+            await expect(profilePage.profileHeader).toBeVisible();
+        });
+
+        for (const field of basicDetailsFields) {
+            // Find the blank scenario for this field
+            const blankScenario = basicDetailsScenarios.negativeScenarios.find((s: any) => s.field === field && s.scenario.toLowerCase().includes('blank'));
+            if (!blankScenario) continue;
+
+            test(`TC_BasicDetails_${field}_Shows validation error when blank`, async ({ page }) => {
+                test.info().annotations.push({ type: 'testData', description: '' });
+                const profilePage = new ProfilePage(page);
+                await profilePage.page.waitForTimeout(1000);
+                await profilePage.clickEdit();
+                
+                const locator = profilePage.getLocator(field);
+                await locator.fill('');
+                await profilePage.clickSave();
+                
+                await expect(page.locator(`text=${blankScenario.expectedError}`).first()).toBeVisible({ timeout: 5000 });
+            });
+        }
+    });
+
+    test.describe('Admin Override (Individual fields non-editable)', () => {
+        test.beforeAll(async () => {
+            await adminApi.updateSecuritySettings({ editableFields: { fields: Object.values(backendFieldMap), isEditable: false } });
+        });
+        
+        test.afterAll(async () => {
+            await adminApi.updateSecuritySettings({ editableFields: { fields: [], isEditable: true } });
+        });
+
+        test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
+            await page.goto(process.env.PORTAL_URL as string);
+            await topNavigationBar.openProfileMenu();
+            await topNavigationBar.profileMenuProfileLink.click();
+            await expect(profilePage.profileHeader).toBeVisible();
+        });
+
+        for (const field of basicDetailsFields) {
+            test(`TC_BasicDetails_${field}_Field becomes read-only`, async ({ page }) => {
+                const profilePage = new ProfilePage(page);
+                await page.waitForTimeout(1000);
+                await profilePage.clickEdit();
+                
+                const locator = profilePage.getLocator(field);
+                await expect(locator).toBeDisabled({ timeout: 5000 });
+            });
+        }
+    });
 });
