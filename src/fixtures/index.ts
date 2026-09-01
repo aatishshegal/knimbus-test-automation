@@ -15,6 +15,8 @@ import { MyLibraryPage } from '@pages/portal/MyLibraryPage';
 import { DetailPage } from '@pages/portal/DetailPage';
 import { ResearchPlusPage } from '@pages/portal/ResearchPlusPage';
 import { WorkAndEducationPage } from '@pages/portal/WorkAndEducationPage';
+import { ForgotPasswordPage } from '@pages/portal/ForgotPasswordPage';
+import { ResetPasswordPage } from '@pages/portal/ResetPasswordPage';
 import { AdminApiService } from '../api/AdminApiService';
 
 // New API-based helper function to handle Admin Session instantly
@@ -41,6 +43,8 @@ type MyFixtures = {
   detailPage: DetailPage;
   researchPlusPage: ResearchPlusPage;
   workAndEducationPage: WorkAndEducationPage;
+  forgotPasswordPage: ForgotPasswordPage;
+  resetPasswordPage: ResetPasswordPage;
   standardUser: { email: string, password: string };
   homePageUser: { email: string, password: string };
   otpUser: { email: string, password: string };
@@ -110,6 +114,12 @@ export const test = base.extend<MyFixtures>({
   },
   workAndEducationPage: async ({ page }, use) => {
     await use(new WorkAndEducationPage(page));
+  },
+  forgotPasswordPage: async ({ page }, use) => {
+    await use(new ForgotPasswordPage(page));
+  },
+  resetPasswordPage: async ({ page }, use) => {
+    await use(new ResetPasswordPage(page));
   },
   researchPlusPage: async ({ page }, use) => {
     const researchPlusPage = new ResearchPlusPage(page);

@@ -29,23 +29,17 @@ test.describe('Profile Password Suite', () => {
     });
 
     test.describe('Profile Password Navigation', () => {
-        test.beforeEach(async ({ page }) => {
-            const topNav = new TopNavigationBar(page);
-            const url = process.env.PORTAL_URL as string;
-            // Navigation workaround for profile redirection
-            const profileUrl = url.replace(/\/home\/?$/, '/profile');
+        test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
+            // Navigate to the portal home (already authenticated via storageState)
+            await page.goto(process.env.PORTAL_URL as string);
             
-            await page.goto(profileUrl);
-            await page.waitForLoadState('domcontentloaded');
+            // Wait for authentication to resolve and home page to load
+            await expect(topNavigationBar.profileDropdown).toBeVisible({ timeout: 15000 });
             
-            // Wait a moment for page to stabilize
-            await page.waitForTimeout(1000);
-            
-            // Use top navigation to make sure we are properly routed if deep linking fails
-            if (await topNav.profileDropdown.isVisible().catch(() => false)) {
-                await topNav.openProfileMenu();
-                await topNav.profileMenuProfileLink.click().catch(() => {});
-            }
+            // Use standard UI flow to navigate to profile
+            await topNavigationBar.openProfileMenu();
+            await topNavigationBar.profileMenuProfileLink.click();
+            await expect(profilePage.profileHeader).toBeVisible({ timeout: 15000 });
             
             // Navigate to Password Tab
             // Wait for it to be attached and visible

@@ -179,6 +179,17 @@ test.describe('Profile Work & Education Suite', () => {
             await expect(savedCard).toBeVisible();
         });
 
+        test('TC_WorkExp_ValidateAddMoreOpensBlankForm', async ({ page }) => {
+            const workAndEducationPage = new WorkAndEducationPage(page);
+            
+            const addMoreBtn = page.getByText('Add more', { exact: true });
+            await addMoreBtn.first().click();
+            
+            await expect(workAndEducationPage.jobTitle).toBeVisible({ timeout: 5000 });
+            await expect(workAndEducationPage.jobTitle).toHaveValue('');
+            await expect(workAndEducationPage.companyName).toHaveValue('');
+        });
+
         test('TC_WorkExp_DeleteRemovesData', async ({ page }) => {
             const workAndEducationPage = new WorkAndEducationPage(page);
             
@@ -203,15 +214,5 @@ test.describe('Profile Work & Education Suite', () => {
             await expect(page.getByText(targetJobTitle, { exact: true })).toBeHidden({ timeout: 5000 });
         });
 
-        test('TC_WorkExp_ValidateAddMoreOpensBlankForm', async ({ page }) => {
-            const workAndEducationPage = new WorkAndEducationPage(page);
-            
-            const addMoreBtn = page.getByText('Add more', { exact: true });
-            await addMoreBtn.first().click();
-            
-            await expect(workAndEducationPage.jobTitle).toBeVisible({ timeout: 5000 });
-            await expect(workAndEducationPage.jobTitle).toHaveValue('');
-            await expect(workAndEducationPage.companyName).toHaveValue('');
-        });
     });
 });
