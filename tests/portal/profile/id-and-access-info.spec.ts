@@ -8,7 +8,7 @@ import * as path from 'path';
 // Load post-login profile data
 const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
-const idDocumentScenarios = postLoginData.idDocumentScenarios || [];
+const idDocumentScenarios = postLoginData.idDocumentScenarios?.data || postLoginData.idDocumentScenarios || [];
 
 test.describe('Id & Access Info Suite', () => {
     let topNav: TopNavigationBar;
@@ -34,7 +34,7 @@ test.describe('Id & Access Info Suite', () => {
         topNav = new TopNavigationBar(page);
         idAccessPage = new IdAndAccessInfoPage(page);
 
-        await page.goto('https://sydneyuniversity.knimbus.com/portal/v2/default/home');
+        await page.goto(process.env.PORTAL_URL as string);
         await topNav.openProfileMenu();
         await topNav.profileMenuProfileLink.click();
         
@@ -43,12 +43,40 @@ test.describe('Id & Access Info Suite', () => {
         await expect(idAccessPage.pageHeading).toBeVisible();
     });
 
-    test('Verify all Id Document upload validation scenarios (Id & Access Info page) run correctly within a single session', async ({ page }) => {
-        const dataDir = path.resolve(__dirname, '../../../tests/test-data');
-        const filesDir = path.resolve(__dirname, '../../../tests/test-data/files');
-        
-        // Execute the entire JSON array in one go
-        await idAccessPage.executeImageUploadScenarios(idDocumentScenarios, dataDir, filesDir);
+    test.describe('Id Document Upload Validation', () => {
+        for (const s of idDocumentScenarios) {
+            test(`TC_IdDoc_${s.ScenarioType}_${s.Scenario.replace(/[^a-zA-Z0-9]/g, '')}`, async ({ page }) => {
+                const dataDir = path.resolve(__dirname, '../../../tests/test-data');
+                const filesDir = path.resolve(__dirname, '../../../tests/test-data/files');
+                
+                if (s.FileName1) {
+                    const filePath1 = path.resolve(filesDir, s.FileName1);
+                    const finalPath1 = fs.existsSync(filePath1) ? filePath1 : path.resolve(dataDir, s.FileName1);
+                    await idAccessPage.frontsideUploadInput.setInputFiles(finalPath1);
+                }
+
+                if (s.FileName2) {
+                    const filePath2 = path.resolve(filesDir, s.FileName2);
+                    const finalPath2 = fs.existsSync(filePath2) ? filePath2 : path.resolve(dataDir, s.FileName2);
+                    await idAccessPage.backsideUploadInput.setInputFiles(finalPath2);
+                }
+
+                await idAccessPage.saveBtn.click();
+
+                if (s.ScenarioType === 'Positive') {
+                    await page.waitForTimeout(1000);
+                    if (s.FileName1) {
+                        await expect(idAccessPage.frontsideContainer.locator('img').first()).toBeVisible({ timeout: 5000 });
+                    }
+                    if (s.FileName2) {
+                        await expect(idAccessPage.backsideContainer.locator('img').first()).toBeVisible({ timeout: 5000 });
+                    }
+                } else {
+                    const msgLocator = page.getByText(s.ExpectedMessage, { exact: false });
+                    await expect(msgLocator.first()).toBeVisible({ timeout: 5000 });
+                }
+            });
+        }
     });
 });
 
