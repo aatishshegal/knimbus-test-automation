@@ -67,7 +67,17 @@ test.describe('Search Detail Page Functionality', () => {
     
     // Validate toast message
     await expect(detailPage.toastNotification).toBeVisible({ timeout: 10000 });
-    const favToastText = await detailPage.toastNotification.innerText();
+    let favToastText = await detailPage.toastNotification.innerText();
+    
+    // Self-healing: if it was already favorited, clicking it removed it.
+    if (favToastText.toLowerCase().includes('remove')) {
+      console.log(`[Self-Healing] Item was already favorited. Re-favoriting it...`);
+      await detailPage.toastNotification.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+      await detailPage.toggleFavorite();
+      await expect(detailPage.toastNotification).toBeVisible({ timeout: 10000 });
+      favToastText = await detailPage.toastNotification.innerText();
+    }
+    
     console.log(`[Validation] Favourite Toast received: "${favToastText}"`);
     expect(favToastText.toLowerCase()).toContain('favourite'); // Validating presence of word favourite/saved
     
