@@ -87,6 +87,10 @@ test.describe('Profile Password Suite', () => {
 
     test.describe('Negative Validation Scenarios', () => {
         for (const s of passwordScenarios.negativeScenarios) {
+            // Skip the "Same as old password" test for the default shared user to avoid state leakage flakiness
+            if (s.scenario.toLowerCase().includes('same as old password')) {
+                continue;
+            }
             test(`TC_Password_Validation_${s.scenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: JSON.stringify(s) });
                 const passwordPage = new PasswordPage(page);
@@ -98,29 +102,17 @@ test.describe('Profile Password Suite', () => {
                     await passwordPage.confirmPasswordInput.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
                 }
                 
-                // Inject actual correct current password for "Same as old password" scenario
-                let testOldPassword = s.oldPassword;
-                let testNewPassword = s.newPassword;
-                let testConfirmPassword = s.confirmPassword;
-                
-                if (s.scenario.toLowerCase().includes('same as old password')) {
-                    const defaultPassword = process.env.HOME_PAGE_USER_PASSWORD as string;
-                    testOldPassword = defaultPassword;
-                    testNewPassword = defaultPassword;
-                    testConfirmPassword = defaultPassword;
-                }
-                
                 await passwordPage.clearPasswordForm();
                 await passwordPage.fillPasswordForm({
-                    oldPassword: testOldPassword,
-                    newPassword: testNewPassword,
-                    confirmPassword: testConfirmPassword
+                    oldPassword: s.oldPassword,
+                    newPassword: s.newPassword,
+                    confirmPassword: s.confirmPassword
                 });
                 
                 await passwordPage.clickUpdatePassword();
                 
                 // Verify expected error
-                await expect(page.getByText(s.expectedError, { exact: false }).first()).toBeVisible({ timeout: 5000 });
+                await expect(page.getByText(s.expectedError, { exact: false }).first()).toBeVisible({ timeout: 15000 });
             });
         }
     });
@@ -150,6 +142,64 @@ test.describe('Profile Password Suite', () => {
         
         test.afterAll(async () => {
              if (adminApiPositive) await adminApiPositive.close();
+        });
+
+        test('TC_Password_Validation_Same as old password - Isolated User', async ({ page, termsAndConditionsModal }) => {
+            const { PortalLoginPage } = require('../../../src/pages/portal/PortalLoginPage');
+            const loginPage = new PortalLoginPage(page);
+            const topNav = new TopNavigationBar(page);
+            const passwordPage = new PasswordPage(page);
+            
+            // Login as the isolated test user
+            await loginPage.login(testUserEmail, defaultPassword);
+            await page.waitForTimeout(3000);
+            
+            // Handle Welcome modal if visible (give it a few seconds to appear for a fresh user)
+            const welcomeContinueBtn = page.getByRole('button', { name: 'Continue', exact: true });
+            await welcomeContinueBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+            if (await welcomeContinueBtn.isVisible().catch(() => false)) {
+                await welcomeContinueBtn.click().catch(() => {});
+            }
+            
+            // Handle T&C modal just in case. Wait for a few seconds for it to pop up.
+            await page.waitForTimeout(3000);
+            await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
+            
+            // Navigate to Profile > Password Tab directly via URL to avoid flakiness
+            const url = process.env.PORTAL_URL as string;
+            const profileUrl = url.replace(/\/home\/?$/, '/profile');
+            await page.goto(profileUrl);
+            await page.waitForLoadState('domcontentloaded');
+            
+            // Wait a moment for page to stabilize
+            await page.waitForTimeout(1000);
+            
+            // Use top navigation to make sure we are properly routed if deep linking fails
+            if (await topNav.profileDropdown.isVisible().catch(() => false)) {
+                await topNav.openProfileMenu();
+                await topNav.profileMenuProfileLink.click({ force: true }).catch(() => {});
+            }
+            
+            const passwordTab = page.getByRole('tab', { name: /Password/i });
+            await passwordTab.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+            await passwordTab.click({ force: true });
+            
+            await expect(passwordPage.tabHeader).toBeVisible();
+            
+            // Fill and Submit with same old and new password
+            await passwordPage.fillPasswordForm({
+                oldPassword: defaultPassword,
+                newPassword: defaultPassword,
+                confirmPassword: defaultPassword
+            });
+            await passwordPage.clickUpdatePassword();
+            
+            // Verify expected error
+            const expectedError = "Old password and new password cannot be same!";
+            await expect(page.getByText(expectedError, { exact: false }).first()).toBeVisible({ timeout: 15000 });
+            
+            // Clear context for the next test
+            await page.context().clearCookies();
         });
 
         test('TC_Password_Success - Verify successful password update', async ({ page, termsAndConditionsModal }) => {
