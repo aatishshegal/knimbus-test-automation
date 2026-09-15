@@ -25,7 +25,7 @@ export class WorkAndEducationPage extends BasePage {
         this.eduToYr = page.locator('#eduToYr');
         
         // Field of Studies Fields
-        this.studySub = page.locator('#studySub');
+        this.studySub = page.locator('form').filter({ has: page.locator('h5:has-text("Field of Studies")') }).locator('#studySub');
     }
 
     /**
@@ -40,9 +40,12 @@ export class WorkAndEducationPage extends BasePage {
         return locator;
     }
 
-    async getSaveButton(sectionTitle: string): Promise<Locator> {
+    async getSaveButton(sectionTitle: string | RegExp): Promise<Locator> {
         // Find the form that contains the specific heading and click its save button
-        return this.page.locator('form').filter({ has: this.page.getByRole('heading', { name: sectionTitle }) }).locator('button:has-text("Save")');
+        if (sectionTitle === 'Field of Studies' || sectionTitle.toString().includes('Field of stud')) {
+            return this.page.locator('form').filter({ has: this.page.locator('h5:has-text("Field of Studies")') }).locator('button:has-text("Save")').first();
+        }
+        return this.page.locator('form').filter({ has: this.page.locator('h1, h2, h3, h4, h5, h6').filter({ hasText: sectionTitle }) }).locator('button:has-text("Save")').first();
     }
 
     async clickAddMore(sectionTitle: string): Promise<void> {
@@ -71,17 +74,20 @@ export class WorkAndEducationPage extends BasePage {
         }
     }
 
-    async getCancelButton(sectionTitle: string): Promise<Locator> {
-        return this.page.locator('form').filter({ has: this.page.getByRole('heading', { name: sectionTitle }) }).getByRole('button', { name: /Cancel/i });
+    async getCancelButton(sectionTitle: string | RegExp): Promise<Locator> {
+        // Return the nearest Cancel button in the form for the given section
+        if (sectionTitle === 'Field of Studies' || sectionTitle.toString().includes('Field of stud')) {
+            return this.page.locator('form').filter({ has: this.page.locator('h5:has-text("Field of Studies")') }).getByRole('button', { name: /Cancel/i }).first();
+        }
+        return this.page.locator('form').filter({ has: this.page.locator('h1, h2, h3, h4, h5, h6').filter({ hasText: sectionTitle }) }).getByRole('button', { name: /Cancel/i }).first();
     }
 
-    async getDeleteButton(sectionTitle: string): Promise<Locator> {
-        // Some forms might have a trash icon or "Delete" button
-        const form = this.page.locator('form').filter({ has: this.page.getByRole('heading', { name: sectionTitle }) });
-        const delBtn = form.getByRole('button', { name: /Delete/i });
-        if (await delBtn.count() > 0) return delBtn;
-        
-        return form.locator('button.delete-btn, button:has(.fa-trash), button:has-text("Delete")').first();
+    async getDeleteButton(sectionTitle: string | RegExp): Promise<Locator> {
+        // Return the nearest Delete button in the form for the given section
+        if (sectionTitle === 'Field of Studies' || sectionTitle.toString().includes('Field of stud')) {
+            return this.page.locator('form').filter({ has: this.page.locator('h5:has-text("Field of Studies")') }).getByRole('button', { name: /Delete/i }).first();
+        }
+        return this.page.locator('form').filter({ has: this.page.locator('h1, h2, h3, h4, h5, h6').filter({ hasText: sectionTitle }) }).getByRole('button', { name: /Delete/i }).first();
     }
 
     getSavedEntry(textValue: string): Locator {
@@ -106,8 +112,10 @@ export class WorkAndEducationPage extends BasePage {
             .first();
     }
 
-    async isFormOpen(sectionTitle: string): Promise<boolean> {
-        const form = this.page.locator('form').filter({ has: this.page.getByRole('heading', { name: sectionTitle }) });
+    async isFormOpen(sectionTitle: string | RegExp): Promise<boolean> {
+        const form = (sectionTitle === 'Field of Studies' || sectionTitle.toString().includes('Field of stud'))
+            ? this.page.locator('form').filter({ has: this.studySub })
+            : this.page.locator('form').filter({ has: this.page.locator('h1, h2, h3, h4, h5, h6').filter({ hasText: sectionTitle }) });
         if (await form.count() === 0) return false;
         
         // Also check if it's visually hidden via class

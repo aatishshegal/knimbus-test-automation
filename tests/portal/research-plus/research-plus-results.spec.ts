@@ -90,8 +90,7 @@ test.describe('Research+ Functionality', () => {
         
         await researchPlusPage.verifyResultsPaintedAndNoTabs();
 
-        const activeSort = await searchResultPage.getActiveSortOption();
-        expect.soft(activeSort).toContain('Source');
+        await expect.soft(searchResultPage.sortingDropdownToggle).toContainText('Source', { timeout: 15000 });
     });
 
     test('Verify default sorting on result page after selecting multiple sources is Best Matched', async ({ topNavigationBar, researchPlusPage, searchResultPage, page }) => {
@@ -110,8 +109,7 @@ test.describe('Research+ Functionality', () => {
         
         await researchPlusPage.verifyResultsPaintedAndNoTabs();
 
-        const activeSort = await searchResultPage.getActiveSortOption();
-        expect.soft(activeSort).toContain('Best Matched');
+        await expect.soft(searchResultPage.sortingDropdownToggle).toContainText('Best Matched', { timeout: 15000 });
     });
 
     test('Verify the result page contains data from selected Publication year range only', async ({ topNavigationBar, researchPlusPage, searchResultPage, page }) => {

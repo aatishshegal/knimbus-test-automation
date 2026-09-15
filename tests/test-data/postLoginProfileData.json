@@ -1097,14 +1097,14 @@
           "fieldsToBlank": [
             "institutionName"
           ],
-          "expectedMessage": "Please fill up the mandatory details in Education section."
+          "expectedMessage": "Institution name is required"
         },
         {
           "scenario": "Validation - Degree is Required",
           "fieldsToBlank": [
             "eduDegree"
           ],
-          "expectedMessage": "Please fill up the mandatory details in Education section."
+          "expectedMessage": "Degree is required"
         },
         {
           "scenario": "Validation - 'To Year' less than 'From Year'",
@@ -1166,7 +1166,7 @@
           "fieldsToBlank": [
             "studySub"
           ],
-          "expectedMessage": "Please fill up the mandatory details in Field of Studies section."
+          "expectedMessage": "Field of study is required"
         },
         {
           "scenario": "Validation_-_FieldOfStudy_RejectHTML",
