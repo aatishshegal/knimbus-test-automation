@@ -95,7 +95,7 @@ test.describe('Profile Work & Education Suite', () => {
         test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
             if (page.url() === 'about:blank') {
                 console.log("Forcing navigation (page was about:blank)");
-                await page.goto(process.env.PORTAL_URL);
+                await page.goto(process.env.PORTAL_URL as string);
                 await topNavigationBar.openProfileMenu();
                 await topNavigationBar.profileMenuProfileLink.click();
                 await page.waitForTimeout(2000);
@@ -203,35 +203,22 @@ test.describe('Profile Work & Education Suite', () => {
             await page.waitForTimeout(4000); // Crucial: Wait for API to save
 
             // 3. Validate saved card is visible
-            const savedCard = page.locator('div')
-                .filter({ has: page.getByText(targetFoS, { exact: true }) })
-                .filter({ has: page.locator('svg') })
-                .last();
+            const savedCard = workAndEducationPage.getSavedEntry(targetFoS);
             await expect(savedCard).toBeVisible({ timeout: 15000 });
         });
 
         test('TC_FoS_VerifyEditIconWorking', async ({ page }) => {
-            const savedCard = page.locator('div')
-                .filter({ has: page.getByText(targetFoS, { exact: true }) })
-                .filter({ has: page.locator('svg') })
-                .last();
-            await expect(savedCard).toBeVisible({ timeout: 15000 });
-            
-            const editIcon = savedCard.locator('svg').first();
-            await expect(editIcon).toBeVisible();
+            const workAndEducationPage = new WorkAndEducationPage(page);
+            const editIcon = await workAndEducationPage.getEditIcon(targetFoS);
+            await expect(editIcon).toBeVisible({ timeout: 15000 });
             await editIcon.click();
             
-            const workAndEducationPage = new WorkAndEducationPage(page);
             await expect(workAndEducationPage.studySub).toBeVisible({ timeout: 15000 });
         });
 
         test('TC_FoS_VerifySaveCancelDeleteButtonsOptions', async ({ page }) => {
             const workAndEducationPage = new WorkAndEducationPage(page);
-            const savedCard = page.locator('div')
-                .filter({ has: page.getByText(targetFoS, { exact: true }) })
-                .filter({ has: page.locator('svg') })
-                .last();
-            const editIcon = savedCard.locator('svg').first();
+            const editIcon = await workAndEducationPage.getEditIcon(targetFoS);
             await editIcon.click();
             await expect(workAndEducationPage.studySub).toBeVisible({ timeout: 15000 });
 
@@ -246,11 +233,7 @@ test.describe('Profile Work & Education Suite', () => {
 
         test('TC_FoS_VerifyCancelClosesForm', async ({ page }) => {
             const workAndEducationPage = new WorkAndEducationPage(page);
-            const savedCard = page.locator('div')
-                .filter({ has: page.getByText(targetFoS, { exact: true }) })
-                .filter({ has: page.locator('svg') })
-                .last();
-            const editIcon = savedCard.locator('svg').first();
+            const editIcon = await workAndEducationPage.getEditIcon(targetFoS);
             await editIcon.click();
             await expect(workAndEducationPage.studySub).toBeVisible({ timeout: 15000 });
 
@@ -262,40 +245,42 @@ test.describe('Profile Work & Education Suite', () => {
 
         test('TC_FoS_VerifyEditCanChangeTitleAndSave', async ({ page }) => {
             const workAndEducationPage = new WorkAndEducationPage(page);
-            const savedCard = page.locator('div')
-                .filter({ has: page.getByText(targetFoS, { exact: true }) })
-                .filter({ has: page.locator('svg') })
-                .last();
-            const editIcon = savedCard.locator('svg').first();
+            const editIcon = await workAndEducationPage.getEditIcon(targetFoS);
             await editIcon.click();
             await expect(workAndEducationPage.studySub).toBeVisible({ timeout: 15000 });
 
-            targetFoS = `${targetFoS} Edited`;
-            await workAndEducationPage.studySub.fill(targetFoS);
+            // Use a completely new, shorter string to avoid UI truncation issues (e.g. max 50 chars)
+            const editedFoS = `Edited FoS ${Date.now()}`;
+            await workAndEducationPage.studySub.clear();
+            await workAndEducationPage.studySub.fill(editedFoS);
+            await workAndEducationPage.studySub.press('Tab'); // Trigger React hook form validation blur
 
             const saveBtn = await workAndEducationPage.getSaveButton('Field of Studies');
+            await expect(saveBtn).toBeEnabled({ timeout: 5000 });
             await saveBtn.click();
-            await page.waitForTimeout(4000);
+            
+            // Wait for form to close (indicating successful save)
+            await expect(workAndEducationPage.studySub).toBeHidden({ timeout: 10000 });
 
-            const newSavedCard = page.locator('div')
-                .filter({ has: page.getByText(targetFoS, { exact: true }) })
-                .filter({ has: page.locator('svg') })
-                .last();
+            const newSavedCard = workAndEducationPage.getSavedEntry(editedFoS);
             await expect(newSavedCard).toBeVisible({ timeout: 15000 });
+            
+            targetFoS = editedFoS; // Update for the delete test
         });
 
         test('TC_FoS_VerifyDeleteContent', async ({ page }) => {
             const workAndEducationPage = new WorkAndEducationPage(page);
-            const savedCard = page.locator('div')
-                .filter({ has: page.getByText(targetFoS, { exact: true }) })
-                .filter({ has: page.locator('svg') })
-                .last();
-            const editIcon = savedCard.locator('svg').first();
-            await editIcon.click();
-            await expect(workAndEducationPage.studySub).toBeVisible({ timeout: 15000 });
-
-            const deleteBtn = await workAndEducationPage.getDeleteButton('Field of Studies');
-            await deleteBtn.click();
+            const deleteIcon = await workAndEducationPage.getDeleteIcon(targetFoS);
+            // Fallback to edit icon and then delete button if direct delete icon isn't there
+            if (await deleteIcon.isVisible()) {
+                await deleteIcon.click();
+            } else {
+                const editIcon = await workAndEducationPage.getEditIcon(targetFoS);
+                await editIcon.click();
+                await expect(workAndEducationPage.studySub).toBeVisible({ timeout: 15000 });
+                const deleteBtn = await workAndEducationPage.getDeleteButton('Field of Studies');
+                await deleteBtn.click();
+            }
 
             await page.waitForTimeout(1000);
             const confirmBtn = page.getByRole('button', { name: /Yes|Confirm|Ok|Delete/i }).first();

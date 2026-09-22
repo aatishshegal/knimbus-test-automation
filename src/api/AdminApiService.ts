@@ -43,6 +43,22 @@ export class AdminApiService {
   }
 
   /**
+   * Initializes the API context using an existing saved storage state (cookies)
+   * to prevent generating a new session token that invalidates the UI session.
+   */
+  async initFromState(storageStatePath: string = '.auth/admin.json') {
+    this.apiContext = await request.newContext({
+      baseURL: this.baseUrl,
+      storageState: storageStatePath,
+      extraHTTPHeaders: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8'
+      }
+    });
+    console.log(`[AdminApiService] API context initialized from state: ${storageStatePath}`);
+  }
+
+  /**
    * Helper to ensure the API context is initialized.
    */
   private getContext(): APIRequestContext {

@@ -25,7 +25,16 @@ test.describe('Profile Password Suite', () => {
     });
 
     test.afterAll(async () => {
-        if (adminApi) await adminApi.close();
+        if (adminApi) {
+            // Re-authenticate to guarantee the session hasn't expired during the UI tests
+            await adminApi.login();
+            await adminApi.updateSecuritySettings({ 
+                mandatoryFields: { fields: [], isMandatory: false },
+                editableFields: { fields: [], isEditable: true },
+                allFieldsEditable: true
+            });
+            await adminApi.close();
+        }
     });
 
     test.describe('Profile Password Navigation', () => {

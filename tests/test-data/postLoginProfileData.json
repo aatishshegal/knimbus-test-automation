@@ -1158,7 +1158,7 @@
     },
     "fieldOfStudiesData": {
       "positiveData": {
-        "studySub": "Software Engineering, AI"
+        "studySub": "SE AI"
       },
       "negativeScenarios": [
         {

@@ -3,6 +3,7 @@ import { AdminApiService } from '../../../src/api/AdminApiService';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ProfilePage } from '../../../src/pages/portal/ProfilePage';
+import portalData from '../../test-data/portal-data.json';
 
 // Load post-login profile data
 const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
@@ -36,6 +37,15 @@ test.describe('Profile Basic Details Suite', () => {
             });
         });
 
+        test.afterAll(async () => {
+            // Reset state to avoid poisoning subsequent tests in the suite
+            await adminApi.updateSecuritySettings({
+                allFieldsEditable: true,
+                mandatoryFields: { fields: [], isMandatory: false },
+                editableFields: { fields: [], isEditable: true }
+            });
+        });
+
         test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
             await page.goto(process.env.PORTAL_URL as string);
             await topNavigationBar.openProfileMenu();
@@ -56,8 +66,9 @@ test.describe('Profile Basic Details Suite', () => {
             const locator = profilePage.getLocator('fullName');
             if (!locator) return;
             const originalName = await locator.inputValue();
-            
-            await locator.fill('Temporary Cancel Name');
+            const tempName = portalData.profile.basicDetails.temporaryName;
+            await locator.fill(tempName);
+            await expect(locator).toHaveValue(tempName);
             await profilePage.cancelBtn.click();
             
             const revertedName = await locator.inputValue();

@@ -39,6 +39,8 @@ test.describe('Research+ Query Type Search Scenarios', () => {
     // Generate dynamic test cases based on JSON configurations
     for (const data of queryTypeScenarios) {
         test(data.testCaseName, async ({ researchPlusPage, searchResultPage, page }) => {
+            test.setTimeout(120000); // Increase timeout to 120s for slow federated sources
+            
             // Pick a random search query from the array
             const randomIndex = Math.floor(Math.random() * data.queries.length);
             const randomQuery = data.queries[randomIndex];
