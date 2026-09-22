@@ -8,7 +8,7 @@ dotenv.config();
 
 // Determine if we have a saved auth state
 const authFile = '.auth/user.json';
-const storageState = fs.existsSync(authFile) ? authFile : undefined;
+const storageState = authFile;
 
 // Standard viewport for reliable rendering across headed/headless
 const defaultViewport = { width: 1280, height: 720 };
@@ -22,7 +22,7 @@ export default defineConfig({
   // Added 1 retry even locally. WebKit often fails first run but succeeds second.
   retries: process.env.CI ? 2 : 1,
   workers: 1,
-  reporter: [['html', { open: 'never' }], ['line'], ['./src/utils/CsvReporter.ts']],
+  reporter: [['html', { open: 'never' }], ['./src/utils/CleanConsoleReporter.ts'], ['./src/utils/CsvReporter.ts']],
 
   use: {
     // Increased default action timeout to 15 seconds to wait for elements to become visible
@@ -35,27 +35,58 @@ export default defineConfig({
   },
 
   projects: [
-    // Setup project runs exactly ONCE globally before the test suite
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    // --- GLOBAL API SETUP ---
+    // Runs exactly ONCE globally before anything else to configure backend preconditions
+    { name: 'global-setup', testMatch: /global\.setup\.ts/ },
+
+    // --- ADMIN DASHBOARD SETUP ---
+    { 
+      name: 'admin-setup', 
+      testMatch: /admin\.setup\.ts/,
+      dependencies: ['global-setup'],
+    },
+
+    // --- PORTAL SETUP ---
+    { 
+      name: 'portal-setup', 
+      testMatch: /portal\.setup\.ts/,
+      dependencies: ['global-setup'],
+    },
     
+    // --- PORTAL UI TESTS ---
     // Pre-login tests (Authentication, Registration) start completely logged out
     { 
-      name: 'pre-login',
-      testMatch: /.*(authentication|registration).*\.spec\.ts/,
+      name: 'Portal - pre-login',
+      testMatch: /portal\/.*(authentication|registration).*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: defaultViewport, deviceScaleFactor: undefined },
+      dependencies: ['portal-setup'],
     },
 
     // Post-login tests (Navigation, Home, etc.) inherit the cached session and wait for setup
     { 
-      name: 'post-login',
-      testIgnore: /.*(authentication|registration|setup).*\.ts/,
+      name: 'Portal - post-login',
+      testMatch: /portal\/.*\.spec\.ts/,
+      testIgnore: /.*(authentication|registration).*\.ts/,
       use: { 
         ...devices['Desktop Chrome'], 
         viewport: defaultViewport, 
         deviceScaleFactor: undefined,
         storageState: storageState 
       },
-      dependencies: ['setup'],
+      dependencies: ['portal-setup'],
     },
+
+    // --- ADMIN DASHBOARD UI TESTS ---
+    {
+      name: 'Admin Dashboard',
+      testMatch: /admin\/.*\.spec\.ts/,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined,
+        storageState: '.auth/admin.json'
+      },
+      dependencies: ['admin-setup'],
+    }
   ],
 });

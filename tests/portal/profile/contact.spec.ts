@@ -3,6 +3,7 @@ import { ContactPage } from '../../../src/pages/portal/ContactPage';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import * as fs from 'fs';
 import * as path from 'path';
+import portalData from '../../test-data/portal-data.json';
 
 // Load test data
 const validationDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
@@ -33,7 +34,14 @@ test.describe('Contact Details Suite', () => {
     });
 
     test.afterAll(async () => {
-        if (adminApi) await adminApi.close();
+        if (adminApi) {
+            await adminApi.updateSecuritySettings({ 
+                mandatoryFields: { fields: [], isMandatory: false },
+                editableFields: { fields: [], isEditable: true },
+                allFieldsEditable: true
+            });
+            await adminApi.close();
+        }
     });
 
     test.beforeEach(async ({ page, topNavigationBar }) => {
@@ -51,12 +59,14 @@ test.describe('Contact Details Suite', () => {
         if (!locator) return;
         const originalMobile = await locator.inputValue();
         
-        await locator.fill('9999999999');
+        const tempPhone = portalData.profile.contact.temporaryPhone;
+        await locator.fill(tempPhone);
+        await expect(locator).toHaveValue(tempPhone);
         await contactPage.clickCancel();
         
         const revertedMobile = await locator.inputValue();
         expect(revertedMobile).toBe(originalMobile);
-        expect(revertedMobile).not.toBe('9999999999');
+        expect(revertedMobile).not.toBe(tempPhone);
     });
 
     test.describe('Positive Scenarios', () => {

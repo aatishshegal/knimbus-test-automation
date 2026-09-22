@@ -1,0 +1,46 @@
+import { Page, Locator } from '@playwright/test';
+import { AdminBasePage } from '../AdminBasePage';
+
+export class AddSingleUserPage extends AdminBasePage {
+    readonly userNameInput: Locator;
+    readonly emailInput: Locator;
+    readonly userTypeSelect: Locator;
+    readonly genderSelect: Locator;
+    readonly serviceGroupSelect: Locator;
+    readonly saveBtn: Locator;
+
+    constructor(page: Page) {
+        super(page);
+
+        // Required fields based on DOM
+        this.userNameInput = page.locator('input#userName');
+        this.emailInput = page.locator('input#email');
+        
+        // Select dropdowns
+        this.userTypeSelect = page.locator('select#userType');
+        this.genderSelect = page.locator('select#gender');
+        this.serviceGroupSelect = page.locator('select#serviceGroup');
+        
+        this.saveBtn = page.getByRole('button', { name: 'Save' });
+    }
+
+    async fillRegistrationForm(userData: {
+        userName: string;
+        email: string;
+        userType: string;
+        gender: string;
+        serviceGroup: string;
+    }) {
+        await this.userNameInput.waitFor({ state: 'visible' });
+        await this.userNameInput.fill(userData.userName);
+        await this.emailInput.fill(userData.email);
+        
+        await this.userTypeSelect.selectOption({ label: userData.userType });
+        await this.genderSelect.selectOption({ label: userData.gender });
+        await this.serviceGroupSelect.selectOption({ label: userData.serviceGroup });
+    }
+
+    async submitForm() {
+        await this.saveBtn.click();
+    }
+}

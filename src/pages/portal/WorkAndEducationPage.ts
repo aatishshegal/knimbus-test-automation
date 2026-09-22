@@ -41,11 +41,11 @@ export class WorkAndEducationPage extends BasePage {
     }
 
     async getSaveButton(sectionTitle: string | RegExp): Promise<Locator> {
-        // Find the form that contains the specific heading and click its save button
+        // Find the container for the specific heading and click its save button
         if (sectionTitle === 'Field of Studies' || sectionTitle.toString().includes('Field of stud')) {
-            return this.page.locator('form').filter({ has: this.page.locator('h5:has-text("Field of Studies")') }).locator('button:has-text("Save")').first();
+            return this.page.locator('div:has(> h5:has-text("Field of Studies"))').locator('..').locator('button:has-text("Save")').first();
         }
-        return this.page.locator('form').filter({ has: this.page.locator('h1, h2, h3, h4, h5, h6').filter({ hasText: sectionTitle }) }).locator('button:has-text("Save")').first();
+        return this.page.locator(`div:has(> h1, h2, h3, h4, h5, h6:has-text("${sectionTitle}"))`).locator('..').locator('button:has-text("Save")').first();
     }
 
     async clickAddMore(sectionTitle: string): Promise<void> {

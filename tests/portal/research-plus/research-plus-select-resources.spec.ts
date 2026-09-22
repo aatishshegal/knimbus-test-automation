@@ -53,7 +53,8 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
 
             test(`Verify click on Clear All deselects sources and disables Search button in ${tab} tab`, async ({ researchPlusPage }) => {
                 // We need to have some query to enable Search button
-                await researchPlusPage.searchBarInput1.fill(advancedSearchData.formReset?.query || 'Test');
+                const fallbackQuery = portalData.researchPlusAdvancedSearch.defaultFallbackSearch;
+                await researchPlusPage.searchBarInput1.fill(advancedSearchData.formReset?.query || fallbackQuery);
                 await researchPlusPage.searchBarInput1.blur();
                 
                 await researchPlusPage.clearAllButton.click();
