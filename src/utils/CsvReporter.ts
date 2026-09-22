@@ -34,6 +34,12 @@ export default class CsvReporter implements Reporter {
 
   onTestEnd(test: TestCase, result: TestResult) {
     const testPath = test.location.file;
+    
+    // Ignore global or project setup files so they don't pollute the client CSV report
+    if (testPath.endsWith('.setup.ts')) {
+        return;
+    }
+
     let moduleName = 'Unknown';
 
     // Extract module from path, e.g. tests/portal/registration/test.spec.ts -> portal/registration

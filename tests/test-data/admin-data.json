@@ -1,0 +1,37 @@
+{
+  "adminUrls": {
+    "dashboard": "/",
+    "userManagement": "/user-management"
+  },
+  "expectedTitles": {
+    "loginPage": "Knimbus Admin",
+    "dashboard": "Codec Network"
+  },
+  "userManagement": {
+    "quickFindKeywords": [
+      "codec@yopmail.com",
+      "network"
+    ],
+    "invalidSearchTerm": "invalid_user_string_1234567890",
+    "temporarySearchText": "Some text to clear",
+    "expectedUrls": {
+      "overview": "/userManagement/overview",
+      "manageUsers": "/userManagement/manageUsers",
+      "ocaRequests": "/ocaPendingRequests",
+      "serviceGroups": "/userManagement/serviceGroups",
+      "contentGroups": "/userManagement/contentGroups",
+      "addSingleUser": "/userManagement/addSingleUser",
+      "addMultipleUsers": "/userManagement/addMultipleUsers",
+      "userProfileSettings": "/userManagement/userProfileSettings",
+      "securitySettings": "/userManagement/securitySettings"
+    },
+    "newUserData": {
+      "userName": "Auto Test User",
+      "email": "auto_tester_manage@yopmail.com",
+      "userType": "Student",
+      "gender": "Other",
+      "serviceGroup": "tester",
+      "expiryDate": "2026-10-10"
+    }
+  }
+}

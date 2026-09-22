@@ -27,7 +27,14 @@ test.describe('Id & Access Info Suite', () => {
     });
 
     test.afterAll(async () => {
-        if (adminApi) await adminApi.close();
+        if (adminApi) {
+            await adminApi.updateSecuritySettings({ 
+                mandatoryFields: { fields: [], isMandatory: false },
+                editableFields: { fields: [], isEditable: true },
+                allFieldsEditable: true
+            });
+            await adminApi.close();
+        }
     });
 
     test.beforeEach(async ({ page }) => {

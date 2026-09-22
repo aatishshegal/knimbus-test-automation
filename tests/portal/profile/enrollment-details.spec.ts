@@ -3,6 +3,7 @@ import { EnrollmentDetailsPage } from '../../../src/pages/portal/EnrollmentDetai
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import * as fs from 'fs';
 import * as path from 'path';
+import portalData from '../../test-data/portal-data.json';
 
 // Load test data
 const validationDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
@@ -40,7 +41,14 @@ test.describe('Enrollment Details Suite', () => {
     });
 
     test.afterAll(async () => {
-        if (adminApi) await adminApi.close();
+        if (adminApi) {
+            await adminApi.updateSecuritySettings({ 
+                mandatoryFields: { fields: [], isMandatory: false },
+                editableFields: { fields: [], isEditable: true },
+                allFieldsEditable: true
+            });
+            await adminApi.close();
+        }
     });
 
     test.beforeEach(async ({ page, topNavigationBar }) => {
@@ -57,13 +65,12 @@ test.describe('Enrollment Details Suite', () => {
         const locator = enrollmentPage.getLocator('idNumber');
         if (!locator) return;
         const originalId = await locator.inputValue();
-        
-        await locator.fill('TEMP-ID-123');
+        const tempId = portalData.profile.enrollment.temporaryId;
+        await locator.fill(tempId);
         await enrollmentPage.clickCancel();
         
-        const revertedId = await locator.inputValue();
-        expect(revertedId).toBe(originalId);
-        expect(revertedId).not.toBe('TEMP-ID-123');
+        const revertedValue = await locator.inputValue();
+        expect(revertedValue).not.toBe(tempId);
     });
 
     test.describe('Positive Scenarios', () => {

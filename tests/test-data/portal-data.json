@@ -10,6 +10,17 @@
       "Quick Links"
     ]
   },
+  "profile": {
+    "basicDetails": {
+      "temporaryName": "Temporary Cancel Name"
+    },
+    "contact": {
+      "temporaryPhone": "9999999999"
+    },
+    "enrollment": {
+      "temporaryId": "TEMP-ID-123"
+    }
+  },
   "expectedPublishers": {
     "_description": "Used in: tests/portal/home/publishers.spec.ts (Suite: 'Home Page - Publishers and Databases' -> Test: 'Verify [Publisher] is clickable and navigates correctly')",
     "data": [
@@ -198,6 +209,7 @@
     "defaultQueryType": "Title",
     "defaultMatch": "All",
     "searchPlaceholder": "Enter search query",
+    "defaultFallbackSearch": "Test",
     "validationError": "Please enter a search query",
     "pubYearCharLenError": "Atleast 4 characters required",
     "pubYearNumericError": "Only numbers are allowed",
