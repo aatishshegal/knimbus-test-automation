@@ -35,6 +35,12 @@ export class ManageUsersPage extends AdminBasePage {
     readonly assignGroupExpiryDateInput: Locator;
     readonly assignGroupSaveBtn: Locator;
 
+    // Notification Modal
+    readonly notificationModal: Locator;
+    readonly notificationTypeWeb: Locator;
+    readonly notificationTypeMobile: Locator;
+    readonly notificationTypeBoth: Locator;
+
     constructor(page: Page) {
         super(page);
 
@@ -69,6 +75,12 @@ export class ManageUsersPage extends AdminBasePage {
         this.assignGroupSelect = this.assignGroupModal.locator('select[name="group"]');
         this.assignGroupExpiryDateInput = this.assignGroupModal.locator('input[name="expiryDate"]');
         this.assignGroupSaveBtn = this.assignGroupModal.getByRole('button', { name: 'Save', exact: true });
+
+        // Notification Modal
+        this.notificationModal = page.locator('.modal.show, .modal').filter({ hasText: 'Send Notification' });
+        this.notificationTypeWeb = this.notificationModal.locator('input#Notification-Type-Web');
+        this.notificationTypeMobile = this.notificationModal.locator('input#Notification-Type-Mobile');
+        this.notificationTypeBoth = this.notificationModal.locator('input#Notification-Type-Both');
     }
 
     async searchForUser(emailOrName: string) {

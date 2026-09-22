@@ -37,7 +37,12 @@ export class AddSingleUserPage extends AdminBasePage {
         
         await this.userTypeSelect.selectOption({ label: userData.userType });
         await this.genderSelect.selectOption({ label: userData.gender });
-        await this.serviceGroupSelect.selectOption({ label: userData.serviceGroup });
+        if (userData.serviceGroup) {
+            await this.serviceGroupSelect.focus();
+            await this.serviceGroupSelect.selectOption({ label: userData.serviceGroup });
+            await this.serviceGroupSelect.evaluate(node => node.dispatchEvent(new Event('change', { bubbles: true })));
+            await this.page.waitForTimeout(500); // Give React state time to update
+        }
     }
 
     async submitForm() {
