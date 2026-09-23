@@ -6,9 +6,9 @@ import * as path from 'path';
 import portalData from '../../test-data/portal-data.json';
 
 // Load test data
-const validationDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
+const validationDataPath = path.resolve(__dirname, '../../../tests/test-data/portal/profile-data.json');
 const validationData = JSON.parse(fs.readFileSync(validationDataPath, 'utf-8'));
-const contactScenarios = validationData.contactScenarios;
+const contactScenarios = validationData['contact.spec.ts'];
 
 const backendFieldMap: Record<string, string> = {
     'mobile': 'Mobile',

@@ -17,57 +17,20 @@ test.describe('User Management - Manage Users', () => {
     const testEmail5 = adminData.userManagement.newUserData.email.replace('@', `${baseTimestamp}5@`);
     const testEmail6 = adminData.userManagement.newUserData.email.replace('@', `${baseTimestamp}6@`);
     const testEmail7 = adminData.userManagement.newUserData.email.replace('@', `${baseTimestamp}7@`);
+  const testEmail8 = adminData.userManagement.newUserData.email.replace('@', `${baseTimestamp}8@`);
+  const testEmail9 = adminData.userManagement.newUserData.email.replace('@', `${baseTimestamp}9@`);
 
-    test.beforeAll(async () => {
-        // Use API for instantaneous test data setup to avoid UI bloat across tests
-        // Initialize from existing state to avoid invalidating the global UI session
-        const adminApi = new AdminApiService();
-        await adminApi.initFromState();
-        
-        const usersToCreate = [
-            { userName: adminData.userManagement.newUserData.userName, email: testEmail1 },
-            { userName: adminData.userManagement.newUserData.userName, email: testEmail2 },
-            { userName: adminData.userManagement.newUserData.userName, email: testEmail3 }
-        ];
-        
-        for (const user of usersToCreate) {
-            await adminApi.addSingleUser(user.userName, user.email);
-        }
-        await adminApi.close();
-    });
+    
+    
+    
+  async function createApiUser(email: string) {
+    const adminApi = new AdminApiService();
+    await adminApi.initFromState();
+    await adminApi.addSingleUser(adminData.userManagement.newUserData.userName, email);
+    await adminApi.close();
+  }
 
-    test.afterAll(async ({ browser }) => {
-        // We use a fresh context injected with the admin state to safely perform UI teardown
-        const context = await browser.newContext({ storageState: '.auth/admin.json' });
-        const authPage = await context.newPage();
-        await authPage.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
-        
-        const dashboardAuth = new AdminDashboardLoginPage(authPage);
-        await dashboardAuth.sidebar.navigateToManageUsers();
-        const manageUsersPage = new ManageUsersPage(authPage);
-
-        for (const email of [testEmail1, testEmail2, testEmail3, testEmail4, testEmail5, testEmail6, testEmail7]) {
-            try {
-                await manageUsersPage.searchForUser(email);
-                
-                const row = manageUsersPage.getRowByEmail(email);
-                const noRecords = authPage.getByText(/No results found|No matching records found|No Record Found/i);
-                
-                await require('@playwright/test').expect(row.or(noRecords).first()).toBeVisible({ timeout: 15000 }).catch(() => {});
-                
-                if (await noRecords.first().isVisible()) {
-                    continue;
-                }
-                await manageUsersPage.deleteUser(email);
-                await authPage.waitForTimeout(1000);
-            } catch (e) {
-                // Ignore if already deleted
-            }
-        }
-        await context.close();
-    });
-
-    test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
         await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
@@ -75,8 +38,9 @@ test.describe('User Management - Manage Users', () => {
         await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
     });
 
-    test('TC_UserMgmt_ManageUsers_Search', async ({ page }) => {
+    test('TC_Manage_Users Search for user by email', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
+        await createApiUser(testEmail1);
         await manageUsersPage.searchForUser(testEmail1);
         
         // Assert that the user is in the table
@@ -84,7 +48,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(userRow).toBeVisible();
     });
 
-    test('TC_UserMgmt_ManageUsers_BulkExportAllToast', async ({ page }) => {
+    test('TC_Manage_Users Bulk export all users shows success toast', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await manageUsersPage.exportAllUsersBtn.click();
         await expect(manageUsersPage.swalToast).toBeVisible();
@@ -93,19 +57,21 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.page.locator('.swal2-close').click().catch(() => {});
     });
     
-    test('TC_UserMgmt_ManageUsers_Table_SearchNoResults', async ({ page }) => {
+    test('TC_Manage_Users Search with invalid term shows no results', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         const invalidSearch = adminData.userManagement.invalidSearchTerm;
         
         test.info().annotations.push({ type: 'testData', description: `Invalid Search: ${invalidSearch}` });
         
         await manageUsersPage.searchForUser(invalidSearch);
-        await expect(page.locator('text=No data found').or(page.locator('.no-data-found, .empty-state'))).toBeVisible({ timeout: 5000 }).catch(() => {});
+        await expect(page.locator('text=No data found')).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_CancelSelection', async ({ page }) => {
+    test('TC_Manage_Users Cancel bulk selection unchecks all boxes', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await createApiUser(testEmail2);
+        await createApiUser(testEmail3);
+        await manageUsersPage.clearSearchSafely();
         const commonEmailPrefix = `auto_tester_manage${baseTimestamp}`;
         await manageUsersPage.searchForUser(commonEmailPrefix);
         
@@ -126,9 +92,10 @@ test.describe('User Management - Manage Users', () => {
         await expect(page.locator('text=2 users selected')).not.toBeVisible();
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_UserDetailsOverview', async ({ page }) => {
+    test('TC_Manage_Users Click on user row opens user profile overview', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickUserDetailsOverview(testEmail1);
@@ -139,22 +106,18 @@ test.describe('User Management - Manage Users', () => {
         await expect(modal).toContainText(testEmail1);
         
         // Close the modal
-        const closeBtn = modal.getByRole('button', { name: 'Close', exact: true }).or(modal.locator('.btn-close'));
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.closeModal(modal);
         await expect(modal).not.toBeVisible();
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_AssignGroup', async ({ page }) => {
+    test('TC_Manage_Users Assign service group updates the user table', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         // 1-4: Navigate to User Management > Add Single User & Create User
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail4 };
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -167,7 +130,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToManageUsers();
 
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 6: Search for the newly created user
         await manageUsersPage.searchForUser(testEmail4);
@@ -177,14 +140,14 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.assignServiceGroup(testEmail4, targetServiceGroup);
         
         // 12: Search for the same user again (to ensure table refresh)
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail4);
         
         // 13: Verify that the selected service group is assigned to the user
         await manageUsersPage.verifyAssignedServiceGroup(testEmail4, targetServiceGroup);
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_AssignGroupWithDate', async ({ page }) => {
+    test('TC_Manage_Users Assign service group updates the user tableWithDate', async ({ page }) => {
         // Required for navigating to other sub-menus in User Management
         const dashboard = new AdminDashboardLoginPage(page);
         
@@ -192,6 +155,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail5 };
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -204,7 +168,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToManageUsers();
 
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 6: Search for the newly created user
         await manageUsersPage.searchForUser(testEmail5);
@@ -219,20 +183,21 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.assignServiceGroupWithDate(testEmail5, targetServiceGroup, expiryDate);
         
         // 12: Search for the same user again (to ensure table refresh)
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail5);
         
         // 13: Verify that the selected service group and date are assigned to the user
         await manageUsersPage.verifyAssignedServiceGroupWithDate(testEmail5, targetServiceGroup, expiryDate);
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_AssignGroup_ExpiredValidation', async ({ page }) => {
+    test('TC_Manage_Users Assign service group updates the user table_ExpiredValidation', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         // 1. Navigate to Add Single User & Create User
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail6 };
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -243,7 +208,7 @@ test.describe('User Management - Manage Users', () => {
         // 2. Navigate to Manage Users
         await dashboard.sidebar.navigateToManageUsers();
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 3. Search for user
         await manageUsersPage.searchForUser(testEmail6);
@@ -260,21 +225,17 @@ test.describe('User Management - Manage Users', () => {
         await expect(expiredWarning).toBeVisible({ timeout: 5000 });
         
         // Cleanup: Close modal
-        const closeBtn = manageUsersPage.assignGroupModal.getByRole('button', { name: 'Cancel' }).or(page.locator('.btn-close')).first();
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.cancelAssignGroupModal();
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_AssignGroup_Cancel', async ({ page }) => {
+    test('TC_Manage_Users Assign service group updates the user table_Cancel', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         // 1. Navigate to Add Single User & Create User
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail7 };
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -285,7 +246,7 @@ test.describe('User Management - Manage Users', () => {
         // 2. Navigate to Manage Users
         await dashboard.sidebar.navigateToManageUsers();
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 3. Search for user
         await manageUsersPage.searchForUser(testEmail7);
@@ -311,7 +272,7 @@ test.describe('User Management - Manage Users', () => {
         // 6. Refresh page and verify it is not assigned
         await page.reload({ waitUntil: 'domcontentloaded' });
         
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail7);
         
         // Assert it's still unassigned
@@ -319,9 +280,10 @@ test.describe('User Management - Manage Users', () => {
         await expect(row.getByText('tester', { exact: true })).not.toBeVisible();
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_SendNotification_Cancel', async ({ page }) => {
+    test('TC_Manage_Users Cancel send notification discards modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickSendNotification(testEmail1);
@@ -330,18 +292,14 @@ test.describe('User Management - Manage Users', () => {
         await expect(modal).toBeVisible();
         
         // Just cancel the modal
-        const closeBtn = modal.getByRole('button', { name: 'Close', exact: true }).or(modal.locator('.btn-close'));
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.closeModal(modal);
         await expect(modal).not.toBeVisible();
     });
 
-    test('TC_UserMgmt_ManageUsers_Table_ExportUsageLog', async ({ page }) => {
+    test('TC_Manage_Users Export usage log opens export modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickExportUsageLog(testEmail1);
@@ -354,10 +312,84 @@ test.describe('User Management - Manage Users', () => {
         await modal.getByRole('button', { name: 'Cancel', exact: true }).click();
         await expect(modal).not.toBeVisible();
     });
+  test('TC_Manage_Users Send notification pop up shows only Email option for unassigned user', async ({ page }) => {
+    const dashboard = new AdminDashboardLoginPage(page);
+    await dashboard.sidebar.navigateToAddSingleUser();
+    const addUserPage = new AddSingleUserPage(page);
+    const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail8 };
+    delete (userToCreate as any).serviceGroup;
+    await addUserPage.fillRegistrationForm(userToCreate);
+    await addUserPage.submitForm();
 
-    test('TC_UserMgmt_ManageUsers_DeleteSingleUser_Cancel', async ({ page }) => {
+    const toastLocator = page.locator('.swal2-toast, .swal2-popup');
+    await expect(toastLocator).toBeVisible({ timeout: 15000 });
+    await expect(toastLocator).not.toBeVisible();
+
+    await dashboard.sidebar.navigateToManageUsers();
+    const manageUsersPage = new ManageUsersPage(page);
+    if (await manageUsersPage.clearSearchBtn.isVisible()) {
+      await manageUsersPage.clearSearchBtn.click();
+    }
+    await manageUsersPage.searchForUser(testEmail8);
+    await manageUsersPage.clickSendNotification(testEmail8);
+
+    const modal = page.locator('.modal.show, .modal').filter({ hasText: 'Send Notification' });
+    await expect(modal).toBeVisible();
+
+    const emailOption = modal.getByText('Email (On email & web portal)');
+    await expect(emailOption).toBeVisible();
+
+    const pushOption = modal.getByText('Push (On mobile app & in-app)');
+    await expect(pushOption).not.toBeVisible();
+
+    const bothOption = modal.getByText('Both (On email, web portal, mobile app & in-app)');
+    await expect(bothOption).not.toBeVisible();
+    
+    await manageUsersPage.cancelSendNotificationModal(modal);
+  });
+
+  test('TC_Manage_Users Send notification pop up shows multiple options for user assigned to service group', async ({ page }) => {
+    const dashboard = new AdminDashboardLoginPage(page);
+    await dashboard.sidebar.navigateToAddSingleUser();
+    const addUserPage = new AddSingleUserPage(page);
+    const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail9 };
+    await addUserPage.fillRegistrationForm(userToCreate);
+    await addUserPage.submitForm();
+
+    const toastLocator = page.locator('.swal2-toast, .swal2-popup');
+    await expect(toastLocator).toBeVisible({ timeout: 15000 });
+    await expect(toastLocator).not.toBeVisible();
+
+    await dashboard.sidebar.navigateToManageUsers();
+    const manageUsersPage = new ManageUsersPage(page);
+    if (await manageUsersPage.clearSearchBtn.isVisible()) {
+      await manageUsersPage.clearSearchBtn.click();
+    }
+    await manageUsersPage.searchForUser(testEmail9);
+    await manageUsersPage.verifyAssignedServiceGroup(testEmail9, userToCreate.serviceGroup as string);
+    await manageUsersPage.clickSendNotification(testEmail9);
+
+    const modal = page.locator('.modal.show, .modal').filter({ hasText: 'Send Notification' });
+    await expect(modal).toBeVisible();
+
+    const emailOption = modal.getByText('Email (On email & web portal)');
+    await expect(emailOption).toBeVisible();
+
+    const pushOption = modal.getByText('Push (On mobile app & in-app)');
+    await expect(pushOption).toBeVisible();
+
+    const bothOption = modal.getByText('Both (On email, web portal, mobile app & in-app)');
+    await expect(bothOption).toBeVisible();
+
+    await manageUsersPage.cancelSendNotificationModal(modal);
+  });
+
+
+
+    test('TC_Manage_Users Cancel single user deletion discards changes', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.selectUserCheckbox(testEmail1);
@@ -366,16 +398,7 @@ test.describe('User Management - Manage Users', () => {
         
         // Wait for modal
         await page.waitForTimeout(500);
-        const swalCancel = page.locator('.swal2-cancel');
-        const modalCancel = page.locator('.modal.show').getByRole('button', { name: 'Cancel', exact: true });
-        
-        if (await swalCancel.isVisible()) {
-            await swalCancel.click();
-        } else if (await modalCancel.isVisible()) {
-            await modalCancel.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.cancelDeletionSafely();
         
         await page.locator('.modal').waitFor({ state: 'hidden' }).catch(() => {});
         await page.locator('.swal2-container').waitFor({ state: 'hidden' }).catch(() => {});
@@ -384,9 +407,11 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.getRowByEmail(testEmail1)).toBeVisible();
     });
     
-    test('TC_UserMgmt_ManageUsers_DeleteMultipleUsersBulk_Cancel', async ({ page }) => {
+    test('TC_Manage_Users Cancel bulk user deletion discards changes', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await createApiUser(testEmail2);
+        await createApiUser(testEmail3);
+        await manageUsersPage.clearSearchSafely();
         const commonEmailPrefix = `auto_tester_manage${baseTimestamp}`;
         await manageUsersPage.searchForUser(commonEmailPrefix);
         
@@ -397,16 +422,7 @@ test.describe('User Management - Manage Users', () => {
         
         // Wait for modal
         await page.waitForTimeout(500);
-        const swalCancel = page.locator('.swal2-cancel');
-        const modalCancel = page.locator('.modal.show').getByRole('button', { name: 'Cancel', exact: true });
-        
-        if (await swalCancel.isVisible()) {
-            await swalCancel.click();
-        } else if (await modalCancel.isVisible()) {
-            await modalCancel.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.cancelDeletionSafely();
         
         await page.locator('.modal').waitFor({ state: 'hidden' }).catch(() => {});
         await page.locator('.swal2-container').waitFor({ state: 'hidden' }).catch(() => {});
@@ -416,8 +432,9 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.getRowByEmail(testEmail3)).toBeVisible();
     });
 
-    test('TC_UserMgmt_ManageUsers_DeleteSingleUser', async ({ page }) => {
+    test('TC_Manage_Users Delete single user removes them from table', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
+        await createApiUser(testEmail1);
         // Ensure we find the user first
         await manageUsersPage.searchForUser(testEmail1);
         
@@ -433,10 +450,12 @@ test.describe('User Management - Manage Users', () => {
         await expect(userRow).not.toBeVisible();
     });
 
-    test('TC_UserMgmt_ManageUsers_DeleteMultipleUsersBulk', async ({ page }) => {
+    test('TC_Manage_Users Delete multiple selected users removes them from table', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
+        await createApiUser(testEmail2);
+        await createApiUser(testEmail3);
         // Clear any previous search
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // Search by the initial common part of the email id
         const commonEmailPrefix = `auto_tester_manage${baseTimestamp}`;

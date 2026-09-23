@@ -1,5 +1,6 @@
 import { test, expect } from '../../../src/fixtures';
-import invalidCredentials from '../../test-data/invalidCredentials.json';
+import portalData from '../../test-data/portal-data.json';
+const invalidCredentials = portalData.invalidCredentials;
 import { AuthHelpers } from '../../../src/utils/AuthHelpers';
 
 test.describe('Portal Authentication - Standard Login Negative Scenarios', () => {

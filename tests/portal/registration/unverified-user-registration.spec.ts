@@ -81,7 +81,7 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
             (mandatoryDetailsPage as any).submitButton = registrationPage.continueButton;
 
             const dummyImagePath = path.join(__dirname, '../../test-data', 'dummy-id.jpg');
-            const mandatoryData = require('../../test-data/mandatoryUserDetails.json');
+            const mandatoryData = require('../../test-data/portal-data.json').mandatoryUserDetails;
 
             await mandatoryDetailsPage.fillMandatoryFields({
                 gender: mandatoryData.gender,

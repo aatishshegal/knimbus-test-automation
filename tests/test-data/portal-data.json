@@ -342,5 +342,53 @@
       ],
       "action": "defaultSources"
     }
-  ]
+  ],
+  "invalidCredentials": {
+    "_description": "Used in: tests/portal/authentication/login-invalid-creds.spec.ts (Negative testing for invalid formatting and incorrect credentials)",
+    "invalidEmailFormat": "invalid_email_format.com",
+    "unregisteredEmailPrefix": "nonexistent_user",
+    "invalidPasswordSuffix": "_wrongpassword"
+  },
+  "forgotPasswordData": {
+    "invalidEmails": [
+      {
+        "email": "plainaddress",
+        "error": "Invalid email address"
+      },
+      {
+        "email": "@missingusername.com",
+        "error": "Invalid email address"
+      },
+      {
+        "email": "username@.com",
+        "error": "Invalid email address"
+      }
+    ],
+    "unregisteredEmail": "notregistered_user12345@yopmail.com",
+    "boundaryPasswords": [
+      {
+        "password": "Pass",
+        "expectedError": "Atleast 5 characters required"
+      },
+      {
+        "password": "Pass123!@#aBcdEFghIJKlmNOPQrstUV",
+        "expectedError": "Maximum 30 characters allowed"
+      }
+    ],
+    "validBoundaryPasswords": [
+      {
+        "password": "123456",
+        "description": "valid password requested by user"
+      }
+    ]
+  },
+  "mandatoryUserDetails": {
+    "_description": "Used in: tests/portal/registration/unverified-user-registration.spec.ts (Tests dynamic mandatory field completion flow)",
+    "gender": "Other",
+    "department": "Engineering",
+    "degree": "B.Tech",
+    "designation": "QA Engineer",
+    "batch": "2026",
+    "nationality": "India"
+  }
 }

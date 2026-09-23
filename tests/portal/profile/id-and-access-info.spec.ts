@@ -6,9 +6,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Load post-login profile data
-const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
+const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/portal/profile-data.json');
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
-const idDocumentScenarios = postLoginData.idDocumentScenarios?.data || postLoginData.idDocumentScenarios || [];
+const idDocumentScenarios = postLoginData['id-and-access-info.spec.ts']?.data || postLoginData['id-and-access-info.spec.ts'] || [];
 
 test.describe('Id & Access Info Suite', () => {
     let topNav: TopNavigationBar;

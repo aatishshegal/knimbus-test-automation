@@ -21,7 +21,7 @@ test.describe('Mandatory Profile Fields Flow', () => {
 
     // 3. Act: Fill out all the mandatory fields
     const dummyImagePath = path.join(__dirname, '../../test-data', 'dummy-id.jpg');
-    const mandatoryData = require('../../test-data/mandatoryUserDetails.json');
+    const mandatoryData = require('../../test-data/portal-data.json').mandatoryUserDetails;
 
     await mandatoryDetailsPage.fillMandatoryFields({
       gender: mandatoryData.gender,

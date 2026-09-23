@@ -153,7 +153,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
 
     // 4. Fill out all the mandatory fields
     const dummyImagePath = path.join(__dirname, '../../test-data', 'dummy-id.jpg');
-    const mandatoryData = require('../../test-data/mandatoryUserDetails.json');
+    const mandatoryData = require('../../test-data/portal-data.json').mandatoryUserDetails;
 
     await mandatoryDetailsPage.fillMandatoryFields({
       gender: mandatoryData.gender,
