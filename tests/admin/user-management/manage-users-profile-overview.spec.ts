@@ -82,11 +82,11 @@ test.describe('Manage Users - User Profile Overview - Basic Details', () => {
         
         const dobInput = manageUsersPage.getProfileLocator('dob');
         await dobInput.fill('2000-01-01');
-        await page.keyboard.press('Enter');
+        await dobInput.blur();
         
         const expiryDateInput = manageUsersPage.getProfileLocator('raExpiryDate');
         await expiryDateInput.fill(adminData.userManagement.newUserData.expiryDate);
-        await page.keyboard.press('Enter');
+        await expiryDateInput.blur();
         
         const alternateEmailInput = manageUsersPage.getProfileLocator('alternateEmail');
         await alternateEmailInput.fill('alt_' + testEmail);
