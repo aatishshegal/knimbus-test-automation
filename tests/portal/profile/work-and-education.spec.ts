@@ -1,13 +1,13 @@
 import { test, expect } from '../../../src/fixtures';
 import { WorkAndEducationPage } from '../../../src/pages/portal/WorkAndEducationPage';
-import * as postLoginProfileData from '../../test-data/postLoginProfileData.json';
+import * as postLoginProfileData from '../../test-data/portal/profile-data.json';
 
-const granularValidationScenarios = postLoginProfileData.workEducationScenarios.workExperienceData.granularValidationScenarios || postLoginProfileData.workEducationScenarios.workExperienceData.negativeScenarios;
-const workExpPositiveData = postLoginProfileData.workEducationScenarios.workExperienceData.positiveData;
-const educationValidationScenarios = postLoginProfileData.workEducationScenarios.educationData.negativeScenarios;
-const eduPositiveData = postLoginProfileData.workEducationScenarios.educationData.positiveData;
-const fieldOfStudiesValidationScenarios = postLoginProfileData.workEducationScenarios.fieldOfStudiesData.negativeScenarios;
-const fieldOfStudiesPositiveData = postLoginProfileData.workEducationScenarios.fieldOfStudiesData.positiveData;
+const granularValidationScenarios = postLoginProfileData['work-and-education.spec.ts'].workExperienceData.granularValidationScenarios || postLoginProfileData['work-and-education.spec.ts'].workExperienceData.negativeScenarios;
+const workExpPositiveData = postLoginProfileData['work-and-education.spec.ts'].workExperienceData.positiveData;
+const educationValidationScenarios = postLoginProfileData['work-and-education.spec.ts'].educationData.negativeScenarios;
+const eduPositiveData = postLoginProfileData['work-and-education.spec.ts'].educationData.positiveData;
+const fieldOfStudiesValidationScenarios = postLoginProfileData['work-and-education.spec.ts'].fieldOfStudiesData.negativeScenarios;
+const fieldOfStudiesPositiveData = postLoginProfileData['work-and-education.spec.ts'].fieldOfStudiesData.positiveData;
 test.describe('Profile Work & Education Suite', () => {
 
     test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {

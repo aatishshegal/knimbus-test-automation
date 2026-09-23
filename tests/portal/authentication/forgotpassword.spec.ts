@@ -1,6 +1,7 @@
 import { test, expect } from '../../../src/fixtures';
 import { YopmailPage } from '../../../src/pages/portal/YopmailPage';
-import testData from '../../test-data/forgotPasswordData.json';
+import portalData from '../../test-data/portal-data.json';
+const testData = portalData.forgotPasswordData;
 
 const TEST_EMAIL = 'aus01@yopmail.com';
 
