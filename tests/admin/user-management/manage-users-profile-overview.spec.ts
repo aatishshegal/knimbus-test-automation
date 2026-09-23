@@ -17,10 +17,8 @@ test.describe('Manage Users - User Profile Overview - Basic Details', () => {
     });
 
     test.beforeEach(async ({ page }) => {
-        const dashboard = new AdminDashboardLoginPage(page);
-        await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
-        await expect(page).toHaveTitle(new RegExp(`.*${adminData.expectedTitles.dashboard}.*`, 'i'), { timeout: 15000 });
-        await dashboard.sidebar.navigateToManageUsers();
+        // Direct navigation to bypass dashboard clicks and save time
+        await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/userManagement/manageUsers');
     });
 
     test('TC_UserProfile_Email_Verification_From_Overview - verifies email in profile modal matches the clicked user', async ({ page }) => {
@@ -126,6 +124,46 @@ test.describe('Manage Users - User Profile Overview - Basic Details', () => {
                 
                 await mobileInput.fill(scenario.value);
                 await mobileInput.blur();
+                
+                await manageUsersPage.clickProfileSave();
+                
+                await expect(page.getByText(scenario.expectedError).first()).toBeVisible({ timeout: 5000 });
+            });
+        }
+    });
+    test.describe('Negative Scenarios - Enrollment Details', () => {
+        // Map End User Portal JSON keys to Admin Dashboard DOM input names
+        const adminFieldMap: Record<string, string> = {
+            'idNumber': 'staffId',
+            'college': 'affiliation',
+            'qualification': 'degree',
+            'areaOfStudy': 'speciality',
+            'admissionYear': 'year'
+        };
+
+        const scenarios = profileData['enrollment-details.spec.ts'].negativeScenarios.filter((s: any) => 
+            !s.scenario.includes('Blank') && !s.scenario.includes('Unselected')
+        );
+
+        for (const scenario of scenarios) {
+            test(`TC_UserProfile_Enrollment_${scenario.field}_${scenario.scenario.replace(/[^a-zA-Z0-9]/g, '')}`, async ({ page }) => {
+                test.info().annotations.push({ type: 'testData', description: scenario.value });
+                const manageUsersPage = new ManageUsersPage(page);
+                await manageUsersPage.searchForUser(testEmail);
+                await manageUsersPage.clickUserDetailsOverview(testEmail);
+                
+                // Switch to Enrollment details tab
+                await page.getByText('Enrollment details').click();
+                
+                const adminFieldName = adminFieldMap[scenario.field] || scenario.field;
+                const fieldInput = manageUsersPage.getProfileLocator(adminFieldName);
+                
+                if (scenario.bypassLength) {
+                    await fieldInput.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
+                }
+                
+                await fieldInput.fill(scenario.value);
+                await fieldInput.blur();
                 
                 await manageUsersPage.clickProfileSave();
                 
