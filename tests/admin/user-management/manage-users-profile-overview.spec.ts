@@ -149,6 +149,39 @@ test.describe('Manage Users - User Profile Overview - Basic Details', () => {
             });
         }
     });
+
+    test.describe('Negative Scenarios - Alternate Email', () => {
+        const scenarios = profileData['profile-basic-details.spec.ts'].negativeScenarios.filter((s: any) => 
+            s.field === 'alternateEmail' && !s.scenario.includes('Blank') && !s.scenario.includes('Whitespace')
+        );
+
+        for (const scenario of scenarios) {
+            test(`TC_UserProfile_AlternateEmail_${scenario.scenario.replace(/[^a-zA-Z0-9]/g, '')}`, async ({ page }) => {
+                test.info().annotations.push({ type: 'testData', description: scenario.value });
+                const manageUsersPage = new ManageUsersPage(page);
+                await manageUsersPage.searchForUser(testEmail);
+                await manageUsersPage.clickUserDetailsOverview(testEmail);
+                
+                const altEmailInput = manageUsersPage.getProfileLocator('alternateEmail');
+                
+                if (scenario.bypassLength) {
+                    await altEmailInput.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
+                }
+                
+                let inputValue = scenario.value;
+                if (inputValue === 'SAME_AS_PRIMARY_EMAIL') {
+                    inputValue = testEmail;
+                }
+                
+                await altEmailInput.fill(inputValue);
+                await altEmailInput.blur();
+                
+                await manageUsersPage.clickProfileSave();
+                
+                await expect(page.getByText(scenario.expectedError).first()).toBeVisible({ timeout: 5000 });
+            });
+        }
+    });
     test.describe('Negative Scenarios - Enrollment Details', () => {
         // Map End User Portal JSON keys to Admin Dashboard DOM input names
         const adminFieldMap: Record<string, string> = {

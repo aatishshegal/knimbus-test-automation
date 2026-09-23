@@ -152,7 +152,6 @@
         "value": "abc1234",
         "expectedError": "Only numbers are allowed"
       },
-
       {
         "scenario": "officePhone - More than 21 numeric characters",
         "field": "officePhone",
@@ -766,6 +765,153 @@
         "scenario": "summary - Blank/Unselected",
         "value": "",
         "expectedError": "Summary is required (2000 characters)"
+      },
+      {
+        "scenario": "Alternate Email - Missing/misplaced @ symbol (plainaddress)",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "plainaddress",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - @missingusername.com (nothing before @)",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "@missingusername.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - username@.com (missing domain name)",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Multiple @ symbols",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@domain@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Missing top-level domain",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@domain",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Double dot in domain",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@domain..com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Trailing dot after TLD",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@domain.com.",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Domain starts with dot",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@.domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Local part starts with a dot",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": ".username@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Local part ends with a dot",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username.@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Consecutive dots in local part",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "user..name@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Unescaped space in local part",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "user name@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - @ symbol in local part, unescaped",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "user@name@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Unsupported special character",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "user!name@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - user#name@domain.com",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "user#name@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Comma instead of dot",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "usern#ame@domain,com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Non-ASCII",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "üser@domain.com",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Whitespace only",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "    ",
+        "expectedError": "Email is required"
+      },
+      {
+        "scenario": "Alternate Email - Nothing after @",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - TLD too short",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "username@domain.c",
+        "expectedError": "Invalid email address"
+      },
+      {
+        "scenario": "Alternate Email - Same as primary email",
+        "field": "alternateEmail",
+        "validationType": "errorMessage",
+        "value": "SAME_AS_PRIMARY_EMAIL",
+        "expectedError": "Alternate Email cannot be the same as Email"
       }
     ],
     "validOptions": [
