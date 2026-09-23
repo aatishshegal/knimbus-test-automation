@@ -552,6 +552,13 @@
         "validationType": "errorMessage",
         "value": "abcd",
         "expectedError": "Only numbers are allowed"
+      },
+      {
+        "scenario": "admission year or year - enter 2 characters",
+        "field": "admissionYear",
+        "validationType": "errorMessage",
+        "value": "20",
+        "expectedError": "Atleast 4 characters required"
       }
     ]
   },

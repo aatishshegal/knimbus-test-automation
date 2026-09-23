@@ -46,7 +46,7 @@ export class ManageUsersPage extends AdminBasePage {
 
     // Added to fix compilation
     getProfileLocator(name: string) {
-        return this.userProfileModal.locator('input[name="' + name + '"]');
+        return this.userProfileModal.locator('[name="' + name + '"]');
     }
 
     async clickProfileSave() {

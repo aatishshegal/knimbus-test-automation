@@ -72,6 +72,24 @@ test.describe('Manage Users - User Profile Overview - Basic Details', () => {
         
         const mobileInput = manageUsersPage.getProfileLocator('contactNos');
         await mobileInput.fill(profileData['contact.spec.ts'].positiveData.mobile);
+
+        // Additional Positive Validations
+        const genderSelect = manageUsersPage.getProfileLocator('gender');
+        await genderSelect.selectOption({ label: adminData.userManagement.newUserData.gender });
+        
+        const userTypeSelect = manageUsersPage.getProfileLocator('userType');
+        await userTypeSelect.selectOption({ label: adminData.userManagement.newUserData.userType });
+        
+        const dobInput = manageUsersPage.getProfileLocator('dob');
+        await dobInput.fill('2000-01-01');
+        await page.keyboard.press('Enter');
+        
+        const expiryDateInput = manageUsersPage.getProfileLocator('raExpiryDate');
+        await expiryDateInput.fill(adminData.userManagement.newUserData.expiryDate);
+        await page.keyboard.press('Enter');
+        
+        const alternateEmailInput = manageUsersPage.getProfileLocator('alternateEmail');
+        await alternateEmailInput.fill('alt_' + testEmail);
         
         await manageUsersPage.clickProfileSave();
         
