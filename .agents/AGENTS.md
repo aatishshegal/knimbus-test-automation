@@ -114,3 +114,11 @@ When configuring admin preconditions for test cases, you MUST NOT use the UI to 
 - **Dynamic / Conditional UI Elements:** When a test interacts with an element that may or may not exist depending on the prior state (e.g., a "Clear Search" button that only appears if text is present), ALWAYS wrap the click in a visibility check (`if (await btn.isVisible()) { await btn.click(); }`) to prevent test flakiness and execution timeouts.
 - **Select Option Data Integrity:** Avoid selecting options in generic comboboxes/dropdowns purely by index (e.g., `selectOption({ index: 1 })`) unless the data is statically controlled. Unpredictable user-generated data (e.g., XSS payloads) might be present. When possible, create dedicated, clean test data prerequisites and select by precise text or value.
 - **Modal Reverse-Engineering:** Never assume two buttons open the same overarching modal just because they relate to the same feature. Always inspect the specific DOM payload that renders (e.g., the "Assign Group" row action opens a distinct `Assign Service Group` modal, while "User Profile" opens a different one). Use the exact modal titles to filter your locators.
+
+## 🛑 MANDATORY PRE-EXECUTION CHECKLIST (AI AGENTS ONLY)
+**CRITICAL RULE:** Before an AI Agent writes or modifies ANY `.spec.ts` file, it **MUST** explicitly output a thought process verifying the following 4 rules. If it fails to do this, the user is authorized to reject the code:
+1. **No Hardcoding**: "I have verified that all strings, expected titles, and locators are extracted from `admin-data.json` or `portal-data.json`."
+2. **No Logic in Specs**: "I have verified there are no `if/else` statements in this `.spec.ts` file. All conditional logic is handled inside the Page Object Model."
+3. **No Internal Loops**: "I have verified there are no `for` loops inside the `test()` blocks. Iterations only exist inside `test.describe()` to dynamically generate independent test blocks."
+4. **No Dynamic Routing**: "I have verified that no locators in the POM use `.or()` for fallback guessing."
+

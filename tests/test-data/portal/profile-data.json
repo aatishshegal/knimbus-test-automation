@@ -1,124 +1,177 @@
 {
-  "fieldStates": {
-    "_description": "Used in: tests/portal/profile/profile-basic-details.spec.ts",
-    "data": [
+  "contact.spec.ts": {
+    "_description": "Used in: tests/portal/profile/contact.spec.ts",
+    "positiveData": {
+      "mobile": "75757474774",
+      "officePhone": "6743674764373",
+      "residentialPhone": "736774343",
+      "nationality": "India",
+      "officeAddress": "Hadpsar, Pune 411028",
+      "residentialAddress": "Pune"
+    },
+    "negativeScenarios": [
       {
-        "Field": "FullName",
-        "ExpectedState": "enabled"
+        "field": "officeAddress",
+        "scenario": "Leading or trailing spaces not allowed",
+        "value": "  Hadpsar, Pune 411028  ",
+        "expectedError": "Leading or trailing spaces not allowed"
       },
       {
-        "Field": "Gender",
-        "ExpectedState": "enabled"
+        "scenario": "Mobile restricts input to less than 7 characters",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "12345",
+        "expectedError": "Atleast 7 characters required"
       },
       {
-        "Field": "DOB",
-        "ExpectedState": "enabled"
+        "scenario": "Mobile restricts input to more than 20 characters",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "1234567890123456789012",
+        "bypassLength": true,
+        "expectedError": "Maximum 20 characters allowed"
       },
       {
-        "Field": "Summary",
-        "ExpectedState": "enabled"
+        "scenario": "residentialAddress - Space is entered in front or back",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
       },
       {
-        "Field": "department",
-        "ExpectedState": "enabled"
+        "scenario": "officeAddress - Space is entered in front or back",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": " test ",
+        "expectedError": "Leading or trailing spaces not allowed"
       },
       {
-        "Field": "qualification",
-        "ExpectedState": "enabled"
+        "scenario": "residentialAddress - HTML is used",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
       },
       {
-        "Field": "admissionYear",
-        "ExpectedState": "enabled"
+        "scenario": "officeAddress - HTML is used",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "scenario": "residentialAddress - More than 2002 characters",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 2000 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "officeAddress - More than 2002 characters",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 2000 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "mobile - Blank/Unselected",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Mobile is required (7-20 numbers)"
+      },
+      {
+        "scenario": "officePhone - Blank/Unselected",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Office Phone is required (4-20 numbers)"
+      },
+      {
+        "scenario": "residentialPhone - Blank/Unselected",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Residential Phone is required (4-20 numbers)"
+      },
+      {
+        "scenario": "officeAddress - Blank/Unselected",
+        "field": "officeAddress",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Office Address is required (2000 characters)"
+      },
+      {
+        "scenario": "residentialAddress - Blank/Unselected",
+        "field": "residentialAddress",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Residential Address is required (2000 characters)"
+      },
+      {
+        "scenario": "nationality - Blank/Unselected",
+        "field": "nationality",
+        "validationType": "errorMessage",
+        "value": "",
+        "expectedError": "Nationality is required"
+      },
+      {
+        "scenario": "officePhone - Less than 3 or 3 characters",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "12",
+        "expectedError": "Atleast 4 characters required"
+      },
+      {
+        "scenario": "residentialPhone - Less than 3 or 3 characters",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "12",
+        "expectedError": "Atleast 4 characters required"
+      },
+      {
+        "scenario": "mobile - Non-numeric characters",
+        "field": "mobile",
+        "validationType": "errorMessage",
+        "value": "abc1234",
+        "expectedError": "Only numbers are allowed"
+      },
+      {
+        "scenario": "officePhone - Non-numeric characters",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "abc1234",
+        "expectedError": "Only numbers are allowed"
+      },
+      {
+        "scenario": "residentialPhone - Non-numeric characters",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "abc1234",
+        "expectedError": "Only numbers are allowed"
+      },
+
+      {
+        "scenario": "officePhone - More than 21 numeric characters",
+        "field": "officePhone",
+        "validationType": "errorMessage",
+        "value": "1111111111111111111111",
+        "expectedError": "Maximum 20 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "scenario": "residentialPhone - More than 21 numeric characters",
+        "field": "residentialPhone",
+        "validationType": "errorMessage",
+        "value": "1111111111111111111111",
+        "expectedError": "Maximum 20 characters allowed",
+        "bypassLength": true
       }
     ]
   },
-  "positiveScenarios": [
-    {
-      "field": "FullName",
-      "scenario": "Valid Single Name",
-      "value": "Hyden",
-      "expectedMessage": "Updated successfully"
-    },
-    {
-      "field": "FullName",
-      "scenario": "Valid First and Last Name",
-      "value": "Mathew Hyden",
-      "expectedMessage": "Updated successfully"
-    },
-    {
-      "field": "Summary",
-      "scenario": "Enter valid summary text",
-      "value": "This is a valid summary text.",
-      "expectedMessage": "Updated successfully"
-    },
-    {
-      "field": "department",
-      "scenario": "Valid Department",
-      "value": "Computer Science",
-      "expectedMessage": "Updated successfully"
-    },
-    {
-      "field": "qualification",
-      "scenario": "Valid Qualification",
-      "value": "Bachelors",
-      "expectedMessage": "Updated successfully"
-    },
-    {
-      "field": "admissionYear",
-      "scenario": "Valid Admission Year",
-      "value": "2022",
-      "expectedMessage": "Updated successfully"
-    }
-  ],
-  "adminOverrides": {
-    "_description": "Used globally across profile test suites",
-    "disabledMessage": "All the fields are set to be non-editable by your institution"
-  },
-  "genderScenarios": {
-    "validOptions": [
-      "Male",
-      "Female",
-      "Other"
-    ],
-    "invalidOption": "Alien"
-  },
-  "imageUploadScenarios": [
-    {
-      "FileName": "",
-      "Scenario": "Empty file",
-      "ExpectedMessage": "Please select a file"
-    },
-    {
-      "FileName": "image..png",
-      "Scenario": "More than one dot",
-      "ExpectedMessage": "Invalid file format."
-    },
-    {
-      "FileName": "large_image.jpg",
-      "Scenario": "> 1MB",
-      "ExpectedMessage": "File size exceeded the 1MB maximum limit!"
-    },
-    {
-      "FileName": "invalid_format.pdf",
-      "Scenario": "Invalid format",
-      "ExpectedMessage": "Invalid file format."
-    },
-    {
-      "FileName": "dummy-id.jpg",
-      "Scenario": "Valid image",
-      "ExpectedMessage": "Updated successfully"
-    }
-  ],
-  "dobScenarios": {
-    "expectedSuccessMessage": "Updated successfully"
-  },
-  "summaryScenarios": {
-    "htmlTagsString": "<script>alert('test')</script>",
-    "htmlTagsError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols.",
-    "mandatoryError": "Summary is required (2000 characters)",
-    "maxLengthError": "Maximum 2000 characters allowed"
-  },
-  "enrollmentScenarios": {
+  "enrollment-details.spec.ts": {
     "_description": "Used in: tests/portal/profile/enrollment-details.spec.ts",
     "positiveData": {
       "idNumber": "ID999",
@@ -502,7 +555,7 @@
       }
     ]
   },
-  "idDocumentScenarios": {
+  "id-and-access-info.spec.ts": {
     "_description": "Used in: tests/portal/profile/id-and-access-info.spec.ts",
     "data": [
       {
@@ -579,244 +632,7 @@
       }
     ]
   },
-  "contactScenarios": {
-    "_description": "Used in: tests/portal/profile/contact.spec.ts",
-    "positiveData": {
-      "mobile": "75757474774",
-      "officePhone": "6743674764373",
-      "residentialPhone": "736774343",
-      "nationality": "India",
-      "officeAddress": "Hadpsar, Pune 411028",
-      "residentialAddress": "Pune"
-    },
-    "negativeScenarios": [
-      {
-        "field": "officeAddress",
-        "scenario": "Leading or trailing spaces not allowed",
-        "value": "  Hadpsar, Pune 411028  ",
-        "expectedError": "Leading or trailing spaces not allowed"
-      },
-      {
-        "scenario": "Mobile restricts input to less than 7 characters",
-        "field": "mobile",
-        "validationType": "errorMessage",
-        "value": "12345",
-        "expectedError": "Atleast 7 characters required"
-      },
-      {
-        "scenario": "Mobile restricts input to more than 20 characters",
-        "field": "mobile",
-        "validationType": "errorMessage",
-        "value": "1234567890123456789012",
-        "bypassLength": true,
-        "expectedError": "Maximum 20 characters allowed"
-      },
-      {
-        "scenario": "residentialAddress - Space is entered in front or back",
-        "field": "residentialAddress",
-        "validationType": "errorMessage",
-        "value": " test ",
-        "expectedError": "Leading or trailing spaces not allowed"
-      },
-      {
-        "scenario": "officeAddress - Space is entered in front or back",
-        "field": "officeAddress",
-        "validationType": "errorMessage",
-        "value": " test ",
-        "expectedError": "Leading or trailing spaces not allowed"
-      },
-      {
-        "scenario": "residentialAddress - HTML is used",
-        "field": "residentialAddress",
-        "validationType": "errorMessage",
-        "value": "<html>",
-        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
-      },
-      {
-        "scenario": "officeAddress - HTML is used",
-        "field": "officeAddress",
-        "validationType": "errorMessage",
-        "value": "<html>",
-        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
-      },
-      {
-        "scenario": "residentialAddress - More than 2002 characters",
-        "field": "residentialAddress",
-        "validationType": "errorMessage",
-        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "expectedError": "Maximum 2000 characters allowed",
-        "bypassLength": true
-      },
-      {
-        "scenario": "officeAddress - More than 2002 characters",
-        "field": "officeAddress",
-        "validationType": "errorMessage",
-        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "expectedError": "Maximum 2000 characters allowed",
-        "bypassLength": true
-      },
-      {
-        "scenario": "mobile - Blank/Unselected",
-        "field": "mobile",
-        "validationType": "errorMessage",
-        "value": "",
-        "expectedError": "Mobile is required (7-20 numbers)"
-      },
-      {
-        "scenario": "officePhone - Blank/Unselected",
-        "field": "officePhone",
-        "validationType": "errorMessage",
-        "value": "",
-        "expectedError": "Office Phone is required (4-20 numbers)"
-      },
-      {
-        "scenario": "residentialPhone - Blank/Unselected",
-        "field": "residentialPhone",
-        "validationType": "errorMessage",
-        "value": "",
-        "expectedError": "Residential Phone is required (4-20 numbers)"
-      },
-      {
-        "scenario": "officeAddress - Blank/Unselected",
-        "field": "officeAddress",
-        "validationType": "errorMessage",
-        "value": "",
-        "expectedError": "Office Address is required (2000 characters)"
-      },
-      {
-        "scenario": "residentialAddress - Blank/Unselected",
-        "field": "residentialAddress",
-        "validationType": "errorMessage",
-        "value": "",
-        "expectedError": "Residential Address is required (2000 characters)"
-      },
-      {
-        "scenario": "nationality - Blank/Unselected",
-        "field": "nationality",
-        "validationType": "errorMessage",
-        "value": "",
-        "expectedError": "Nationality is required"
-      },
-      {
-        "scenario": "officePhone - Less than 3 or 3 characters",
-        "field": "officePhone",
-        "validationType": "errorMessage",
-        "value": "12",
-        "expectedError": "Atleast 4 characters required"
-      },
-      {
-        "scenario": "residentialPhone - Less than 3 or 3 characters",
-        "field": "residentialPhone",
-        "validationType": "errorMessage",
-        "value": "12",
-        "expectedError": "Atleast 4 characters required"
-      },
-      {
-        "scenario": "mobile - Non-numeric characters",
-        "field": "mobile",
-        "validationType": "errorMessage",
-        "value": "abc1234",
-        "expectedError": "Only numbers are allowed"
-      },
-      {
-        "scenario": "officePhone - Non-numeric characters",
-        "field": "officePhone",
-        "validationType": "errorMessage",
-        "value": "abc1234",
-        "expectedError": "Only numbers are allowed"
-      },
-      {
-        "scenario": "residentialPhone - Non-numeric characters",
-        "field": "residentialPhone",
-        "validationType": "errorMessage",
-        "value": "abc1234",
-        "expectedError": "Only numbers are allowed"
-      },
-      {
-        "scenario": "mobile - More than 21 numeric characters",
-        "field": "mobile",
-        "validationType": "errorMessage",
-        "value": "1111111111111111111111",
-        "expectedError": "Maximum 20 characters allowed",
-        "bypassLength": true
-      },
-      {
-        "scenario": "officePhone - More than 21 numeric characters",
-        "field": "officePhone",
-        "validationType": "errorMessage",
-        "value": "1111111111111111111111",
-        "expectedError": "Maximum 20 characters allowed",
-        "bypassLength": true
-      },
-      {
-        "scenario": "residentialPhone - More than 21 numeric characters",
-        "field": "residentialPhone",
-        "validationType": "errorMessage",
-        "value": "1111111111111111111111",
-        "expectedError": "Maximum 20 characters allowed",
-        "bypassLength": true
-      }
-    ]
-  },
-  "basicDetailsScenarios": {
-    "positiveData": {
-      "fullName": "Automation User",
-      "summary": "This is a valid summary for automation."
-    },
-    "negativeScenarios": [
-      {
-        "field": "fullName",
-        "scenario": "Full Name - Blank field",
-        "value": "",
-        "expectedError": "Full Name is required (3-100 characters)"
-      },
-      {
-        "field": "fullName",
-        "scenario": "Full Name - Enter only 2 char",
-        "value": "ab",
-        "expectedError": "Atleast 3 characters required"
-      },
-      {
-        "field": "fullName",
-        "scenario": "Full Name - Enter leading and trailing spaces",
-        "value": " test name ",
-        "expectedError": "Leading or trailing spaces not allowed"
-      },
-      {
-        "field": "fullName",
-        "scenario": "Full Name - Enter HTML format",
-        "value": "<html>",
-        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
-      },
-      {
-        "field": "fullName",
-        "scenario": "Full Name - Enter 102 characters",
-        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "expectedError": "Maximum 100 characters allowed",
-        "bypassLength": true
-      },
-      {
-        "field": "summary",
-        "scenario": "summary - HTML is used",
-        "value": "<html>",
-        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
-      },
-      {
-        "field": "summary",
-        "scenario": "summary - More than 2002 characters",
-        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "expectedError": "Maximum 2000 characters allowed",
-        "bypassLength": true
-      },
-      {
-        "field": "summary",
-        "scenario": "summary - Blank/Unselected",
-        "value": "",
-        "expectedError": "Summary is required (2000 characters)"
-      }
-    ]
-  },
-  "passwordScenarios": {
+  "password.spec.ts": {
     "validInputs": {
       "newPassword": "Password@123",
       "newPassword2": "Password@321"
@@ -888,7 +704,178 @@
       }
     ]
   },
-  "workEducationScenarios": {
+  "profile-basic-details.spec.ts": {
+    "positiveData": {
+      "fullName": "Automation User",
+      "summary": "This is a valid summary for automation."
+    },
+    "negativeScenarios": [
+      {
+        "field": "fullName",
+        "scenario": "Full Name - Blank field",
+        "value": "",
+        "expectedError": "Full Name is required (3-100 characters)"
+      },
+      {
+        "field": "fullName",
+        "scenario": "Full Name - Enter only 2 char",
+        "value": "ab",
+        "expectedError": "Atleast 3 characters required"
+      },
+      {
+        "field": "fullName",
+        "scenario": "Full Name - Enter leading and trailing spaces",
+        "value": " test name ",
+        "expectedError": "Leading or trailing spaces not allowed"
+      },
+      {
+        "field": "fullName",
+        "scenario": "Full Name - Enter HTML format",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "field": "fullName",
+        "scenario": "Full Name - Enter 102 characters",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 100 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "field": "summary",
+        "scenario": "summary - HTML is used",
+        "value": "<html>",
+        "expectedError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols."
+      },
+      {
+        "field": "summary",
+        "scenario": "summary - More than 2002 characters",
+        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expectedError": "Maximum 2000 characters allowed",
+        "bypassLength": true
+      },
+      {
+        "field": "summary",
+        "scenario": "summary - Blank/Unselected",
+        "value": "",
+        "expectedError": "Summary is required (2000 characters)"
+      }
+    ],
+    "validOptions": [
+      "Male",
+      "Female",
+      "Other"
+    ],
+    "invalidOption": "Alien",
+    "fieldStates": {
+      "_description": "Used in: tests/portal/profile/profile-basic-details.spec.ts",
+      "data": [
+        {
+          "Field": "FullName",
+          "ExpectedState": "enabled"
+        },
+        {
+          "Field": "Gender",
+          "ExpectedState": "enabled"
+        },
+        {
+          "Field": "DOB",
+          "ExpectedState": "enabled"
+        },
+        {
+          "Field": "Summary",
+          "ExpectedState": "enabled"
+        },
+        {
+          "Field": "department",
+          "ExpectedState": "enabled"
+        },
+        {
+          "Field": "qualification",
+          "ExpectedState": "enabled"
+        },
+        {
+          "Field": "admissionYear",
+          "ExpectedState": "enabled"
+        }
+      ]
+    },
+    "summaryScenarios": {
+      "htmlTagsString": "<script>alert('test')</script>",
+      "htmlTagsError": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols.",
+      "mandatoryError": "Summary is required (2000 characters)",
+      "maxLengthError": "Maximum 2000 characters allowed"
+    },
+    "dobScenarios": {
+      "expectedSuccessMessage": "Updated successfully"
+    },
+    "imageUploadScenarios": [
+      {
+        "FileName": "",
+        "Scenario": "Empty file",
+        "ExpectedMessage": "Please select a file"
+      },
+      {
+        "FileName": "image..png",
+        "Scenario": "More than one dot",
+        "ExpectedMessage": "Invalid file format."
+      },
+      {
+        "FileName": "large_image.jpg",
+        "Scenario": "> 1MB",
+        "ExpectedMessage": "File size exceeded the 1MB maximum limit!"
+      },
+      {
+        "FileName": "invalid_format.pdf",
+        "Scenario": "Invalid format",
+        "ExpectedMessage": "Invalid file format."
+      },
+      {
+        "FileName": "dummy-id.jpg",
+        "Scenario": "Valid image",
+        "ExpectedMessage": "Updated successfully"
+      }
+    ],
+    "positiveScenarios": [
+      {
+        "field": "FullName",
+        "scenario": "Valid Single Name",
+        "value": "Hyden",
+        "expectedMessage": "Updated successfully"
+      },
+      {
+        "field": "FullName",
+        "scenario": "Valid First and Last Name",
+        "value": "Mathew Hyden",
+        "expectedMessage": "Updated successfully"
+      },
+      {
+        "field": "Summary",
+        "scenario": "Enter valid summary text",
+        "value": "This is a valid summary text.",
+        "expectedMessage": "Updated successfully"
+      },
+      {
+        "field": "department",
+        "scenario": "Valid Department",
+        "value": "Computer Science",
+        "expectedMessage": "Updated successfully"
+      },
+      {
+        "field": "qualification",
+        "scenario": "Valid Qualification",
+        "value": "Bachelors",
+        "expectedMessage": "Updated successfully"
+      },
+      {
+        "field": "admissionYear",
+        "scenario": "Valid Admission Year",
+        "value": "2022",
+        "expectedMessage": "Updated successfully"
+      }
+    ]
+  },
+  "work-and-education.spec.ts": {
     "workExperienceData": {
       "positiveData": {
         "jobTitle": "Senior Quality Assurance Engineer",
@@ -1055,8 +1042,14 @@
         {
           "scenario": "From Year - Greater than To Year",
           "fieldsToFill": [
-            {"field": "workExpToYr", "value": "2024"},
-            {"field": "workExpFromYr", "value": "2026"}
+            {
+              "field": "workExpToYr",
+              "value": "2024"
+            },
+            {
+              "field": "workExpFromYr",
+              "value": "2026"
+            }
           ],
           "expectedMessage": "From year value can't be greater than To year value"
         },
@@ -1184,5 +1177,9 @@
         }
       ]
     }
+  },
+  "adminOverrides": {
+    "_description": "Used globally across profile test suites",
+    "disabledMessage": "All the fields are set to be non-editable by your institution"
   }
 }

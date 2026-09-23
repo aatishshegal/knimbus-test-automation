@@ -6,9 +6,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Load post-login profile data
-const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/postLoginProfileData.json');
+const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/portal/profile-data.json');
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
-const passwordScenarios = postLoginData.passwordScenarios;
+const passwordScenarios = postLoginData['password.spec.ts'];
 
 test.describe('Profile Password Suite', () => {
     let adminApi: AdminApiService;

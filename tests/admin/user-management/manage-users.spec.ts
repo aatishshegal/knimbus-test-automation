@@ -64,14 +64,14 @@ test.describe('User Management - Manage Users', () => {
         test.info().annotations.push({ type: 'testData', description: `Invalid Search: ${invalidSearch}` });
         
         await manageUsersPage.searchForUser(invalidSearch);
-        await expect(page.locator('text=No data found').or(page.locator('.no-data-found, .empty-state'))).toBeVisible({ timeout: 5000 }).catch(() => {});
+        await expect(page.locator('text=No data found')).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
 
     test('TC_Manage_Users Cancel bulk selection unchecks all boxes', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail2);
         await createApiUser(testEmail3);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         const commonEmailPrefix = `auto_tester_manage${baseTimestamp}`;
         await manageUsersPage.searchForUser(commonEmailPrefix);
         
@@ -95,7 +95,7 @@ test.describe('User Management - Manage Users', () => {
     test('TC_Manage_Users Click on user row opens user profile overview', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickUserDetailsOverview(testEmail1);
@@ -106,12 +106,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(modal).toContainText(testEmail1);
         
         // Close the modal
-        const closeBtn = modal.getByRole('button', { name: 'Close', exact: true }).or(modal.locator('.btn-close'));
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.closeModal(modal);
         await expect(modal).not.toBeVisible();
     });
 
@@ -122,7 +117,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail4 };
-        delete userToCreate.serviceGroup;
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -135,7 +130,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToManageUsers();
 
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 6: Search for the newly created user
         await manageUsersPage.searchForUser(testEmail4);
@@ -145,7 +140,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.assignServiceGroup(testEmail4, targetServiceGroup);
         
         // 12: Search for the same user again (to ensure table refresh)
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail4);
         
         // 13: Verify that the selected service group is assigned to the user
@@ -160,7 +155,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail5 };
-        delete userToCreate.serviceGroup;
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -173,7 +168,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToManageUsers();
 
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 6: Search for the newly created user
         await manageUsersPage.searchForUser(testEmail5);
@@ -188,7 +183,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.assignServiceGroupWithDate(testEmail5, targetServiceGroup, expiryDate);
         
         // 12: Search for the same user again (to ensure table refresh)
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail5);
         
         // 13: Verify that the selected service group and date are assigned to the user
@@ -202,7 +197,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail6 };
-        delete userToCreate.serviceGroup;
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -213,7 +208,7 @@ test.describe('User Management - Manage Users', () => {
         // 2. Navigate to Manage Users
         await dashboard.sidebar.navigateToManageUsers();
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 3. Search for user
         await manageUsersPage.searchForUser(testEmail6);
@@ -230,12 +225,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(expiredWarning).toBeVisible({ timeout: 5000 });
         
         // Cleanup: Close modal
-        const closeBtn = manageUsersPage.assignGroupModal.getByRole('button', { name: 'Cancel' }).or(page.locator('.btn-close')).first();
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.cancelAssignGroupModal();
     });
 
     test('TC_Manage_Users Assign service group updates the user table_Cancel', async ({ page }) => {
@@ -245,7 +235,7 @@ test.describe('User Management - Manage Users', () => {
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
         const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail7 };
-        delete userToCreate.serviceGroup;
+        delete (userToCreate as any).serviceGroup;
         await addUserPage.fillRegistrationForm(userToCreate);
         await addUserPage.submitForm();
         
@@ -256,7 +246,7 @@ test.describe('User Management - Manage Users', () => {
         // 2. Navigate to Manage Users
         await dashboard.sidebar.navigateToManageUsers();
         const manageUsersPage = new ManageUsersPage(page);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // 3. Search for user
         await manageUsersPage.searchForUser(testEmail7);
@@ -282,7 +272,7 @@ test.describe('User Management - Manage Users', () => {
         // 6. Refresh page and verify it is not assigned
         await page.reload({ waitUntil: 'domcontentloaded' });
         
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail7);
         
         // Assert it's still unassigned
@@ -293,7 +283,7 @@ test.describe('User Management - Manage Users', () => {
     test('TC_Manage_Users Cancel send notification discards modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickSendNotification(testEmail1);
@@ -302,19 +292,14 @@ test.describe('User Management - Manage Users', () => {
         await expect(modal).toBeVisible();
         
         // Just cancel the modal
-        const closeBtn = modal.getByRole('button', { name: 'Close', exact: true }).or(modal.locator('.btn-close'));
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.closeModal(modal);
         await expect(modal).not.toBeVisible();
     });
 
     test('TC_Manage_Users Export usage log opens export modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickExportUsageLog(testEmail1);
@@ -332,7 +317,7 @@ test.describe('User Management - Manage Users', () => {
     await dashboard.sidebar.navigateToAddSingleUser();
     const addUserPage = new AddSingleUserPage(page);
     const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail8 };
-    delete userToCreate.serviceGroup;
+    delete (userToCreate as any).serviceGroup;
     await addUserPage.fillRegistrationForm(userToCreate);
     await addUserPage.submitForm();
 
@@ -360,8 +345,7 @@ test.describe('User Management - Manage Users', () => {
     const bothOption = modal.getByText('Both (On email, web portal, mobile app & in-app)');
     await expect(bothOption).not.toBeVisible();
     
-    const cancelBtn = modal.getByRole('button', { name: 'Cancel' });
-    if (await cancelBtn.isVisible()) await cancelBtn.click();
+    await manageUsersPage.cancelSendNotificationModal(modal);
   });
 
   test('TC_Manage_Users Send notification pop up shows multiple options for user assigned to service group', async ({ page }) => {
@@ -397,8 +381,7 @@ test.describe('User Management - Manage Users', () => {
     const bothOption = modal.getByText('Both (On email, web portal, mobile app & in-app)');
     await expect(bothOption).toBeVisible();
 
-    const cancelBtn = modal.getByRole('button', { name: 'Cancel' });
-    if (await cancelBtn.isVisible()) await cancelBtn.click();
+    await manageUsersPage.cancelSendNotificationModal(modal);
   });
 
 
@@ -406,7 +389,7 @@ test.describe('User Management - Manage Users', () => {
     test('TC_Manage_Users Cancel single user deletion discards changes', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.selectUserCheckbox(testEmail1);
@@ -415,16 +398,7 @@ test.describe('User Management - Manage Users', () => {
         
         // Wait for modal
         await page.waitForTimeout(500);
-        const swalCancel = page.locator('.swal2-cancel');
-        const modalCancel = page.locator('.modal.show').getByRole('button', { name: 'Cancel', exact: true });
-        
-        if (await swalCancel.isVisible()) {
-            await swalCancel.click();
-        } else if (await modalCancel.isVisible()) {
-            await modalCancel.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.cancelDeletionSafely();
         
         await page.locator('.modal').waitFor({ state: 'hidden' }).catch(() => {});
         await page.locator('.swal2-container').waitFor({ state: 'hidden' }).catch(() => {});
@@ -437,7 +411,7 @@ test.describe('User Management - Manage Users', () => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail2);
         await createApiUser(testEmail3);
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         const commonEmailPrefix = `auto_tester_manage${baseTimestamp}`;
         await manageUsersPage.searchForUser(commonEmailPrefix);
         
@@ -448,16 +422,7 @@ test.describe('User Management - Manage Users', () => {
         
         // Wait for modal
         await page.waitForTimeout(500);
-        const swalCancel = page.locator('.swal2-cancel');
-        const modalCancel = page.locator('.modal.show').getByRole('button', { name: 'Cancel', exact: true });
-        
-        if (await swalCancel.isVisible()) {
-            await swalCancel.click();
-        } else if (await modalCancel.isVisible()) {
-            await modalCancel.click();
-        } else {
-            await page.keyboard.press('Escape');
-        }
+        await manageUsersPage.cancelDeletionSafely();
         
         await page.locator('.modal').waitFor({ state: 'hidden' }).catch(() => {});
         await page.locator('.swal2-container').waitFor({ state: 'hidden' }).catch(() => {});
@@ -490,7 +455,7 @@ test.describe('User Management - Manage Users', () => {
         await createApiUser(testEmail2);
         await createApiUser(testEmail3);
         // Clear any previous search
-        if (await manageUsersPage.clearSearchBtn.isVisible()) { await manageUsersPage.clearSearchBtn.click(); }
+        await manageUsersPage.clearSearchSafely();
         
         // Search by the initial common part of the email id
         const commonEmailPrefix = `auto_tester_manage${baseTimestamp}`;

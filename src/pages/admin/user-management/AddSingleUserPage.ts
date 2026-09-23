@@ -29,7 +29,7 @@ export class AddSingleUserPage extends AdminBasePage {
         email: string;
         userType: string;
         gender: string;
-        serviceGroup: string;
+        serviceGroup?: string;
     }) {
         await this.userNameInput.waitFor({ state: 'visible' });
         await this.userNameInput.fill(userData.userName);

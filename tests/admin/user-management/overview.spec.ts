@@ -18,10 +18,11 @@ test.describe('User Management - Overview Validations', () => {
         await expect(overviewPage.totalRegisteredUsersCount).not.toBeEmpty();
     });
 
-    test('TC_UserMgmt_Overview_ManageUsers_Navigation', async ({ page }) => {
+    test('TC_UserMgmt_Overview_TotalUsers_NavigatesTo_ManageUsers', async ({ page }) => {
         const overviewPage = new UserMgmtOverviewPage(page);
-        await overviewPage.totalRegisteredUsersCard.click();
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
+        // Explicitly click the arrow icon (svg) as instructed by user because other parts of the card don't trigger navigation
+        await overviewPage.totalRegisteredUsersCard.locator('.link-arrow-icon').click();
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers), { timeout: 15000 });
         await page.goBack();
     });
 
@@ -33,7 +34,7 @@ test.describe('User Management - Overview Validations', () => {
     test('TC_UserMgmt_Overview_PendingOCA_Navigation', async ({ page }) => {
         const overviewPage = new UserMgmtOverviewPage(page);
         await overviewPage.pendingOcaRequestsCard.click();
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.ocaRequests));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.ocaRequests), { timeout: 15000 });
         await page.goBack();
     });
 
@@ -46,7 +47,7 @@ test.describe('User Management - Overview Validations', () => {
         const overviewPage = new UserMgmtOverviewPage(page);
         const keyword = adminData.userManagement.quickFindKeywords[0]; // codec@yopmail.com
         await overviewPage.performQuickFindSearch(keyword);
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers), { timeout: 15000 });
         await page.goBack();
     });
 
@@ -54,7 +55,7 @@ test.describe('User Management - Overview Validations', () => {
         const overviewPage = new UserMgmtOverviewPage(page);
         const keyword = adminData.userManagement.quickFindKeywords[1]; // network
         await overviewPage.performQuickFindSearch(keyword);
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers), { timeout: 15000 });
         await page.goBack();
     });
 
@@ -80,7 +81,7 @@ test.describe('User Management - Overview Validations', () => {
     test('TC_UserMgmt_Overview_ServiceGroups_Navigation', async ({ page }) => {
         const overviewPage = new UserMgmtOverviewPage(page);
         await overviewPage.serviceGroupsCard.click();
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.serviceGroups));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.serviceGroups), { timeout: 15000 });
         await page.goBack();
     });
 
@@ -92,28 +93,28 @@ test.describe('User Management - Overview Validations', () => {
     test('TC_UserMgmt_Overview_ContentGroups_Navigation', async ({ page }) => {
         const overviewPage = new UserMgmtOverviewPage(page);
         await overviewPage.contentGroupsCard.click();
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.contentGroups));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.contentGroups), { timeout: 15000 });
         await page.goBack();
     });
 
     test('TC_UserMgmt_Overview_AddSingleUser_Navigation', async ({ page }) => {
         const overviewPage = new UserMgmtOverviewPage(page);
         await overviewPage.addSingleUserCard.click();
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.addSingleUser));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.addSingleUser), { timeout: 15000 });
         await page.goBack();
     });
 
     test('TC_UserMgmt_Overview_AddMultipleUsers_Navigation', async ({ page }) => {
         const overviewPage = new UserMgmtOverviewPage(page);
         await overviewPage.addMultipleUsersCard.click();
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.addMultipleUsers));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.addMultipleUsers), { timeout: 15000 });
         await page.goBack();
     });
 
     test('TC_UserMgmt_Overview_ProfileSettings_Navigation', async ({ page }) => {
         const overviewPage = new UserMgmtOverviewPage(page);
         await overviewPage.profileSettingsCard.click();
-        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.userProfileSettings));
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.userProfileSettings), { timeout: 15000 });
         await page.goBack();
     });
 

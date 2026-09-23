@@ -40,21 +40,47 @@ export class ManageUsersPage extends AdminBasePage {
     readonly notificationTypeWeb: Locator;
     readonly notificationTypeMobile: Locator;
     readonly notificationTypeBoth: Locator;
+    readonly userProfileModal: Locator;
+    readonly userProfileSaveBtn: Locator;
+    readonly userProfileCancelBtn: Locator;
+
+    // Added to fix compilation
+    getProfileLocator(name: string) {
+        return this.userProfileModal.locator('input[name="' + name + '"]');
+    }
+
+    async clickProfileSave() {
+        await this.userProfileSaveBtn.click();
+    }
+
+    async clickProfileCancel() {
+        if (await this.userProfileCancelBtn.isVisible()) {
+            await this.userProfileCancelBtn.click();
+        } else {
+            const closeBtn = this.userProfileModal.getByRole('button', { name: 'Close', exact: true });
+            if (await closeBtn.isVisible()) {
+                await closeBtn.click();
+            } else {
+                await this.page.keyboard.press('Escape');
+            }
+        }
+    }
+
 
     constructor(page: Page) {
         super(page);
 
         // Search Block
         this.searchInput = page.locator('input#user-search');
-        this.searchBtn = page.getByRole('button', { name: 'Search', exact: true }).or(page.locator('button[title="Search"]'));
-        this.clearSearchBtn = page.getByRole('button', { name: 'Clear', exact: true }).or(page.locator('button[title="Clear"]'));
+        this.searchBtn = page.getByRole('button', { name: 'Search', exact: true });
+        this.clearSearchBtn = page.getByRole('button', { name: 'Clear', exact: true });
 
         // Filters
         this.expiryDateRangeInput = page.locator('input[name="expiryDateRange"]');
         this.ocaPendingCheckbox = page.locator('input[name="OCA Pending Request"]');
         this.noServiceGroupCheckbox = page.locator('input[name="No Service Group"]');
-        this.applyFiltersBtn = page.getByRole('button', { name: 'Apply' }).or(page.locator('button[title="Apply"]'));
-        this.clearFiltersBtn = page.getByRole('button', { name: 'Clear' }).or(page.locator('button[title="Clear"]'));
+        this.applyFiltersBtn = page.getByRole('button', { name: 'Apply' });
+        this.clearFiltersBtn = page.getByRole('button', { name: 'Clear' });
 
         // Bulk Actions
         this.exportAllUsersBtn = page.getByRole('button', { name: 'Export All Users' });
@@ -81,6 +107,10 @@ export class ManageUsersPage extends AdminBasePage {
         this.notificationTypeWeb = this.notificationModal.locator('input#Notification-Type-Web');
         this.notificationTypeMobile = this.notificationModal.locator('input#Notification-Type-Mobile');
         this.notificationTypeBoth = this.notificationModal.locator('input#Notification-Type-Both');
+        this.userProfileModal = page.locator('.modal.show, .swal2-popup, .offcanvas.show, [role=\"dialog\"]').filter({ hasText: 'User Profile' });
+        this.userProfileSaveBtn = this.userProfileModal.getByRole('button', { name: 'Update', exact: true });
+        this.userProfileCancelBtn = this.userProfileModal.getByRole('button', { name: 'Cancel', exact: true });
+
     }
 
     async searchForUser(emailOrName: string) {
@@ -234,5 +264,45 @@ export class ManageUsersPage extends AdminBasePage {
         
         await this.page.locator('.modal').waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
         await this.page.locator('.swal2-container').waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+    }
+    async closeModal(modalLocator: Locator) {
+        const closeBtn = modalLocator.getByRole('button', { name: 'Close', exact: true });
+        if (await closeBtn.isVisible()) {
+            await closeBtn.click();
+        } else {
+            await this.page.keyboard.press('Escape');
+        }
+    }
+
+    async cancelAssignGroupModal() {
+        const closeBtn = this.assignGroupModal.getByRole('button', { name: 'Cancel' }).first();
+        if (await closeBtn.isVisible()) {
+            await closeBtn.click();
+        } else {
+            await this.page.keyboard.press('Escape');
+        }
+    }
+
+    async cancelDeletionSafely() {
+        const swalCancel = this.page.locator('.swal2-cancel');
+        const modalCancel = this.page.locator('.modal.show').getByRole('button', { name: 'Cancel', exact: true });
+        if (await swalCancel.isVisible()) {
+            await swalCancel.click();
+        } else if (await modalCancel.isVisible()) {
+            await modalCancel.click();
+        } else {
+            await this.page.keyboard.press('Escape');
+        }
+    }
+
+    async cancelSendNotificationModal(modalLocator: Locator) {
+        const cancelBtn = modalLocator.getByRole('button', { name: 'Cancel' });
+        if (await cancelBtn.isVisible()) await cancelBtn.click();
+    }
+
+    async clearSearchSafely() {
+        if (await this.clearSearchBtn.isVisible()) { 
+            await this.clearSearchBtn.click(); 
+        }
     }
 }
