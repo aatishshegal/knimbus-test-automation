@@ -10,6 +10,7 @@ export class OtpPage extends BasePage {
   readonly otpExhaustedError: Locator;
   readonly resendOtpButton: Locator;
   readonly resendOtpLimitText: Locator;
+  readonly anyOtpError: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -19,6 +20,7 @@ export class OtpPage extends BasePage {
     this.invalidOtpFormatError = page.getByText('OTP must be 6 digits', { exact: true });
     this.invalidOtpError = page.getByText(/You have entered a wrong OTP\. Please try again/i);
     this.otpExhaustedError = page.getByText(/You have entered a wrong OTP for \d+ times now\. Please reload this window to start afresh\./i);
+    this.anyOtpError = page.getByText(/You have entered a wrong OTP/i);
     this.resendOtpButton = page.getByText(/Resend OTP|Retry/i).filter({ hasNotText: /in 00:/i });
     this.resendOtpLimitText = page.getByText('Resend OTP (3/3)', { exact: true });
   }
@@ -47,7 +49,7 @@ export class OtpPage extends BasePage {
     for (let i = 0; i < attemptsLeft; i++) {
         await this.submitOtp(invalidOtp);
         
-        await this.invalidOtpError.or(this.otpExhaustedError).waitFor({ state: 'visible', timeout: 15000 });
+        await this.anyOtpError.waitFor({ state: 'visible', timeout: 15000 });
         
         if (await this.otpExhaustedError.isVisible()) {
             break;
@@ -55,9 +57,16 @@ export class OtpPage extends BasePage {
     }
   }
 
+  async handleExhaustOtpLockout(invalidOtp: string) {
+    await this.anyOtpError.waitFor({ state: 'visible', timeout: 15000 });
+    const attemptsLeft = await this.getOtpRemainingAttempts();
+    if (attemptsLeft > 0) {
+      await this.exhaustInvalidOtpAttempts(attemptsLeft, invalidOtp);
+    }
+  }
+
   async exhaustResendOtpLimit(maxResends: number) {
     for (let i = 1; i <= maxResends; i++) {
-        console.log(`Waiting for Resend OTP button to become active (Attempt ${i})...`);
         await this.resendOtpButton.waitFor({ state: 'visible', timeout: 70000 });
         await this.clickElement(this.resendOtpButton, `Resend OTP Button (Attempt ${i})`);
         

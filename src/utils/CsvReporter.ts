@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export default class CsvReporter implements Reporter {
-  private results: { module: string; path: string; name: string; status: string }[] = [];
+  private resultsMap: Map<string, { module: string; path: string; name: string; type: string; status: string; testData: string }> = new Map();
   private testResultsDir: string;
   private archivesDir: string;
 
@@ -60,22 +60,27 @@ export default class CsvReporter implements Reporter {
         testData = dataAnnotation.description || '';
     }
 
-    this.results.push({
+    // Determine final status: if the test passed or was flaky (passed on retry), mark passed
+    const outcome = test.outcome();
+    const effectiveStatus = (result.status === 'passed' || outcome === 'expected' || outcome === 'flaky') ? 'passed' : result.status;
+
+    this.resultsMap.set(test.id, {
       module: moduleName,
       path: path.relative(process.cwd(), testPath),
       name: test.title,
       type: testType,
-      status: result.status,
+      status: effectiveStatus,
       testData: testData
-    } as any);
+    });
   }
 
   onEnd() {
-    if (this.results.length === 0) return;
+    if (this.resultsMap.size === 0) return;
 
     // Generate CSV content
     const header = 'Module,Path,Test Case Name,Test Case Type,Status,Test Data\n';
-    const rows = this.results.map((r: any) => {
+    const results = Array.from(this.resultsMap.values());
+    const rows = results.map((r: any) => {
       // Escape quotes and commas in CSV fields
       const escapeCsv = (str: string) => `"${str.replace(/"/g, '""')}"`;
       return `${escapeCsv(r.module)},${escapeCsv(r.path)},${escapeCsv(r.name)},${escapeCsv(r.type)},${escapeCsv(r.status)},${escapeCsv(r.testData)}`;

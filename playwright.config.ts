@@ -15,13 +15,13 @@ const defaultViewport = { width: 1280, height: 720 };
 
 export default defineConfig({
   testDir: './tests',
-  // Increased timeout to 60s to account for slow WebKit/Firefox startup
-  timeout: 60 * 1000,
+  // Increased timeout to 90s to account for federated external publisher queries
+  timeout: 90 * 1000,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   // Added 1 retry even locally. WebKit often fails first run but succeeds second.
   retries: process.env.CI ? 2 : 1,
-  workers: 1,
+  workers: process.env.CI ? 2 : 4,
   reporter: [['html', { open: 'never' }], ['./src/utils/CleanConsoleReporter.ts'], ['./src/utils/CsvReporter.ts']],
 
   use: {
@@ -54,19 +54,13 @@ export default defineConfig({
     },
     
     // --- PORTAL UI TESTS ---
-    // Pre-login tests (Authentication, Registration) start completely logged out
+    // 1. Read-Only fast suites: Search, Navigation, Home (61 tests)
+    // Run concurrently with 4 workers using the cached authenticated session
     { 
-      name: 'Portal - pre-login',
-      testMatch: /portal\/.*(authentication|registration).*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'], viewport: defaultViewport, deviceScaleFactor: undefined },
-      dependencies: ['portal-setup'],
-    },
-
-    // Post-login tests (Navigation, Home, etc.) inherit the cached session and wait for setup
-    { 
-      name: 'Portal - post-login',
-      testMatch: /portal\/.*\.spec\.ts/,
-      testIgnore: /.*(authentication|registration).*\.ts/,
+      name: 'Portal - Read-Only',
+      testMatch: /portal\/(search|navigation|home)\/.*\.spec\.ts/,
+      fullyParallel: true,
+      workers: 4,
       use: { 
         ...devices['Desktop Chrome'], 
         viewport: defaultViewport, 
@@ -76,10 +70,61 @@ export default defineConfig({
       dependencies: ['portal-setup'],
     },
 
+    // 2. Federated Search suite: Research+ (54 tests)
+    // Run sequentially with 1 worker to avoid proxy bottlenecking on external publisher APIs (IEEE, ProQuest)
+    { 
+      name: 'Portal - Research Plus',
+      testMatch: /portal\/research-plus\/.*\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
+      timeout: 120 * 1000,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined,
+        storageState: storageState 
+      },
+      dependencies: ['portal-setup'],
+    },
+
+    // 2. Pre-login mutating suites: Authentication & Registration (43 tests)
+    // Run sequentially with 1 worker to protect tenant admin security state
+    { 
+      name: 'Portal - Pre-Login',
+      testMatch: /portal\/(authentication|registration)\/.*\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined 
+      },
+      dependencies: ['portal-setup'],
+    },
+
+    // 3. Post-login mutating suites: Profile details, contact, enrollment, password
+    // Run sequentially with 1 worker to prevent race conditions during editability/field toggling
+    { 
+      name: 'Portal - Profile',
+      testMatch: /portal\/profile\/.*\.spec\.ts/,
+      testIgnore: /work-and-education\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined,
+        storageState: storageState 
+      },
+      dependencies: ['Portal - Pre-Login'],
+    },
+
     // --- ADMIN DASHBOARD UI TESTS ---
     {
       name: 'Admin Dashboard',
       testMatch: /admin\/.*\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
       use: { 
         ...devices['Desktop Chrome'], 
         viewport: defaultViewport, 

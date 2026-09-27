@@ -1,103 +1,81 @@
 import { test, expect } from '../../../src/fixtures';
 import portalData from '../../test-data/portal-data.json';
 
-test.describe('Global Navigation - Search Bar Validations @navigation', () => {
+test.describe('Global Navigation - Search Bar Validations', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(process.env.PORTAL_URL as string);
   });
 
-  test('Verify search bar is present on home page', async ({ topNavigationBar }) => {
+  test('Search Bar - Search input field is visible on home page', async ({ topNavigationBar }) => {
     await expect(topNavigationBar.searchInput).toBeVisible();
   });
 
-  test('Verify default search dropdown is Title', async ({ topNavigationBar }) => {
+  test('Search Bar - Default search category dropdown selection is Title', async ({ topNavigationBar }) => {
     await expect(topNavigationBar.searchDropdown).toHaveValue('doc_title');
   });
 
-  test('Verify search dropdown contains Title, Author, Everything', async ({ topNavigationBar }) => {
-    // Wait for the options to actually render in the DOM before extracting texts
+  test('Search Bar - Search dropdown provides Title, Author, and Everything categories', async ({ topNavigationBar }) => {
     await expect(topNavigationBar.searchDropdown.locator('option').first()).toBeAttached();
     const optionsText = await topNavigationBar.searchDropdown.locator('option').allTextContents();
     expect(optionsText.map(t => t.trim())).toEqual(portalData.searchBarData.expectedDropdownOptions);
   });
 
-  test('Verify search placeholder text', async ({ topNavigationBar }) => {
+  test('Search Bar - Input field displays expected placeholder text', async ({ topNavigationBar }) => {
     await expect(topNavigationBar.searchInput).toHaveAttribute('placeholder', portalData.searchBarData.expectedPlaceholder);
   });
 
-  test('Verify search button is disabled when input is empty', async ({ topNavigationBar, page }, testInfo) => {
+  test('Search Bar - Search button remains disabled when input is empty', async ({ topNavigationBar }) => {
     await topNavigationBar.searchInput.clear();
-    if (!testInfo.project.use.headless) await page.waitForTimeout(1000); // Visual pause
     await expect(topNavigationBar.searchButton).toBeDisabled();
   });
 
-  test('Verify search button is disabled when input has 2 characters', async ({ topNavigationBar, page }, testInfo) => {
+  test('Search Bar - Search button remains disabled when input length is fewer than 3 characters', async ({ topNavigationBar }) => {
     await topNavigationBar.searchInput.clear();
-    // Use pressSequentially with a delay to visually simulate real user typing
-    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.invalidSearchTerm, { delay: 150 });
-    if (!testInfo.project.use.headless) await page.waitForTimeout(1000); // Wait so user can see it
+    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.invalidSearchTerm, { delay: 100 });
     await expect(topNavigationBar.searchButton).toBeDisabled();
   });
 
-  test('Verify search button is enabled when input has 3 characters', async ({ topNavigationBar, page }, testInfo) => {
+  test('Search Bar - Search button enables when valid input of 3 characters or more is entered', async ({ topNavigationBar }) => {
     await topNavigationBar.searchInput.clear();
-    // Use pressSequentially with a delay to visually simulate real user typing
-    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.validSearchTerm, { delay: 150 });
-    if (!testInfo.project.use.headless) await page.waitForTimeout(1000); // Wait so user can see it
+    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.validSearchTerm, { delay: 100 });
     await expect(topNavigationBar.searchButton).toBeEnabled();
   });
 
-  test('Verify entering a query enables the search button and navigates to the search result page', async ({ topNavigationBar, searchResultPage, page }, testInfo) => {
+  test('Search Bar - Submitting query with default category navigates to search results page', async ({ topNavigationBar, searchResultPage, page }) => {
     await topNavigationBar.searchInput.clear();
-    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.navigationSearchTerm, { delay: 150 });
+    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.navigationSearchTerm, { delay: 100 });
     await expect(topNavigationBar.searchButton).toBeEnabled();
     
-    if (!testInfo.project.use.headless) await page.waitForTimeout(1000); // Visual pause before click
     await topNavigationBar.searchButton.click();
     
-    if (!testInfo.project.use.headless) await page.waitForTimeout(3000); // Visual pause before asserting new page
-    
-    // Assert navigation to search results page
     await expect(page).toHaveURL(/.*searchresult/);
     await expect(searchResultPage.searchResultIdentifier).toBeVisible({ timeout: 10000 });
   });
 
-  test('Verify selecting Author from dropdown and searching navigates to search result page', async ({ topNavigationBar, searchResultPage, page }, testInfo) => {
-    // Select Author from dropdown
+  test('Search Bar - Submitting query with Author category navigates to search results page', async ({ topNavigationBar, searchResultPage, page }) => {
     await topNavigationBar.searchDropdown.selectOption({ label: 'Author' });
     
     await topNavigationBar.searchInput.clear();
-    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.authorSearchTerm, { delay: 150 });
+    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.authorSearchTerm, { delay: 100 });
     await expect(topNavigationBar.searchButton).toBeEnabled();
     
-    if (!testInfo.project.use.headless) await page.waitForTimeout(1000); // Visual pause before click
     await topNavigationBar.searchButton.click();
     
-    if (!testInfo.project.use.headless) await page.waitForTimeout(3000); // Visual pause before asserting new page
-    
-    // Assert navigation to search results page
     await expect(page).toHaveURL(/.*searchresult/);
     await expect(searchResultPage.searchResultIdentifier).toBeVisible({ timeout: 10000 });
   });
 
-  test('Verify auto suggestions are displayed after typing a query', async ({ topNavigationBar, page }, testInfo) => {
+  test('Search Bar - Displays live auto-suggestion list as user types search query', async ({ topNavigationBar, page }) => {
     await topNavigationBar.searchInput.clear();
+    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.autoSuggestionTerm, { delay: 100 });
     
-    // Enter query in search box (using data-driven term as requested)
-    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.autoSuggestionTerm, { delay: 150 });
-    
-    // Check auto suggestions container is displayed
     const autoSuggestionBox = page.locator('div.suggested-result').first();
     await expect(autoSuggestionBox).toBeVisible({ timeout: 10000 });
     
-    // Verify there is at least one suggestion item using a web-first assertion (auto-retries until true)
     const firstSuggestionItem = autoSuggestionBox.locator('li.list-group-item').first();
     await expect(firstSuggestionItem).toBeVisible({ timeout: 10000 });
     
-    // Verify count is greater than 0
     const suggestionItemsCount = await autoSuggestionBox.locator('li.list-group-item').count();
     expect(suggestionItemsCount).toBeGreaterThan(0);
-    
-    if (!testInfo.project.use.headless) await page.waitForTimeout(1000); // Visual pause
   });
 });

@@ -5,8 +5,20 @@ import * as path from 'path';
 
 test.describe('Unverified User Registration (Automated Verification Disabled)', () => {
 
-    test.describe('Scenario 1: Registration when Mandatory Fields are Disabled', () => {
-        test('Verify a user who signs up lands on the Automated User Verification page', async ({
+    test.afterAll(async () => {
+        const adminApi = new AdminApiService();
+        await adminApi.login();
+        await adminApi.updateSecuritySettings({
+            selfRegistration: true,
+            automatedVerification: true,
+            twoFactorAuth: false,
+            mandatoryFields: { fields: [], isMandatory: false }
+        });
+        await adminApi.close();
+    });
+
+    test.describe('Mandatory Fields Disabled', () => {
+        test('Registration - Unverified user lands on verification pending page when mandatory fields are disabled', async ({
             page,
             portalLoginPage,
             registrationPage
@@ -40,8 +52,8 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
         });
     });
 
-    test.describe('Scenario 2: Registration when Mandatory Fields are Enabled', () => {
-        test('Verify a user who signs up and fills mandatory registration fields lands on the Automated Verification page', async ({
+    test.describe('Mandatory Fields Enabled', () => {
+        test('Registration - Unverified user filling mandatory fields lands on verification pending page', async ({
             page,
             portalLoginPage,
             registrationPage,
@@ -99,8 +111,8 @@ test.describe('Unverified User Registration (Automated Verification Disabled)', 
             await expect(page.getByText('Account verification in progress', { exact: false })).toBeVisible({ timeout: 15000 });
         });
     });
-    test.describe('Scenario 3: Registration when OTP (Two-Factor Auth) is Enabled', () => {
-        test('Verify a user who signs up and enters OTP lands on the Automated Verification page', async ({
+    test.describe('Two-Factor Authentication Enabled', () => {
+        test('Registration - Unverified user completing OTP verification lands on verification pending page', async ({
             page,
             context,
             portalLoginPage,

@@ -1,9 +1,12 @@
 import { test, expect } from '../../../src/fixtures';
 import path from 'path';
+import portalData from '../../test-data/portal-data.json';
 
-test.describe('Mandatory Profile Fields Flow', () => {
+const mandatoryData = portalData.mandatoryUserDetails;
 
-  test('Verify a freshly registered user is forced to fill out all mandatory profile fields on first login', async ({
+test.describe('Portal Authentication - Mandatory Details to Welcome Flow', () => {
+
+  test('Mandatory Profile Routing - Freshly registered user completing all mandatory profile fields navigates to Welcome page', async ({
     portalLoginPage,
     mandatoryDetailsPage,
     welcomePage,
@@ -21,7 +24,6 @@ test.describe('Mandatory Profile Fields Flow', () => {
 
     // 3. Act: Fill out all the mandatory fields
     const dummyImagePath = path.join(__dirname, '../../test-data', 'dummy-id.jpg');
-    const mandatoryData = require('../../test-data/portal-data.json').mandatoryUserDetails;
 
     await mandatoryDetailsPage.fillMandatoryFields({
       gender: mandatoryData.gender,
@@ -33,10 +35,6 @@ test.describe('Mandatory Profile Fields Flow', () => {
       idDocumentFrontPath: dummyImagePath,
       idDocumentBackPath: dummyImagePath
     });
-
-    if (process.argv.includes('--headed')) {
-      await page.waitForTimeout(3000);
-    }
 
     // 4. Act: Submit the form
     await mandatoryDetailsPage.submitForm();

@@ -9,8 +9,7 @@ test.describe('Home Page - Content Types Section', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  test('Verify all content type cards are clickable and navigate correctly', async ({ homePage }) => {
-    // Calling the helper method to handle loop iteration inside the POM
+  test('Home Page - Content type cards navigate to corresponding content type results when clicked', async ({ homePage }) => {
     await homePage.verifyWidgetItemsClickable(widgetTitle, portalData.expectedContentTypes.data);
   });
 });

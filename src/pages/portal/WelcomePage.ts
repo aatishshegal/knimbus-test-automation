@@ -8,11 +8,16 @@ export class WelcomePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.welcomePageIdentifier = page.locator('text=/welcome/i').first();
-    this.continueButton = page.locator('button#continue');
+    this.continueButton = page.getByRole('button', { name: 'Continue' });
   }
 
   async proceedToHome() {
-    // Wait for the button to be visible and click it
-    await this.clickElement(this.continueButton, 'Continue');
+    try {
+      await this.welcomePageIdentifier.waitFor({ state: 'visible', timeout: 8000 });
+      await this.clickElement(this.continueButton, 'Continue');
+      await this.welcomePageIdentifier.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+    } catch {
+      // Welcome page not present, user landed directly on home page
+    }
   }
 }

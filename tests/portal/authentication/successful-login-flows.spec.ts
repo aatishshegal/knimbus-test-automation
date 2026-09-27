@@ -1,22 +1,22 @@
 import { test, expect } from '../../../src/fixtures';
 import path from 'path';
+import portalData from '../../test-data/portal-data.json';
+
+const mandatoryData = portalData.mandatoryUserDetails;
 
 test.describe('Portal Authentication - Successful Login Flows', () => {
 
-  test('An existing standard user with no pending mandatory fields and OTP disabled should be routed directly to the Home Page',
+  test('Login Flow - Standard authenticated user without pending mandatory details routes directly to Home page',
     async ({ portalLoginPage, homePage, termsAndConditionUser }) => {
-
-      // 1. Arrange & Act
       await portalLoginPage.login(
         termsAndConditionUser.email,
         termsAndConditionUser.password
       );
 
-      // 2. Assert
       await expect(homePage.homePageIdentifier).toBeVisible();
     });
 
-  test('Verify user navigates through the Login -> Mandatory Details -> Welcome -> Home flow (T&C optional)', async ({
+  test('Login Flow - User completing mandatory details routes through welcome page to Home page', async ({
     portalLoginPage,
     mandatoryDetailsPage,
     welcomePage,
@@ -25,7 +25,6 @@ test.describe('Portal Authentication - Successful Login Flows', () => {
     fullMandatoryDetailsUser,
     page
   }) => {
-
     // 1. Arrange & Act: Login
     await portalLoginPage.login(
       fullMandatoryDetailsUser.email,
@@ -35,23 +34,19 @@ test.describe('Portal Authentication - Successful Login Flows', () => {
     // 2. Assert: Must land on Mandatory Details Page
     await expect(mandatoryDetailsPage.mandatoryDetailsIdentifier).toBeVisible();
 
-    // 3. Act: Fill out all the mandatory fields
+    // 3. Act: Fill out all the mandatory fields using central test data
     const dummyImagePath = path.join(__dirname, '../../test-data', 'dummy-id.jpg');
 
     await mandatoryDetailsPage.fillMandatoryFields({
-      gender: 'Other',
-      department: 'Engineering',
-      degree: 'B.Tech',
-      designation: 'QA Engineer',
-      batch: '2026',
-      nationality: 'India',
+      gender: mandatoryData.gender,
+      department: mandatoryData.department,
+      degree: mandatoryData.degree,
+      designation: mandatoryData.designation,
+      batch: mandatoryData.batch,
+      nationality: mandatoryData.nationality,
       idDocumentFrontPath: dummyImagePath,
       idDocumentBackPath: dummyImagePath
     });
-
-    if (process.argv.includes('--headed')) {
-      await page.waitForTimeout(2000);
-    }
 
     await mandatoryDetailsPage.submitForm();
 

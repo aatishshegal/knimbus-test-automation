@@ -91,6 +91,12 @@ export class ProfilePage extends BasePage {
     await this.saveBtn.click();
   }
 
+  async cancelIfVisible() {
+    if (await this.cancelBtn.isVisible()) {
+      await this.cancelBtn.click();
+    }
+  }
+
   getLocator(fieldName: string): Locator {
     const fieldMap: Record<string, Locator> = {
       'fullName': this.fullNameInput,

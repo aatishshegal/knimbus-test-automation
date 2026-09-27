@@ -91,79 +91,67 @@ export class RegistrationPage extends BasePage {
   }
 
   /**
-   * Executes a list of dynamic field validation scenarios.
-   * This logic is encapsulated here to keep the test spec linear and logicless.
+   * Validates a single scenario using web-first soft assertions.
    */
-  async executeValidationScenarios(scenarios: any[], logResultCallback: (data: any, passed: boolean, message: string) => void) {
-    for (const data of scenarios) {
-        console.log(`Testing Scenario: ${data.scenario}`);
+  async validateFieldScenario(data: any) {
+    const targetField = (this as any)[data.field] as Locator;
+    if (!targetField) {
+      expect.soft(false, `Locator for field '${data.field}' is not mapped in RegistrationPage`).toBeTruthy();
+      return;
+    }
 
-        // Fetch the target locator from the RegistrationPage object dynamically based on the field name in JSON
-        const targetField = (this as any)[data.field] as Locator;
+    try {
+      const tagName = await targetField.evaluate((el: HTMLElement) => el.tagName.toLowerCase()).catch(() => 'input');
+      if (tagName !== 'select' && data.field !== 'idDocumentFront' && data.field !== 'idDocumentBack') {
+        await targetField.clear({ timeout: 1000 });
+      }
 
-        let resultStatus = 'Passed';
-        let resultDetails = '';
-
-        if (targetField) {
-            try {
-                const tagName = await targetField.evaluate((el: HTMLElement) => el.tagName.toLowerCase()).catch(() => 'input');
-                // Always clear the existing value before filling per user requirement, EXCEPT for file inputs and selects
-                if (tagName !== 'select' && data.field !== 'idDocumentFront' && data.field !== 'idDocumentBack') {
-                    await targetField.clear({ timeout: 1000 });
-                }
-
-                if (data.field === 'idDocumentFront' || data.field === 'idDocumentBack') {
-                    const filePath = `tests/test-data/files/${data.value}`;
-                    await targetField.setInputFiles(filePath, { timeout: 1000 });
-                }
-                else if (tagName === 'select') {
-                    if (data.value === 'BLANK') {
-                        await targetField.selectOption({ index: 0 }, { timeout: 1000 }).catch(() => {});
-                    } else {
-                        await targetField.selectOption(data.value, { timeout: 1000 }).catch(() => {});
-                    }
-                }
-                else {
-                    if (data.value !== 'BLANK') {
-                        await targetField.fill(data.value, { timeout: 1000 });
-                        await targetField.blur();
-                    }
-                }
-
-                // Verify Validation State
-                if (data.expectedValidity === 'invalid') {
-                    const validationMessage = await targetField.evaluate((el: HTMLInputElement) => el.validationMessage).catch(() => '');
-                    const isCssInvalid = await targetField.evaluate((el: HTMLElement) => el.classList.contains('is-invalid') || el.classList.contains('ng-invalid')).catch(() => false);
-                    
-                    if (!validationMessage && !isCssInvalid) {
-                        resultStatus = 'Failed';
-                        resultDetails = 'Field accepted invalid input without triggering HTML5 or CSS validation.';
-                    } else {
-                        resultDetails = `Validation triggered successfully. Message: ${validationMessage}`;
-                    }
-                }
-                else if (data.expectedValidity === 'valid') {
-                     const isCssInvalid = await targetField.evaluate((el: HTMLElement) => el.classList.contains('is-invalid')).catch(() => false);
-                     if (isCssInvalid) {
-                         resultStatus = 'Failed';
-                         resultDetails = 'Field incorrectly flagged valid input as invalid.';
-                     } else {
-                         resultDetails = 'Input accepted as valid.';
-                     }
-                }
-
-            } catch (e) {
-                resultStatus = 'Failed';
-                resultDetails = `Error interacting with field: ${(e as Error).message}`;
-            }
+      if (data.field === 'idDocumentFront' || data.field === 'idDocumentBack') {
+        const filePath = `tests/test-data/files/${data.value}`;
+        await targetField.setInputFiles(filePath, { timeout: 1000 });
+      } else if (tagName === 'select') {
+        if (data.value === 'BLANK') {
+          await targetField.selectOption({ index: 0 }, { timeout: 1000 }).catch(() => {});
         } else {
-            resultStatus = 'Failed';
-            resultDetails = `Locator for field '${data.field}' not mapped in RegistrationPage.`;
+          await targetField.selectOption(data.value, { timeout: 1000 }).catch(() => {});
         }
+      } else {
+        if (data.value !== 'BLANK') {
+          await targetField.fill(data.value, { timeout: 1000 });
+          await targetField.blur();
+        }
+      }
 
-        const passed = resultStatus === 'Passed';
-        logResultCallback(data, passed, resultDetails);
-        expect.soft(passed, resultDetails).toBeTruthy();
+      if (data.expectedValidity === 'invalid') {
+        const validationMessage = await targetField.evaluate((el: HTMLInputElement) => el.validationMessage).catch(() => '');
+        const isCssInvalid = await targetField.evaluate((el: HTMLElement) => el.classList.contains('is-invalid') || el.classList.contains('ng-invalid')).catch(() => false);
+        const isInvalid = !!validationMessage || isCssInvalid;
+        expect.soft(isInvalid, `[${data.field}] Scenario '${data.scenario}' failed: Accepted invalid value '${data.value}' without triggering validation`).toBeTruthy();
+      } else if (data.expectedValidity === 'valid') {
+        const isCssInvalid = await targetField.evaluate((el: HTMLElement) => el.classList.contains('is-invalid')).catch(() => false);
+        expect.soft(!isCssInvalid, `[${data.field}] Scenario '${data.scenario}' failed: Valid value '${data.value}' was incorrectly flagged as invalid`).toBeTruthy();
+      }
+    } catch (e) {
+      expect.soft(false, `[${data.field}] Scenario '${data.scenario}' error: ${(e as Error).message}`).toBeTruthy();
+    }
+  }
+
+  /**
+   * Iterates through scenarios matching the given fields array, encapsulating loops inside the POM.
+   */
+  async validateScenariosForFields(fields: string[], allScenarios: any[]) {
+    const scenarios = allScenarios.filter((s: any) => fields.includes(s.field));
+    for (const scenario of scenarios) {
+      await this.validateFieldScenario(scenario);
+    }
+  }
+
+  /**
+   * Legacy batch validation method maintained for backwards compatibility.
+   */
+  async executeValidationScenarios(scenarios: any[], logResultCallback?: (data: any, passed: boolean, message: string) => void) {
+    for (const data of scenarios) {
+      await this.validateFieldScenario(data);
     }
   }
 }

@@ -1,9 +1,8 @@
 import { test, expect } from '../../../src/fixtures';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import validationData from '../../test-data/field-validation-data.json';
-import { Locator } from '@playwright/test';
 
-test.describe('Registration Form Field Validation', () => {
+test.describe('Registration Form - Boundary Validations', () => {
     test.beforeAll(async () => {
         const adminApi = new AdminApiService();
         await adminApi.login();
@@ -14,52 +13,48 @@ test.describe('Registration Form Field Validation', () => {
         await adminApi.close();
     });
 
-    // Increase timeout to 300 seconds to safely allow all 70 data-driven scenarios to finish
-    test.setTimeout(300000);
+    test.afterAll(async () => {
+        const adminApi = new AdminApiService();
+        await adminApi.login();
+        await adminApi.updateSecuritySettings({
+            automatedVerification: true,
+            mandatoryFields: { fields: [], isMandatory: false }
+        });
+        await adminApi.close();
+    });
 
-    test('Verify Registration Form fields enforce minimum and maximum character/value boundaries (data-driven test)', async ({ page, portalLoginPage, registrationPage }, testInfo) => {
-        // 1. Navigate to Registration Form
+    test.beforeEach(async ({ portalLoginPage, registrationPage }) => {
         await portalLoginPage.navigateTo(process.env.PORTAL_URL!);
         await portalLoginPage.signInPopupTrigger.click();
         await portalLoginPage.signUpLink.click();
         await expect(registrationPage.registrationPageIdentifier).toBeVisible();
+    });
 
-        // 3. Prepare CSV Report array
-        const reportData: any[] = [];
-        const csvHeader = 'Scenario,Field,Test Value,Expected Error,Result,Details\n';
-        
-        const logResult = (data: any, passed: boolean, details: string) => {
-            const status = passed ? 'Passed' : 'Failed';
-            const cleanDetails = details.replace(/[\n\r,]/g, ' '); // Clean for CSV
-            reportData.push(`"${data.scenario}","${data.field}","${data.value || 'BLANK'}","${data.expectedError || 'N/A'}","${status}","${cleanDetails}"\n`);
-        };
+    test('Registration - Full Name field input boundary validations', async ({ registrationPage }) => {
+        await registrationPage.validateScenariosForFields(['FullName'], validationData.scenarios);
+    });
 
-        // Iterate through all validation scenarios using the encapsulated POM method
-        await registrationPage.executeValidationScenarios(validationData.scenarios, logResult);
+    test('Registration - Email format and boundary validations', async ({ registrationPage }) => {
+        await registrationPage.validateScenariosForFields(['Email'], validationData.scenarios);
+    });
 
-        // 5. Generate dynamic CSV Report with IST timestamp
-        const now = new Date();
-        const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000)); // Add 5.5 hours for IST
-        const timestamp = istTime.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0] + '_IST';
-        const fs = require('fs');
-        const csvContent = csvHeader + reportData.join('');
-        
-        // Save to actual report section (test-results directory)
-        const reportDir = 'test-results';
-        const reportPath = `${reportDir}/Validation_Report_${timestamp}.csv`;
-        
-        if (!fs.existsSync(reportDir)) {
-            fs.mkdirSync(reportDir, { recursive: true });
-        }
-        
-        fs.writeFileSync(reportPath, csvContent);
-        
-        // Attach the report to the Playwright HTML report
-        await testInfo.attach('Validation Report', {
-            body: csvContent,
-            contentType: 'text/csv'
-        });
-        
-        console.log(`\n✅ CSV Report generated successfully: ${reportPath}\n`);
+    test('Registration - Password security and character boundary validations', async ({ registrationPage }) => {
+        await registrationPage.validateScenariosForFields(['Password'], validationData.scenarios);
+    });
+
+    test('Registration - Mobile and Contact number validations', async ({ registrationPage }) => {
+        await registrationPage.validateScenariosForFields(['mobile', 'officePhone', 'residentialPhone'], validationData.scenarios);
+    });
+
+    test('Registration - Academic and Enrollment details validations', async ({ registrationPage }) => {
+        await registrationPage.validateScenariosForFields(['college', 'department', 'qualification', 'admissionYear', 'idNumber', 'areaOfStudy'], validationData.scenarios);
+    });
+
+    test('Registration - Address, Nationality, and Membership details validations', async ({ registrationPage }) => {
+        await registrationPage.validateScenariosForFields(['residentialAddress', 'officeAddress', 'nationality', 'membershipStatus', 'membershipType', 'summary', 'cadre', 'batch', 'rank', 'designation'], validationData.scenarios);
+    });
+
+    test('Registration - ID Document upload format and size validations', async ({ registrationPage }) => {
+        await registrationPage.validateScenariosForFields(['idDocumentFront'], validationData.scenarios);
     });
 });

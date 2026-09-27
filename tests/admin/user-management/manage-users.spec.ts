@@ -287,102 +287,195 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickSendNotification(testEmail1);
+        await expect(manageUsersPage.notificationModal).toBeVisible();
         
-        const modal = page.locator('.modal.show, .modal');
-        await expect(modal).toBeVisible();
-        
-        // Just cancel the modal
-        await manageUsersPage.closeModal(modal);
-        await expect(modal).not.toBeVisible();
+        // Cancel the modal
+        await manageUsersPage.notificationCancelBtn.click();
+        await expect(manageUsersPage.notificationModal).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Export usage log opens export modal', async ({ page }) => {
+    test('TC_Manage_Users Send notification close via top cross icon discards modal', async ({ page }) => {
+        const manageUsersPage = new ManageUsersPage(page);
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(testEmail1);
+        
+        await manageUsersPage.clickSendNotification(testEmail1);
+        await expect(manageUsersPage.notificationModal).toBeVisible();
+        
+        await manageUsersPage.notificationCloseCrossBtn.click();
+        await expect(manageUsersPage.notificationModal).not.toBeVisible();
+    });
+
+    test('TC_Manage_Users Send notification form fields validation and dynamic send button state', async ({ page }) => {
+        const manageUsersPage = new ManageUsersPage(page);
+        const notifData = adminData.userManagement.notification;
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(testEmail1);
+        
+        await manageUsersPage.clickSendNotification(testEmail1);
+        await expect(manageUsersPage.notificationModal).toBeVisible();
+
+        // Verify initial state: Send button disabled and initial char counter present
+        await expect(manageUsersPage.notificationSendBtn).toBeDisabled();
+        await expect(manageUsersPage.notificationCharCounter).toHaveText(notifData.remainingCharInitial);
+
+        // Fill Title only -> Send button must remain disabled
+        await manageUsersPage.fillNotificationTitle(notifData.sampleTitle);
+        await expect(manageUsersPage.notificationSendBtn).toBeDisabled();
+
+        // Fill Description -> Send button must become enabled
+        await manageUsersPage.fillNotificationDescription(notifData.sampleDescription);
+        await expect(manageUsersPage.notificationSendBtn).toBeEnabled();
+
+        // Verify remaining character counter dynamically decremented
+        await expect(manageUsersPage.notificationCharCounter).not.toHaveText(notifData.remainingCharInitial);
+
+        // Clear Title -> Send button must revert to disabled
+        await manageUsersPage.fillNotificationTitle('');
+        await expect(manageUsersPage.notificationSendBtn).toBeDisabled();
+
+        // Refill Title and clear Description -> Send button must remain disabled
+        await manageUsersPage.fillNotificationTitle(notifData.sampleTitle);
+        await manageUsersPage.fillNotificationDescription('');
+        await expect(manageUsersPage.notificationSendBtn).toBeDisabled();
+
+        // Cleanup
+        await manageUsersPage.notificationCancelBtn.click();
+    });
+
+    test('TC_Manage_Users Send notification submit sends notification and closes modal', async ({ page }) => {
+        const manageUsersPage = new ManageUsersPage(page);
+        const notifData = adminData.userManagement.notification;
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(testEmail1);
+        
+        await manageUsersPage.clickSendNotification(testEmail1);
+        await expect(manageUsersPage.notificationModal).toBeVisible();
+
+        await manageUsersPage.fillNotificationTitle(notifData.sampleTitle);
+        await manageUsersPage.fillNotificationDescription(notifData.sampleDescription);
+
+        // Intercept backend API call
+        const apiResponsePromise = page.waitForResponse(
+            res => res.url().includes('/ws/addNotification') && res.status() === 200
+        );
+
+        await manageUsersPage.clickSendNotificationSubmit();
+        const apiResponse = await apiResponsePromise;
+        expect(apiResponse.ok()).toBeTruthy();
+
+        // Modal automatically closes on successful submission
+        await expect(manageUsersPage.notificationModal).not.toBeVisible();
+    });
+
+    test('TC_Manage_Users Send notification pop up shows only Email option for unassigned user', async ({ page }) => {
+        const dashboard = new AdminDashboardLoginPage(page);
+        await dashboard.sidebar.navigateToAddSingleUser();
+        const addUserPage = new AddSingleUserPage(page);
+        const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail8 };
+        delete (userToCreate as any).serviceGroup;
+        await addUserPage.fillRegistrationForm(userToCreate);
+        await addUserPage.submitForm();
+
+        const toastLocator = page.locator('.swal2-toast, .swal2-popup');
+        await expect(toastLocator).toBeVisible({ timeout: 15000 });
+        await expect(toastLocator).not.toBeVisible();
+
+        await dashboard.sidebar.navigateToManageUsers();
+        const manageUsersPage = new ManageUsersPage(page);
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(testEmail8);
+        await manageUsersPage.clickSendNotification(testEmail8);
+
+        await expect(manageUsersPage.notificationModal).toBeVisible();
+        await expect(manageUsersPage.notificationTypeWeb).toBeVisible();
+        await expect(manageUsersPage.notificationTypeMobile).not.toBeVisible();
+        await expect(manageUsersPage.notificationTypeBoth).not.toBeVisible();
+        
+        await manageUsersPage.notificationCancelBtn.click();
+    });
+
+    test('TC_Manage_Users Send notification pop up shows multiple options for user assigned to service group', async ({ page }) => {
+        const dashboard = new AdminDashboardLoginPage(page);
+        await dashboard.sidebar.navigateToAddSingleUser();
+        const addUserPage = new AddSingleUserPage(page);
+        const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail9 };
+        await addUserPage.fillRegistrationForm(userToCreate);
+        await addUserPage.submitForm();
+
+        const toastLocator = page.locator('.swal2-toast, .swal2-popup');
+        await expect(toastLocator).toBeVisible({ timeout: 15000 });
+        await expect(toastLocator).not.toBeVisible();
+
+        await dashboard.sidebar.navigateToManageUsers();
+        const manageUsersPage = new ManageUsersPage(page);
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(testEmail9);
+        await manageUsersPage.verifyAssignedServiceGroup(testEmail9, userToCreate.serviceGroup as string);
+        await manageUsersPage.clickSendNotification(testEmail9);
+
+        await expect(manageUsersPage.notificationModal).toBeVisible();
+        await expect(manageUsersPage.notificationTypeWeb).toBeVisible();
+        await expect(manageUsersPage.notificationTypeMobile).toBeVisible();
+        await expect(manageUsersPage.notificationTypeBoth).toBeVisible();
+
+        // Verify radio button interaction
+        await manageUsersPage.selectNotificationType('Both');
+        await expect(manageUsersPage.notificationTypeBoth).toBeChecked();
+
+        await manageUsersPage.notificationCancelBtn.click();
+    });
+
+    test('TC_Manage_Users Export usage log opens export modal and displays date range', async ({ page }) => {
+        const manageUsersPage = new ManageUsersPage(page);
+        const exportData = adminData.userManagement.exportUsageLog;
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(testEmail1);
+        
+        await manageUsersPage.clickExportUsageLog(testEmail1);
+        await expect(manageUsersPage.exportUsageLogModal).toBeVisible();
+        await expect(manageUsersPage.exportUsageLogModal).toContainText(exportData.promptText);
+        await expect(manageUsersPage.exportUsageLogDateRangeInput).toBeVisible();
+        await expect(manageUsersPage.exportUsageLogDateRangeInput).not.toBeEmpty();
+        
+        // Cancel to verify dismiss
+        await manageUsersPage.exportUsageLogCancelBtn.click();
+        await expect(manageUsersPage.exportUsageLogModal).not.toBeVisible();
+    });
+
+    test('TC_Manage_Users Export usage log close via top cross icon discards modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail1);
         
         await manageUsersPage.clickExportUsageLog(testEmail1);
+        await expect(manageUsersPage.exportUsageLogModal).toBeVisible();
         
-        // Wait for Export Usage Log modal
-        const modal = page.locator('.modal.show, .modal').filter({ hasText: 'Export Usage Log' });
-        await expect(modal).toBeVisible();
-        
-        // Click Cancel to just verify the modal opens without triggering actual export emails/downloads in this simple check
-        await modal.getByRole('button', { name: 'Cancel', exact: true }).click();
-        await expect(modal).not.toBeVisible();
+        await manageUsersPage.exportUsageLogCloseCrossBtn.click();
+        await expect(manageUsersPage.exportUsageLogModal).not.toBeVisible();
     });
-  test('TC_Manage_Users Send notification pop up shows only Email option for unassigned user', async ({ page }) => {
-    const dashboard = new AdminDashboardLoginPage(page);
-    await dashboard.sidebar.navigateToAddSingleUser();
-    const addUserPage = new AddSingleUserPage(page);
-    const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail8 };
-    delete (userToCreate as any).serviceGroup;
-    await addUserPage.fillRegistrationForm(userToCreate);
-    await addUserPage.submitForm();
 
-    const toastLocator = page.locator('.swal2-toast, .swal2-popup');
-    await expect(toastLocator).toBeVisible({ timeout: 15000 });
-    await expect(toastLocator).not.toBeVisible();
+    test('TC_Manage_Users Export usage log triggers CSV download successfully', async ({ page }) => {
+        const manageUsersPage = new ManageUsersPage(page);
+        const exportData = adminData.userManagement.exportUsageLog;
+        await createApiUser(testEmail1);
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(testEmail1);
+        
+        await manageUsersPage.clickExportUsageLog(testEmail1);
+        await expect(manageUsersPage.exportUsageLogModal).toBeVisible();
 
-    await dashboard.sidebar.navigateToManageUsers();
-    const manageUsersPage = new ManageUsersPage(page);
-    if (await manageUsersPage.clearSearchBtn.isVisible()) {
-      await manageUsersPage.clearSearchBtn.click();
-    }
-    await manageUsersPage.searchForUser(testEmail8);
-    await manageUsersPage.clickSendNotification(testEmail8);
+        const download = await manageUsersPage.clickExportUsageLogSubmit();
+        const downloadedFileName = download.suggestedFilename();
+        expect(downloadedFileName.endsWith(exportData.expectedExtension)).toBeTruthy();
 
-    const modal = page.locator('.modal.show, .modal').filter({ hasText: 'Send Notification' });
-    await expect(modal).toBeVisible();
-
-    const emailOption = modal.getByText('Email (On email & web portal)');
-    await expect(emailOption).toBeVisible();
-
-    const pushOption = modal.getByText('Push (On mobile app & in-app)');
-    await expect(pushOption).not.toBeVisible();
-
-    const bothOption = modal.getByText('Both (On email, web portal, mobile app & in-app)');
-    await expect(bothOption).not.toBeVisible();
-    
-    await manageUsersPage.cancelSendNotificationModal(modal);
-  });
-
-  test('TC_Manage_Users Send notification pop up shows multiple options for user assigned to service group', async ({ page }) => {
-    const dashboard = new AdminDashboardLoginPage(page);
-    await dashboard.sidebar.navigateToAddSingleUser();
-    const addUserPage = new AddSingleUserPage(page);
-    const userToCreate = { ...adminData.userManagement.newUserData, email: testEmail9 };
-    await addUserPage.fillRegistrationForm(userToCreate);
-    await addUserPage.submitForm();
-
-    const toastLocator = page.locator('.swal2-toast, .swal2-popup');
-    await expect(toastLocator).toBeVisible({ timeout: 15000 });
-    await expect(toastLocator).not.toBeVisible();
-
-    await dashboard.sidebar.navigateToManageUsers();
-    const manageUsersPage = new ManageUsersPage(page);
-    if (await manageUsersPage.clearSearchBtn.isVisible()) {
-      await manageUsersPage.clearSearchBtn.click();
-    }
-    await manageUsersPage.searchForUser(testEmail9);
-    await manageUsersPage.verifyAssignedServiceGroup(testEmail9, userToCreate.serviceGroup as string);
-    await manageUsersPage.clickSendNotification(testEmail9);
-
-    const modal = page.locator('.modal.show, .modal').filter({ hasText: 'Send Notification' });
-    await expect(modal).toBeVisible();
-
-    const emailOption = modal.getByText('Email (On email & web portal)');
-    await expect(emailOption).toBeVisible();
-
-    const pushOption = modal.getByText('Push (On mobile app & in-app)');
-    await expect(pushOption).toBeVisible();
-
-    const bothOption = modal.getByText('Both (On email, web portal, mobile app & in-app)');
-    await expect(bothOption).toBeVisible();
-
-    await manageUsersPage.cancelSendNotificationModal(modal);
-  });
+        await expect(manageUsersPage.exportUsageLogModal).not.toBeVisible();
+    });
 
 
 

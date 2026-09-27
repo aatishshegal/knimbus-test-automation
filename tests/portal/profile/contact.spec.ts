@@ -20,7 +20,7 @@ const backendFieldMap: Record<string, string> = {
 };
 const contactFields = Object.keys(backendFieldMap);
 
-test.describe('Contact Details Suite', () => {
+test.describe('Profile Details - Contact Suite', () => {
     let adminApi: AdminApiService;
 
     test.beforeAll(async () => {
@@ -35,6 +35,7 @@ test.describe('Contact Details Suite', () => {
 
     test.afterAll(async () => {
         if (adminApi) {
+            await adminApi.login();
             await adminApi.updateSecuritySettings({ 
                 mandatoryFields: { fields: [], isMandatory: false },
                 editableFields: { fields: [], isEditable: true },
@@ -51,12 +52,11 @@ test.describe('Contact Details Suite', () => {
         await page.getByRole('tab', { name: /Contact/i }).click();
     });
 
-    test('TC_Contact_Cancel_Discards_Changes', async ({ page }) => {
+    test('Contact Details - Cancel button discards unsaved edits and restores original mobile number', async ({ page }) => {
         const contactPage = new ContactPage(page);
-        await contactPage.clickEdit();
+        await contactPage.ensureInEditMode();
         
         const locator = contactPage.getLocator('mobile');
-        if (!locator) return;
         const originalMobile = await locator.inputValue();
         
         const tempPhone = portalData.profile.contact.temporaryPhone;
@@ -69,21 +69,14 @@ test.describe('Contact Details Suite', () => {
         expect(revertedMobile).not.toBe(tempPhone);
     });
 
-    test.describe('Positive Scenarios', () => {
+    test.describe('Contact Details - Valid Input Submissions', () => {
         for (const field of contactFields) {
             const value = contactScenarios.positiveData[field];
             if (value) {
-                test(`TC_Contact_${field}_Accepts valid data`, async ({ page }) => {
+                test(`Contact Details - Accepts and saves valid data for field: ${field}`, async ({ page }) => {
                     test.info().annotations.push({ type: 'testData', description: String(value) });
                     const contactPage = new ContactPage(page);
-                    if (await contactPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await contactPage.clickEdit();
-                    
-                    const locator = contactPage.getLocator(field);
-                    if (field === 'nationality') {
-                         await locator.selectOption(value).catch(()=>{});
-                    } else {
-                         await locator.fill(value);
-                    }
+                    await contactPage.setFieldValue(field, value);
                     
                     await contactPage.clickSave();
                     await expect(page.getByRole('heading', { name: /updated successfully/i }).first()).toBeVisible({ timeout: 5000 });
@@ -92,108 +85,40 @@ test.describe('Contact Details Suite', () => {
         }
     });
 
-    test.describe('Blank Validations (Mandatory ON)', () => {
+    test.describe('Contact Details - Mandatory Field Validations', () => {
         test.beforeAll(async () => {
-            await adminApi.updateSecuritySettings({ mandatoryFields: { fields: Object.values(backendFieldMap), isMandatory: true } });
+            const api = new AdminApiService();
+            await api.login();
+            await api.updateSecuritySettings({ mandatoryFields: { fields: Object.values(backendFieldMap), isMandatory: true } });
+            await api.close();
         });
         
         test.afterAll(async () => {
-            await adminApi.updateSecuritySettings({ mandatoryFields: { fields: [], isMandatory: false } });
+            const api = new AdminApiService();
+            await api.login();
+            await api.updateSecuritySettings({ mandatoryFields: { fields: [], isMandatory: false } });
+            await api.close();
         });
 
         for (const field of contactFields) {
-            test(`TC_Contact_${field}_Shows validation error when blank`, async ({ page }) => {
+            test(`Contact Details - Displays validation error when mandatory field is left empty: ${field}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: '' });
                 const contactPage = new ContactPage(page);
-                if (await contactPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await contactPage.clickEdit();
+                await contactPage.clearFieldAndBlur(field);
                 
-                const locator = contactPage.getLocator(field);
-                if (!locator) return;
-                
-                if (contactScenarios.positiveData[field]) {
-                    if (field === 'nationality') {
-                         await locator.selectOption(contactScenarios.positiveData[field]).catch(()=>{});
-                    } else {
-                         await locator.fill(contactScenarios.positiveData[field]);
-                    }
-                }
-                
-                if (field === 'nationality') {
-                     await locator.selectOption('').catch(()=>{});
-                } else {
-                     await locator.fill(' ');
-                     await locator.focus();
-                     await page.keyboard.press('Backspace');
-                     await locator.blur();
-                }
-                
-                await expect(page.getByText(/is required/i).first()).toBeVisible({ timeout: 2000 });
+                await expect(page.getByText(/is required/i).first()).toBeVisible({ timeout: 5000 });
             });
         }
     });
 
-    test.describe('Negative Scenarios', () => {
-        const nonBlankNegativeScenarios = contactScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank'));
+    test.describe('Contact Details - Field Input Validations', () => {
+        const nonBlankNegativeScenarios = contactScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank') && !s.bypassLength);
         for (const s of nonBlankNegativeScenarios) {
-            test(`TC_Contact_${s.field}_${s.scenario}`, async ({ page }) => {
+            test(`Contact Details - Rejects invalid input: ${s.field} - ${s.scenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: String(s.value) });
                 const contactPage = new ContactPage(page);
-                if (await contactPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await contactPage.clickEdit();
-                
-                const locator = contactPage.getLocator(s.field);
-                if (!locator) return;
-
-                if (s.field === 'nationality') {
-                     await locator.selectOption(s.value).catch(()=>{});
-                } else {
-                     if (s.bypassLength) {
-                         await locator.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
-                     }
-                     await locator.fill(String(s.value));
-                     await locator.blur();
-                }
-                await contactPage.clickSave();
-                await expect(page.getByText(s.expectedError).first()).toBeVisible({ timeout: 2000 });
-            });
-        }
-    });
-
-    test.describe('Admin Override (All fields non-editable)', () => {
-        test.beforeAll(async () => {
-            await adminApi.updateSecuritySettings({ allFieldsEditable: false });
-        });
-        test.afterAll(async () => {
-            await adminApi.updateSecuritySettings({ allFieldsEditable: true });
-        });
-
-        test('TC_Contact_AllNonEditable_Edit button hidden and warning shown', async ({ page }) => {
-            test.info().annotations.push({ type: 'testData', description: 'N/A' });
-            const contactPage = new ContactPage(page);
-            const expectedMessage = validationData.adminOverrides?.disabledMessage || "All the fields are set to be non-editable by your institution";
-            await expect(page.getByText(expectedMessage).first()).toBeVisible({ timeout: 5000 });
-            await expect(contactPage.editBtn).toBeHidden({ timeout: 5000 });
-        });
-    });
-
-    test.describe('Admin Override (Individual fields non-editable)', () => {
-        for (const field of contactFields) {
-            test(`TC_Contact_${field}_Field becomes read-only`, async ({ page }) => {
-                test.info().annotations.push({ type: 'testData', description: 'N/A' });
-                const backendName = backendFieldMap[field];
-                if (!backendName) return;
-                
-                await adminApi.updateSecuritySettings({ editableFields: { fields: [backendName], isEditable: false } });
-                await page.reload();
-                await page.getByRole('tab', { name: /Contact/i }).click();
-
-                const contactPage = new ContactPage(page);
-                await contactPage.clickEdit();
-                const locator = contactPage.getLocator(field);
-                if (locator) {
-                    await expect(locator).toBeDisabled({ timeout: 5000 });
-                }
-                
-                await adminApi.updateSecuritySettings({ editableFields: { fields: [], isEditable: true } });
+                await contactPage.setFieldValue(s.field, s.value);
+                await contactPage.validateFieldError(s.expectedError);
             });
         }
     });

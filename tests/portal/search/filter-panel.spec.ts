@@ -166,18 +166,11 @@ test.describe('Search Filter Panel Scenarios', () => {
     
     await test.step(`Verify "Showing [count]" matches the applied filter's original count`, async () => {
       const currentCount = await filterPanel.getResultCountText();
-      console.log(`[LOG] Global "Showing X for Y" count after first filter: ${currentCount}`);
-      // Only do exact match if count is > 0 and exists, otherwise just check it reduced
-      if (expectedCountCategory1 > 0) {
-        expect(currentCount).toBe(expectedCountCategory1);
-      } else {
-        expect(currentCount).toBeLessThanOrEqual(initialResultCount);
-      }
+      filterPanel.assertResultCountMatches(currentCount, expectedCountCategory1, initialResultCount);
     });
     
     await test.step(`Check count for "${category2Values[0]}" in category "${category2}" before applying`, async () => {
       expectedCountCategory2 = await filterPanel.getFilterValueCount(category2, category2Values[0]);
-      console.log(`[LOG] Extracted count from label "${category2Values[0]}": ${expectedCountCategory2}`);
     });
     
     await test.step(`Apply filter "${category2Values[0]}" in category "${category2}"`, async () => {
@@ -186,12 +179,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     
     await test.step(`Verify "Showing [count]" strictly matches the second applied filter's count`, async () => {
       const currentCount = await filterPanel.getResultCountText();
-      console.log(`[LOG] Global "Showing X for Y" count after second filter: ${currentCount}`);
-      if (expectedCountCategory2 > 0) {
-        expect(currentCount).toBe(expectedCountCategory2);
-      } else {
-        expect(currentCount).toBeLessThanOrEqual(expectedCountCategory1 || initialResultCount);
-      }
+      filterPanel.assertResultCountMatches(currentCount, expectedCountCategory2, expectedCountCategory1 || initialResultCount);
     });
     
     await test.step(`Verify both filter chips are present in the applied section`, async () => {

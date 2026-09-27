@@ -9,8 +9,7 @@ test.describe('Home Page - Academic Subjects', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  test('Verify all academic subjects are clickable and navigate correctly', async ({ homePage }) => {
-    // Calling the helper method to handle loop iteration inside the POM
+  test('Home Page - Academic subjects navigate to corresponding subject search results when clicked', async ({ homePage }) => {
     await homePage.verifyWidgetItemsClickable(widgetTitle, portalData.expectedSubjects.data);
   });
 });
