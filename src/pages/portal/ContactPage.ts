@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from '../BasePage';
 
 export class ContactPage extends BasePage {
@@ -22,7 +22,7 @@ export class ContactPage extends BasePage {
 
     // Core Elements scoped to Contact panel to avoid strict mode violations
     const panel = page.locator('.tab-pane.active').first();
-    this.pageHeader = panel.getByRole('heading', { name: 'Contact Details' }).or(page.getByRole('heading', { name: 'Contact' }));
+    this.pageHeader = panel.getByRole('heading', { name: /Contact/i });
     this.editBtn = panel.locator('.edit-btn');
     this.saveBtn = panel.getByRole('button', { name: 'Save' });
     this.cancelBtn = panel.getByRole('button', { name: 'Cancel' });
@@ -46,6 +46,39 @@ export class ContactPage extends BasePage {
 
   async clickCancel() {
     await this.cancelBtn.click();
+  }
+
+  async ensureInEditMode() {
+    if (await this.editBtn.isVisible()) {
+      await this.clickEdit();
+    }
+  }
+
+  async setFieldValue(field: string, value: string) {
+    await this.ensureInEditMode();
+    const locator = this.getLocator(field);
+    if (field === 'nationality') {
+      await locator.selectOption(value);
+    } else {
+      await locator.fill(value);
+    }
+  }
+
+  async clearFieldAndBlur(field: string) {
+    await this.ensureInEditMode();
+    const locator = this.getLocator(field);
+    if (field === 'nationality') {
+      await locator.selectOption('');
+    } else {
+      await locator.fill(' ');
+      await locator.focus();
+      await this.page.keyboard.press('Backspace');
+      await locator.blur();
+    }
+  }
+
+  async validateFieldError(expectedError: string) {
+    await expect(this.page.getByText(expectedError, { exact: false }).first()).toBeVisible({ timeout: 5000 });
   }
 
   getLocator(fieldName: string): Locator {

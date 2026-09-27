@@ -20,11 +20,11 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
                 await tabLocator.click();
             });
 
-            test(`Verify presence of Select All button in ${tab} tab`, async ({ researchPlusPage }) => {
+            test(`Research Plus - ${tab} tab displays Select All button`, async ({ researchPlusPage }) => {
                 await expect(researchPlusPage.selectAllButton).toBeVisible();
             });
 
-            test(`Verify click on Select All selects all sources and updates to Default in ${tab} tab`, async ({ researchPlusPage }) => {
+            test(`Research Plus - ${tab} tab Select All checks all resources and toggles button to Default`, async ({ researchPlusPage }) => {
                 await researchPlusPage.selectAllButton.click();
                 
                 // Ensure the list is populated and checkboxes are checked
@@ -35,7 +35,7 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
                 await expect(researchPlusPage.selectAllButton).toBeHidden();
             });
 
-            test(`Verify click on Default restores Select All and partial selection in ${tab} tab`, async ({ researchPlusPage }) => {
+            test(`Research Plus - ${tab} tab Default button restores initial resource selection`, async ({ researchPlusPage }) => {
                 await researchPlusPage.selectAllButton.click();
                 await researchPlusPage.defaultButton.click();
                 
@@ -43,15 +43,14 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
                 await expect(researchPlusPage.defaultButton).toBeHidden();
                 
                 // Ensure some are selected and some are not (default state)
-                // We just verify that not ALL of them are selected anymore.
                 await researchPlusPage.verifyResourcesPartiallyChecked();
             });
 
-            test(`Verify presence of Clear All button in ${tab} tab`, async ({ researchPlusPage }) => {
+            test(`Research Plus - ${tab} tab displays Clear All button`, async ({ researchPlusPage }) => {
                 await expect(researchPlusPage.clearAllButton).toBeVisible();
             });
 
-            test(`Verify click on Clear All deselects sources and disables Search button in ${tab} tab`, async ({ researchPlusPage }) => {
+            test(`Research Plus - ${tab} tab Clear All deselects all resources and disables Search`, async ({ researchPlusPage }) => {
                 // We need to have some query to enable Search button
                 const fallbackQuery = portalData.researchPlusAdvancedSearch.defaultFallbackSearch;
                 await researchPlusPage.searchBarInput1.fill(advancedSearchData.formReset?.query || fallbackQuery);
@@ -71,19 +70,16 @@ test.describe('Research+ Advanced Search - Select Resources', () => {
                 await expect(researchPlusPage.searchButton).toBeDisabled();
             });
 
-            test(`Verify searching within ${tab} tab filters listed sources`, async ({ researchPlusPage }) => {
+            test(`Research Plus - ${tab} tab search input filters displayed resources by keyword`, async ({ researchPlusPage }) => {
                 const queryKey = tab as keyof typeof advancedSearchData.selectResources.searchQueries;
                 const searchQuery = advancedSearchData.selectResources.searchQueries[queryKey];
                 
                 await researchPlusPage.sourceSearchInput.fill(searchQuery);
-                await researchPlusPage.page.waitForTimeout(1000); // Wait for filtering to happen
 
-                // Verify at least one result shows up and contains the text
+                // Verify filtered results show up and contain the search text
+                await expect(researchPlusPage.allResourcesList.first()).toContainText(searchQuery, { ignoreCase: true });
                 const visibleCount = await researchPlusPage.allResourcesList.count();
                 expect(visibleCount).toBeGreaterThan(0);
-                
-                const firstResourceText = await researchPlusPage.allResourcesList.first().innerText();
-                expect(firstResourceText.toLowerCase()).toContain(searchQuery.toLowerCase());
             });
         });
     }

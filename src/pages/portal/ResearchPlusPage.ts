@@ -64,8 +64,8 @@ export class ResearchPlusPage extends BasePage {
     this.resetAllButton = page.locator('button[type="reset"]');
     
     // Publication Year Fields
-    this.fromYearInput = page.locator('input').filter({ hasAttribute: /name|placeholder/i, hasText: /from|start|year/i }).first().or(page.locator('input[name*="from"], input[placeholder*="From Year"]')).first();
-    this.toYearInput = page.locator('input').filter({ hasAttribute: /name|placeholder/i, hasText: /to|end|year/i }).first().or(page.locator('input[name*="to"], input[placeholder*="To Year"]')).first();
+    this.fromYearInput = page.locator('input[name*="from"], input[placeholder*="From Year"]').first();
+    this.toYearInput = page.locator('input[name*="to"], input[placeholder*="To Year"]').first();
     
     // Locators for results validation
     this.showingCountIndicator = page.locator('.showing-count').filter({ hasText: 'Showing' });
@@ -83,12 +83,12 @@ export class ResearchPlusPage extends BasePage {
     this.historyTab = page.locator('.nav-item').filter({ hasText: /History/i }).locator('a, input').first();
     
     // Action buttons inside the resource box
-    this.clearAllButton = page.getByRole('button', { name: /Clear all/i }).or(page.locator('button').filter({ hasText: /Clear all/i }));
-    this.selectAllButton = page.getByRole('button', { name: /Select all/i }).or(page.locator('button').filter({ hasText: /Select all/i }));
-    this.defaultButton = page.getByRole('button', { name: /Default/i }).or(page.locator('button').filter({ hasText: /Default/i }));
+    this.clearAllButton = page.getByRole('button', { name: 'Clear all', exact: false });
+    this.selectAllButton = page.getByRole('button', { name: 'Select all', exact: false });
+    this.defaultButton = page.getByRole('button', { name: 'Default', exact: true });
     
     // Search input for resources
-    this.sourceSearchInput = page.getByPlaceholder('Search within').or(page.locator('input[placeholder*="Search within"]'));
+    this.sourceSearchInput = page.getByPlaceholder('Search within');
     
     // The list of resources (checkbox containers)
     // Only search within the active tab to prevent counting hidden resources from other tabs
@@ -130,8 +130,8 @@ export class ResearchPlusPage extends BasePage {
 
   async verifyResultsPaintedAndNoTabs() {
     // 1. Verify the result count indicator is visible (Results are painted)
-    // Increased timeout to 45s because federated search over multiple third-party sources can be slow.
-    await expect(this.showingCountIndicator).toBeVisible({ timeout: 45000 });
+    // Increased timeout to 90s because federated search over multiple third-party sources can be slow.
+    await expect(this.showingCountIndicator).toBeVisible({ timeout: 90000 });
     
     // 2. Verify that global search menus like eCatalog, Section, Multimedia (tabs) do NOT exist
     await expect(this.resultPageTabs).toBeHidden();
@@ -142,15 +142,58 @@ export class ResearchPlusPage extends BasePage {
     await this.clickElement(this.clearAllButton, 'Clear All Button');
   }
 
-  async selectRandomResources(count: number, allowedSources?: string[]): Promise<string[]> {
-    const selectedNames: string[] = [];
+  async executeQueryTypeSearch(queryType: string, query: string, action: string, specificSource?: string) {
+    await this.clickElement(this.allTab, 'All Tab');
+    if (action === 'selectSpecific' && specificSource) {
+      await this.clickElement(this.clearAllButton, 'Clear All Button');
+      await this.selectSpecificResources([specificSource]);
+    }
+    await this.queryTypeDropdown1.selectOption({ label: queryType });
+    await this.fillText(this.searchBarInput1, query, 'Research+ Search Input');
+    await this.clickElement(this.searchButton, 'Research+ Search Button');
+    await expect(this.showingCountIndicator).toBeVisible({ timeout: 90000 });
+  }
+
+  async getRenderedResultCount(): Promise<number> {
+    const countText = await this.showingCountIndicator.innerText();
+    const match = countText.match(/Showing\s+([\d,]+)/);
+    return match ? parseInt(match[1].replace(/,/g, ''), 10) : 0;
+  }
+
+  async triggerRefreshAndGetNewCount(initialCount: number): Promise<number> {
+    const getMoreVis = await this.getMoreButton.isVisible();
+    if (getMoreVis) {
+      await this.clickElement(this.getMoreButton, 'Get More Button');
+    }
+    await expect(this.refreshButton).toBeVisible({ timeout: 90000 });
+    await this.clickElement(this.refreshButton, 'Refresh Button');
     
-    // Ensure the resources list is populated
+    await expect(async () => {
+      const newCount = await this.getRenderedResultCount();
+      expect(newCount).toBeGreaterThan(initialCount);
+    }).toPass({ timeout: 15000 });
+
+    return this.getRenderedResultCount();
+  }
+
+  async triggerGetMoreAndValidatePolling() {
+    await expect(this.pollingHourglass).toBeHidden({ timeout: 90000 });
+    const isRefreshVis = await this.refreshButton.isVisible();
+    if (isRefreshVis) {
+      await this.clickElement(this.refreshButton, 'Refresh Button');
+    }
+    await expect(this.getMoreButton).toBeVisible({ timeout: 15000 });
+    await this.clickElement(this.getMoreButton, 'Get More Button');
+    await expect(this.pollingHourglass).toBeVisible({ timeout: 10000 });
+    await expect(this.pollingHourglass).toBeHidden({ timeout: 90000 });
+  }
+
+  async selectResourcesByCount(count: number, allowedSources?: string[]): Promise<string[]> {
+    const selectedNames: string[] = [];
     await this.allResourcesList.first().waitFor({ state: 'visible' });
     const totalResources = await this.allResourcesList.count();
     
-    // If an allowed list is provided, find the indices of the allowed sources present in the DOM
-    let validIndices: number[] = [];
+    const validIndices: number[] = [];
     for (let i = 0; i < totalResources; i++) {
         const text = await this.allResourcesList.nth(i).locator('.text-truncate').innerText();
         if (!allowedSources || allowedSources.includes(text.trim())) {
@@ -162,21 +205,19 @@ export class ResearchPlusPage extends BasePage {
       throw new Error(`Cannot select ${count} resources, only ${validIndices.length} available out of allowed list.`);
     }
 
-    // Pick random indices from valid indices
-    const selectedIndices = new Set<number>();
-    while (selectedIndices.size < count) {
-      const randomArrIndex = Math.floor(Math.random() * validIndices.length);
-      selectedIndices.add(validIndices[randomArrIndex]);
-    }
-
+    const selectedIndices = validIndices.slice(0, count);
     for (const index of selectedIndices) {
       const resourceLocator = this.allResourcesList.nth(index);
       const resourceName = await resourceLocator.locator('.text-truncate').innerText();
       await this.clickElement(resourceLocator, `Resource: ${resourceName}`);
-      selectedNames.push(resourceName);
+      selectedNames.push(resourceName.trim());
     }
 
     return selectedNames.sort();
+  }
+
+  async selectRandomResources(count: number, allowedSources?: string[]): Promise<string[]> {
+    return this.selectResourcesByCount(count, allowedSources);
   }
 
   async selectSpecificResources(sourceNames: string[]) {

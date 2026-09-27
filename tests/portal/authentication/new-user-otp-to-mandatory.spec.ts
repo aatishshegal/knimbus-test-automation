@@ -1,10 +1,13 @@
 import { test, expect } from '../../../src/fixtures';
 import path from 'path';
 import { YopmailPage } from '../../../src/pages/portal/YopmailPage';
+import portalData from '../../test-data/portal-data.json';
 
-test.describe('OTP and Mandatory Profile Flow', () => {
+const mandatoryData = portalData.mandatoryUserDetails;
 
-  test('Verify user navigates through the Login -> OTP -> Mandatory Details -> Welcome flow', async ({
+test.describe('Portal Authentication - OTP and Mandatory Profile Flow', () => {
+
+  test('Multi-Step Authentication - User completing OTP verification and mandatory details navigates through welcome page', async ({
     portalLoginPage,
     otpPage,
     termsAndConditionsModal,
@@ -34,39 +37,32 @@ test.describe('OTP and Mandatory Profile Flow', () => {
     // Submit the extracted OTP
     await otpPage.submitOtp(otpCode);
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(5000);
 
     // After OTP, T&C might appear before we reach the Mandatory form
     await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
 
     // 4. Verify routing to Mandatory Details Page after successful OTP
-    // Wait for the mandatory details identifier to become visible
     await expect(mandatoryDetailsPage.mandatoryDetailsIdentifier).toBeVisible({ timeout: 15000 });
 
-    // 5. Act: Fill out all the mandatory fields
+    // 5. Act: Fill out all the mandatory fields using central test data
     const dummyImagePath = path.join(__dirname, '../../test-data', 'dummy-id.jpg');
 
     await mandatoryDetailsPage.fillMandatoryFields({
-      gender: 'Other',
-      department: 'Engineering',
-      degree: 'B.Tech',
-      designation: 'QA Engineer',
-      batch: '2026',
-      nationality: 'India',
+      gender: mandatoryData.gender,
+      department: mandatoryData.department,
+      degree: mandatoryData.degree,
+      designation: mandatoryData.designation,
+      batch: mandatoryData.batch,
+      nationality: mandatoryData.nationality,
       idDocumentFrontPath: dummyImagePath,
       idDocumentBackPath: dummyImagePath
     });
-
-    if (process.argv.includes('--headed')) {
-      await page.waitForTimeout(2000); // Small pause for visual confirmation
-    }
 
     await mandatoryDetailsPage.submitForm();
 
     // 6. Verify Welcome Page
     await page.waitForURL(/.*welcome/, { timeout: 15000 });
     await expect(welcomePage.welcomePageIdentifier).toBeVisible();
-
   });
 
 });

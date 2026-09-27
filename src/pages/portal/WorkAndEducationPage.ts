@@ -124,4 +124,78 @@ export class WorkAndEducationPage extends BasePage {
         
         return await form.isVisible();
     }
+
+    async ensureSectionFormOpen(sectionTitle: string) {
+        if (sectionTitle === 'Work Experience') {
+            if (!(await this.jobTitle.isVisible())) {
+                await this.clickAddMore('Work Experience');
+            }
+            await this.jobTitle.waitFor({ state: 'visible', timeout: 15000 });
+        } else if (sectionTitle === 'Education') {
+            if (!(await this.institutionName.isVisible())) {
+                await this.clickAddMore('Education');
+            }
+            await this.institutionName.waitFor({ state: 'visible', timeout: 15000 });
+        }
+    }
+
+    async ensureFieldOfStudiesFormOpen() {
+        if (!(await this.studySub.isVisible())) {
+            const fosHeading = this.page.getByRole('heading', { name: 'Field of Studies', exact: false });
+            const fosContainer = this.page.locator('div').filter({ has: fosHeading }).last();
+            const addMoreBtn = fosContainer.locator('..').getByText('Add more', { exact: true });
+            if (await addMoreBtn.first().isVisible()) {
+                await addMoreBtn.first().click();
+            } else {
+                await fosContainer.locator('..').locator('button, a').filter({ has: this.page.locator('svg') }).first().click();
+            }
+        }
+        await this.studySub.waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    async fillFields(fields: { field: string; value: string }[]) {
+        for (const f of fields) {
+            const loc = this.getLocator(f.field);
+            await loc.fill(f.value);
+        }
+    }
+
+    async createFieldOfStudyEntry(title: string) {
+        await this.ensureFieldOfStudiesFormOpen();
+        await this.studySub.fill(title);
+        const saveBtn = await this.getSaveButton('Field of Studies');
+        await saveBtn.click();
+        await this.getSavedEntry(title).waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    async deleteFieldOfStudyEntry(title: string) {
+        const savedCard = this.page.locator('div')
+            .filter({ has: this.page.getByText(title, { exact: true }) })
+            .filter({ has: this.page.locator('svg') })
+            .last();
+        const editIcon = savedCard.locator('svg').first();
+        await editIcon.click();
+        await this.studySub.waitFor({ state: 'visible', timeout: 15000 });
+
+        const deleteBtn = await this.getDeleteButton('Field of Studies');
+        await deleteBtn.click();
+
+        const confirmBtn = this.page.getByRole('button', { name: /Yes|Confirm|Ok|Delete/i }).first();
+        if (await confirmBtn.isVisible()) {
+            await confirmBtn.click();
+        }
+        await this.page.getByText(title, { exact: true }).waitFor({ state: 'hidden', timeout: 15000 });
+    }
+
+    async createAndVerifyMultipleFieldOfStudyEntries(titles: string[]) {
+        for (const title of titles) {
+            await this.createFieldOfStudyEntry(title);
+        }
+        for (const title of titles) {
+            await this.page.getByText(title, { exact: true }).waitFor({ state: 'visible', timeout: 15000 });
+        }
+        for (const title of titles) {
+            await this.deleteFieldOfStudyEntry(title);
+        }
+    }
 }

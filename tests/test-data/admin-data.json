@@ -1,20 +1,26 @@
 {
   "adminUrls": {
+    "_description": "Where: src/pages/admin/AdminBasePage.ts (Shared across Admin tests) | Class: AdminBasePage | Tests: Base routing & URL navigation for Admin Dashboard",
     "dashboard": "/",
     "userManagement": "/user-management"
   },
   "expectedTitles": {
+    "_description": "Where: tests/admin/auth/admin-login.spec.ts, tests/admin/user-management/add-single-user.spec.ts | Class: AdminDashboardLoginPage, AddSingleUserPage | Tests: TC_Admin_Login_Successful, Admin - Add Single User Success Flow",
     "loginPage": "Knimbus Admin",
     "dashboard": "Codec Network"
   },
   "userManagement": {
+    "_quickFindKeywordsDescription": "Where: tests/admin/user-management/overview.spec.ts | Class: UserMgmtOverviewPage | Tests: TC_UserMgmt_Overview_QuickFind_FiltersUsers (Quick Find search filtering with email and name)",
     "quickFindKeywords": [
       "codec@yopmail.com",
       "network"
     ],
+    "_invalidSearchTermDescription": "Where: tests/admin/user-management/manage-users.spec.ts | Class: ManageUsersPage | Tests: TC_UserMgmt_ManageUsers_EmptyState_InvalidSearch",
     "invalidSearchTerm": "invalid_user_string_1234567890",
+    "_temporarySearchTextDescription": "Where: tests/admin/user-management/overview.spec.ts | Class: UserMgmtOverviewPage | Tests: TC_UserMgmt_Overview_QuickFind_ClearButton",
     "temporarySearchText": "Some text to clear",
     "expectedUrls": {
+      "_description": "Where: tests/admin/user-management/ (overview, manage-users, add-single-user, service-groups) | Class: UserMgmtOverviewPage, ManageUsersPage, AddSingleUserPage, ServiceGroupsPage | Tests: URL route verification across all User Management sub-pages and card navigation",
       "overview": "/userManagement/overview",
       "manageUsers": "/userManagement/manageUsers",
       "ocaRequests": "/ocaPendingRequests",
@@ -26,12 +32,157 @@
       "securitySettings": "/userManagement/securitySettings"
     },
     "newUserData": {
+      "_description": "Where: tests/admin/user-management/ (add-single-user.spec.ts, manage-users.spec.ts, manage-users-profile-overview_user-details.spec.ts) | Class: AddSingleUserPage, ManageUsersPage | Tests: Add single user flow, Manage Users add user modal, seed user profile overview",
       "userName": "Auto Test User",
       "email": "auto_tester_manage@yopmail.com",
       "userType": "Student",
       "gender": "Other",
       "serviceGroup": "tester",
-      "expiryDate": "2026-10-10"
+      "expiryDate": "2026-10-10",
+      "dob": "2000-01-01"
+    },
+    "notification": {
+      "_description": "Where: tests/admin/user-management/manage-users.spec.ts | Class: ManageUsersPage | Tests: TC_UserMgmt_ManageUsers_SendNotification_Modal (Modal title, sample title, description, character countdown)",
+      "modalTitle": "Send Notification",
+      "sampleTitle": "Automated System Notice",
+      "sampleDescription": "This is an automated test notification message.",
+      "remainingCharInitial": "6000 characters remaining"
+    },
+    "exportUsageLog": {
+      "_description": "Where: tests/admin/user-management/manage-users.spec.ts | Class: ManageUsersPage | Tests: TC_UserMgmt_ManageUsers_ExportUsageLog_Modal (Modal title, date prompt, exported file extension)",
+      "modalTitle": "Export Usage Log",
+      "promptText": "Please select a date range below to export usage log.",
+      "expectedExtension": ".csv"
+    },
+    "userProfileOverview": {
+      "_description": "Where: tests/admin/user-management/manage-users-profile-overview_*.spec.ts | Class: ManageUsersPage | Tests: User Profile Overview modal tabs, content groups, service groups, change password, ID document",
+      "tabs": {
+        "_description": "Where: tests/admin/user-management/manage-users-profile-overview_*.spec.ts | Class: ManageUsersPage | Tests: Profile Overview tab titles and tab navigation",
+        "userDetails": "User details",
+        "idDocument": "ID document",
+        "changePassword": "Change password"
+      },
+      "sections": {
+        "_description": "Where: tests/admin/user-management/manage-users-profile-overview_user-details.spec.ts | Class: ManageUsersPage | Tests: User details section headers",
+        "basicDetails": "Basic details",
+        "enrollmentDetails": "Enrollment details",
+        "groupDetails": "Group details"
+      },
+      "contentGroups": {
+        "_description": "Where: tests/admin/user-management/manage-users-profile-overview_user-details.spec.ts | Class: ManageUsersPage | Tests: TC_Admin_ProfileOverview_ContentGroups_MultiSelect, TC_Admin_ProfileOverview_ContentGroups_Deselect",
+        "defaultPlaceholder": "Select",
+        "testGroups": [
+          "CG Science",
+          "CG Medicine",
+          "CG Engineering"
+        ],
+        "singleCountSuffix": "group selected",
+        "pluralCountSuffix": "groups selected",
+        "successToastText": "User details updated successfully!"
+      },
+      "serviceGroups": {
+        "_description": "Where: tests/admin/user-management/manage-users-profile-overview_user-details.spec.ts | Class: ManageUsersPage | Tests: TC_Admin_ProfileOverview_ServiceGroups_ActiveSelection, TC_Admin_ProfileOverview_ServiceGroups_ExpiredWarning",
+        "defaultPlaceholder": "Select",
+        "activeGroup": "RA",
+        "expiredGroup": "tester",
+        "activeGroupExpiryDate": "2031-02-13",
+        "expiredWarningText": "This service group is already expired!!",
+        "successToastText": "User details updated successfully!"
+      },
+      "changePassword": {
+        "_description": "Where: tests/admin/user-management/manage-users-profile-overview_password.spec.ts | Class: ManageUsersPage | Tests: TC_Admin_ProfileOverview_ChangePassword_Validation, TC_Admin_ProfileOverview_ChangePassword_Success",
+        "tabName": "Change password",
+        "newPasswordPlaceholder": "New Password",
+        "confirmPasswordPlaceholder": "Confirm Password",
+        "validPassword": "TestUser@12345",
+        "boundaryMinPassword": "12345",
+        "boundaryMaxPassword": "123456789012345678901234567890",
+        "shortPassword": "123",
+        "longPassword": "1234567890123456789012345678901",
+        "mismatchedPassword": "DifferentPassword123",
+        "messages": {
+          "newPasswordRequired": "New password is required (5-30 characters)",
+          "confirmPasswordRequired": "Confirm password is required (5-30 characters)",
+          "atLeast5Characters": "Atleast 5 characters required",
+          "max30Characters": "Maximum 30 characters allowed",
+          "passwordsMismatch": "New password and confirm password should be same!",
+          "updateSuccessToast": "Password updated successfully!"
+        }
+      },
+      "idDocument": {
+        "_description": "Where: tests/admin/user-management/manage-users-profile-overview_id-document.spec.ts | Class: ManageUsersPage | Tests: TC_Admin_ProfileOverview_IDDocument_* (Mandatory field markers, instructions, empty submit, file size, invalid type, upload persist, download, delete)",
+        "tabName": "ID document",
+        "introText": "Documents such as College ID / Employee ID etc. can be helpful in verify or authenticate a user.",
+        "frontsideHeading": "Frontside",
+        "backsideHeading": "Backside",
+        "instructions": {
+          "main": "Choose a file or drag & drop it here",
+          "sizeLimit": "Maximum upload size of 1MB",
+          "formats": "JPG, JPEG, PNG formats only",
+          "browseBtn": "Browse File"
+        },
+        "files": {
+          "validPng": "dummy.png",
+          "validJpg": "dummy-id.jpg",
+          "largeFile": "large-dummy.jpg",
+          "invalidPdf": "dummy.pdf"
+        },
+        "messages": {
+          "fileRequired": "Please select a file",
+          "sizeExceeded": "File size exceeded the 1MB maximum limit!",
+          "invalidFormat": "Invalid file format. Only JPG, JPEG, PNG Images are allowed.",
+          "updateSuccessToast": "ID document updated successfully"
+        },
+        "indicators": {
+          "mandatory": "*",
+          "optional": "(optional)"
+        },
+        "acceptAttribute": ".jpg, .jpeg, .png, image/jpeg, image/png",
+        "persistedFrontFileName": "idCard-front.jpg"
+      }
+    },
+    "serviceGroupsManagement": {
+      "_description": "Where: tests/admin/user-management/service-groups.spec.ts | Class: ServiceGroupsPage, SelectUsersModal, SelectResourcesModal | Tests: TC_ServiceGroups_01 to TC_ServiceGroups_38 (CRUD, form validation, showing count, pagination Load More, sorting A-Z/Z-A, expired group alerts, user associations, resource associations)",
+      "url": "/userManagement/serviceGroups",
+      "createGroupBtnText": "Create group",
+      "modalTitle": "Create group",
+      "existingGroup": "RA",
+      "expiredGroup": "tester",
+      "accessOptions": {
+        "offCampus": "Off-Campus Access",
+        "mobileApp": "Mobile App"
+      },
+      "messages": {
+        "nameRequired": "Group name is required",
+        "htmlUnsupported": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols.",
+        "leadingTrailingSpaces": "Leading or trailing spaces not allowed",
+        "max100Chars": "Maximum 100 characters allowed",
+        "alreadyExists": "The group name already exists! Please enter a different group name.",
+        "expiryRequired": "Expiry date is required",
+        "deleteAlertTitle": "Alert",
+        "deleteAlertMessage": "Are you sure you want to delete group?",
+        "expiredAlertTitle": "Group expired!",
+        "expiredAlertMessage": "This service group is already expired. Are you sure you want to proceed with this group?"
+      },
+      "dialogs": {
+        "yesDeleteBtn": "Yes, Delete",
+        "cancelBtn": "Cancel",
+        "continueBtn": "Continue",
+        "updateBtn": "Update",
+        "loadMoreBtn": "Load more",
+        "selectUsersTitle": "Select users",
+        "selectResourcesTitle": "Select resources",
+        "addUsersBtn": "Add users",
+        "addResourcesBtn": "Add resources",
+        "sortAscTitle": "Sorting: A-Z",
+        "sortDescTitle": "Sorting: Z-A"
+      },
+      "testInputs": {
+        "htmlPayload": "<script>alert(1)</script>",
+        "spacedName": "  Leading Space  ",
+        "oversizedName": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "uniquePrefix": "AutoSG_"
+      }
     }
   }
 }

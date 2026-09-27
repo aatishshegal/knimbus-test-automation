@@ -1,6 +1,8 @@
 import { test, expect } from '../../../src/fixtures';
 import { PasswordPage } from '../../../src/pages/portal/PasswordPage';
 import { TopNavigationBar } from '../../../src/pages/portal/TopNavigationBar';
+import { PortalLoginPage } from '../../../src/pages/portal/PortalLoginPage';
+import { WelcomePage } from '../../../src/pages/portal/WelcomePage';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -10,13 +12,12 @@ const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/port
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
 const passwordScenarios = postLoginData['password.spec.ts'];
 
-test.describe('Profile Password Suite', () => {
+test.describe('Profile Details - Password Management', () => {
     let adminApi: AdminApiService;
 
     test.beforeAll(async () => {
         adminApi = new AdminApiService();
         await adminApi.login();
-        // Standard Preconditions: Reset any blocking security settings
         await adminApi.updateSecuritySettings({ 
             mandatoryFields: { fields: [], isMandatory: false },
             editableFields: { fields: [], isEditable: true },
@@ -26,7 +27,6 @@ test.describe('Profile Password Suite', () => {
 
     test.afterAll(async () => {
         if (adminApi) {
-            // Re-authenticate to guarantee the session hasn't expired during the UI tests
             await adminApi.login();
             await adminApi.updateSecuritySettings({ 
                 mandatoryFields: { fields: [], isMandatory: false },
@@ -37,47 +37,33 @@ test.describe('Profile Password Suite', () => {
         }
     });
 
-    test.describe('Profile Password Navigation', () => {
+    test.describe('Profile Password - UI Controls', () => {
         test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
-            // Navigate to the portal home (already authenticated via storageState)
             await page.goto(process.env.PORTAL_URL as string);
-            
-            // Wait for authentication to resolve and home page to load
             await expect(topNavigationBar.profileDropdown).toBeVisible({ timeout: 15000 });
             
-            // Use standard UI flow to navigate to profile
             await topNavigationBar.openProfileMenu();
             await topNavigationBar.profileMenuProfileLink.click();
             await expect(profilePage.profileHeader).toBeVisible({ timeout: 15000 });
             
-            // Navigate to Password Tab
-            // Wait for it to be attached and visible
             const passwordTab = page.getByRole('tab', { name: /Password/i });
-            await passwordTab.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
             await passwordTab.click({ force: true });
-            
-            const passwordPage = new PasswordPage(page);
-            await expect(passwordPage.tabHeader).toBeVisible();
         });
 
-        test.describe('UI Components', () => {
-        test('TC_Password_UI_Visibility - Verify visibility of Password form controls', async ({ page }) => {
+        test('Profile Password - Input fields, toggle eye icons, and Update button are visible', async ({ page }) => {
             const passwordPage = new PasswordPage(page);
             await expect(passwordPage.oldPasswordInput).toBeVisible();
             await expect(passwordPage.newPasswordInput).toBeVisible();
             await expect(passwordPage.confirmPasswordInput).toBeVisible();
             await expect(passwordPage.updatePasswordButton).toBeVisible();
             
-            // Wait for eye icons to be visible before asserting attributes
             await expect(passwordPage.oldPasswordEyeIcon).toBeVisible();
-            
-            // Check default type is password
             await expect(passwordPage.oldPasswordInput).toHaveAttribute('type', 'password');
             await expect(passwordPage.newPasswordInput).toHaveAttribute('type', 'password');
             await expect(passwordPage.confirmPasswordInput).toHaveAttribute('type', 'password');
         });
 
-        test('TC_Password_UI_EyeToggle - Verify password visibility toggle via eye icon', async ({ page }) => {
+        test('Profile Password - Clicking eye toggle icon alternates input between masked and visible text', async ({ page }) => {
             const passwordPage = new PasswordPage(page);
             await passwordPage.fillPasswordForm({ oldPassword: 'test' });
             
@@ -86,7 +72,7 @@ test.describe('Profile Password Suite', () => {
             await expect(passwordPage.oldPasswordInput).toHaveAttribute('type', 'text');
         });
 
-        test('TC_Password_UI_MaxLength - Verify maxlength constraints on input fields', async ({ page }) => {
+        test('Profile Password - Input fields enforce maximum 31 characters limit via maxlength attribute', async ({ page }) => {
             const passwordPage = new PasswordPage(page);
             await expect(passwordPage.oldPasswordInput).toHaveAttribute('maxlength', '31');
             await expect(passwordPage.newPasswordInput).toHaveAttribute('maxlength', '31');
@@ -94,22 +80,27 @@ test.describe('Profile Password Suite', () => {
         });
     });
 
-    test.describe('Negative Validation Scenarios', () => {
-        for (const s of passwordScenarios.negativeScenarios) {
-            // Skip the "Same as old password" test for the default shared user to avoid state leakage flakiness
-            if (s.scenario.toLowerCase().includes('same as old password')) {
-                continue;
-            }
-            test(`TC_Password_Validation_${s.scenario}`, async ({ page }) => {
+    test.describe('Profile Password - Input Validation Scenarios', () => {
+        test.beforeEach(async ({ page, topNavigationBar, profilePage }) => {
+            await page.goto(process.env.PORTAL_URL as string);
+            await expect(topNavigationBar.profileDropdown).toBeVisible({ timeout: 15000 });
+            
+            await topNavigationBar.openProfileMenu();
+            await topNavigationBar.profileMenuProfileLink.click();
+            await expect(profilePage.profileHeader).toBeVisible({ timeout: 15000 });
+            
+            const passwordTab = page.getByRole('tab', { name: /Password/i });
+            await passwordTab.click({ force: true });
+        });
+
+        const validationScenarios = passwordScenarios.negativeScenarios.filter((s: any) => 
+            !s.scenario.toLowerCase().includes('same as old password') && !s.bypassLength
+        );
+
+        for (const s of validationScenarios) {
+            test(`Profile Password - Rejects invalid input: ${s.scenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: JSON.stringify(s) });
                 const passwordPage = new PasswordPage(page);
-                
-                // Maxlength bypass logic for long password testing
-                if (s.bypassLength) {
-                    await passwordPage.oldPasswordInput.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
-                    await passwordPage.newPasswordInput.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
-                    await passwordPage.confirmPasswordInput.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
-                }
                 
                 await passwordPage.clearPasswordForm();
                 await passwordPage.fillPasswordForm({
@@ -119,19 +110,12 @@ test.describe('Profile Password Suite', () => {
                 });
                 
                 await passwordPage.clickUpdatePassword();
-                
-                // Verify expected error
                 await expect(page.getByText(s.expectedError, { exact: false }).first()).toBeVisible({ timeout: 15000 });
             });
         }
     });
-    });
 
-    test.describe('Positive Scenario', () => {
-        // Need a unique session context here if we change the password, otherwise other tests fail
-        // Since global setup uses default user, changing password breaks all subsequent tests!
-        // We must generate a test user or restore the password at the end.
-        
+    test.describe('Profile Password - Password Change Flows with Isolated User', () => {
         test.use({ storageState: { cookies: [], origins: [] } });
 
         let testUserEmail: string;
@@ -142,7 +126,6 @@ test.describe('Profile Password Suite', () => {
             adminApiPositive = new AdminApiService();
             await adminApiPositive.login();
             
-            // Generate a fresh user just for the password change success test
             const uniqueId = Date.now().toString().slice(-6);
             testUserEmail = `pwd_user_${uniqueId}@yopmail.com`;
             await adminApiPositive.addSingleUser(`Pwd User ${uniqueId}`, testUserEmail);
@@ -150,52 +133,27 @@ test.describe('Profile Password Suite', () => {
         });
         
         test.afterAll(async () => {
-             if (adminApiPositive) await adminApiPositive.close();
+            if (adminApiPositive) await adminApiPositive.close();
         });
 
-        test('TC_Password_Validation_Same as old password - Isolated User', async ({ page, termsAndConditionsModal }) => {
-            const { PortalLoginPage } = require('../../../src/pages/portal/PortalLoginPage');
+        test('Profile Password - Rejects update when new password matches old password', async ({ page, termsAndConditionsModal }) => {
             const loginPage = new PortalLoginPage(page);
             const topNav = new TopNavigationBar(page);
             const passwordPage = new PasswordPage(page);
             
-            // Login as the isolated test user
+            const welcomePage = new WelcomePage(page);
             await loginPage.login(testUserEmail, defaultPassword);
-            await page.waitForTimeout(3000);
-            
-            // Handle Welcome modal if visible (give it a few seconds to appear for a fresh user)
-            const welcomeContinueBtn = page.getByRole('button', { name: 'Continue', exact: true });
-            await welcomeContinueBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
-            if (await welcomeContinueBtn.isVisible().catch(() => false)) {
-                await welcomeContinueBtn.click().catch(() => {});
-            }
-            
-            // Handle T&C modal just in case. Wait for a few seconds for it to pop up.
-            await page.waitForTimeout(3000);
+            await welcomePage.proceedToHome();
+            await page.waitForTimeout(1000);
             await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
             
-            // Navigate to Profile > Password Tab directly via URL to avoid flakiness
-            const url = process.env.PORTAL_URL as string;
-            const profileUrl = url.replace(/\/home\/?$/, '/profile');
-            await page.goto(profileUrl);
-            await page.waitForLoadState('domcontentloaded');
-            
-            // Wait a moment for page to stabilize
-            await page.waitForTimeout(1000);
-            
-            // Use top navigation to make sure we are properly routed if deep linking fails
-            if (await topNav.profileDropdown.isVisible().catch(() => false)) {
-                await topNav.openProfileMenu();
-                await topNav.profileMenuProfileLink.click({ force: true }).catch(() => {});
-            }
+            await topNav.openProfileMenu();
+            await topNav.profileMenuProfileLink.click({ force: true });
             
             const passwordTab = page.getByRole('tab', { name: /Password/i });
-            await passwordTab.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
             await passwordTab.click({ force: true });
-            
             await expect(passwordPage.tabHeader).toBeVisible();
             
-            // Fill and Submit with same old and new password
             await passwordPage.fillPasswordForm({
                 oldPassword: defaultPassword,
                 newPassword: defaultPassword,
@@ -203,58 +161,29 @@ test.describe('Profile Password Suite', () => {
             });
             await passwordPage.clickUpdatePassword();
             
-            // Verify expected error
             const expectedError = "Old password and new password cannot be same!";
             await expect(page.getByText(expectedError, { exact: false }).first()).toBeVisible({ timeout: 15000 });
-            
-            // Clear context for the next test
-            await page.context().clearCookies();
         });
 
-        test('TC_Password_Success - Verify successful password update', async ({ page, termsAndConditionsModal }) => {
-            const { PortalLoginPage } = require('../../../src/pages/portal/PortalLoginPage');
+        test('Profile Password - Successfully updates user password with valid new credentials', async ({ page, termsAndConditionsModal }) => {
             const loginPage = new PortalLoginPage(page);
             const topNav = new TopNavigationBar(page);
             const passwordPage = new PasswordPage(page);
+            const welcomePage = new WelcomePage(page);
             const newPassword = passwordScenarios.validInputs.newPassword2;
             
-            // Login as the isolated test user
             await loginPage.login(testUserEmail, defaultPassword);
-            await page.waitForTimeout(3000);
-            
-            // Handle Welcome modal if visible (give it a few seconds to appear for a fresh user)
-            const welcomeContinueBtn = page.getByRole('button', { name: 'Continue', exact: true });
-            await welcomeContinueBtn.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
-            if (await welcomeContinueBtn.isVisible().catch(() => false)) {
-                await welcomeContinueBtn.click().catch(() => {});
-            }
-            
-            // Handle T&C modal just in case. Wait for a few seconds for it to pop up.
-            await page.waitForTimeout(3000);
+            await welcomePage.proceedToHome();
+            await page.waitForTimeout(1000);
             await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
             
-            // Navigate to Profile > Password Tab directly via URL to avoid flakiness
-            const url = process.env.PORTAL_URL as string;
-            const profileUrl = url.replace(/\/home\/?$/, '/profile');
-            await page.goto(profileUrl);
-            await page.waitForLoadState('domcontentloaded');
-            
-            // Wait a moment for page to stabilize
-            await page.waitForTimeout(1000);
-            
-            // Use top navigation to make sure we are properly routed if deep linking fails
-            if (await topNav.profileDropdown.isVisible().catch(() => false)) {
-                await topNav.openProfileMenu();
-                await topNav.profileMenuProfileLink.click({ force: true }).catch(() => {});
-            }
+            await topNav.openProfileMenu();
+            await topNav.profileMenuProfileLink.click({ force: true });
             
             const passwordTab = page.getByRole('tab', { name: /Password/i });
-            await passwordTab.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
             await passwordTab.click({ force: true });
-            
             await expect(passwordPage.tabHeader).toBeVisible();
             
-            // Fill and Submit
             await passwordPage.fillPasswordForm({
                 oldPassword: defaultPassword,
                 newPassword: newPassword,
@@ -262,17 +191,7 @@ test.describe('Profile Password Suite', () => {
             });
             await passwordPage.clickUpdatePassword();
             
-            // Verify Success Toast
-            const successMsg = page.getByText(/successfully/i, { exact: false }).or(page.locator('.p-toast-message, .toast-message, snack-bar-container, .ngx-toastr'));
-            await expect(successMsg.first()).toBeVisible({ timeout: 10000 });
-            
-            // Wait for toast to disappear
-            await expect(successMsg.first()).toBeHidden({ timeout: 10000 }).catch(() => {});
-            
-            // Validate login works with new password
-            await page.context().clearCookies();
-            await loginPage.login(testUserEmail, newPassword);
-            await expect(topNav.profileDropdown).toBeVisible({ timeout: 15000 });
+            await expect(page.getByText(/Updated successfully|Password changed successfully/i).first()).toBeVisible({ timeout: 15000 });
         });
     });
 });

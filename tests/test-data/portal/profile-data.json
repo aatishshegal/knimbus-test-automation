@@ -1,6 +1,6 @@
 {
   "contact.spec.ts": {
-    "_description": "Used in: tests/portal/profile/contact.spec.ts",
+    "_description": "Where: tests/portal/profile/contact.spec.ts | Class: ContactPage | Tests: Profile Contact tab validations (Phone Number, Mobile, Secondary Email, Address, City, State, Country, Postal Code)",
     "positiveData": {
       "mobile": "75757474774",
       "officePhone": "6743674764373",
@@ -171,7 +171,7 @@
     ]
   },
   "enrollment-details.spec.ts": {
-    "_description": "Used in: tests/portal/profile/enrollment-details.spec.ts",
+    "_description": "Where: tests/portal/profile/enrollment-details.spec.ts | Class: EnrollmentDetailsPage | Tests: Profile Enrollment Details validations (College/Affiliation, Department, Degree, Programme, Designation, Date of Birth, Expiry Date, Gender)",
     "positiveData": {
       "idNumber": "ID999",
       "college": "Tech University",
@@ -562,7 +562,7 @@
     ]
   },
   "id-and-access-info.spec.ts": {
-    "_description": "Used in: tests/portal/profile/id-and-access-info.spec.ts",
+    "_description": "Where: tests/portal/profile/id-and-access-info.spec.ts | Class: IdAndAccessInfoPage | Tests: Profile ID and Access Info validations (ID card preview, upload JPG/PNG, size limit, download, delete, Service Group access)",
     "data": [
       {
         "ScenarioType": "Positive",
@@ -639,6 +639,7 @@
     ]
   },
   "password.spec.ts": {
+    "_description": "Where: tests/portal/profile/password.spec.ts | Class: PasswordPage | Tests: Profile Change Password validations (Current password, new password boundary/complexity, confirm password matching, eye icon toggle)",
     "validInputs": {
       "newPassword": "Password@123",
       "newPassword2": "Password@321"
@@ -711,6 +712,7 @@
     ]
   },
   "profile-basic-details.spec.ts": {
+    "_description": "Where: tests/portal/profile/profile-basic-details.spec.ts | Class: ProfilePage | Tests: Profile Basic Details validations (Full Name boundary & regex, Email read-only, profile picture upload/delete, editable vs admin-disabled field state)",
     "positiveData": {
       "fullName": "Automation User",
       "summary": "This is a valid summary for automation."
@@ -1029,6 +1031,7 @@
     ]
   },
   "work-and-education.spec.ts": {
+    "_description": "Where: tests/portal/profile/work-and-education.spec.ts | Class: WorkAndEducationPage | Tests: Profile Work and Education validations (Work Experience CRUD & boundary validations, Education details, Field of Studies add/edit/delete)",
     "workExperienceData": {
       "positiveData": {
         "jobTitle": "Senior Quality Assurance Engineer",
@@ -1332,7 +1335,7 @@
     }
   },
   "adminOverrides": {
-    "_description": "Used globally across profile test suites",
+    "_description": "Where: tests/portal/profile/ (shared across basic-details, contact, enrollment-details) | Class: ProfilePage, ContactPage, EnrollmentDetailsPage | Tests: Admin-managed non-editable field state banner and field disablement validations",
     "disabledMessage": "All the fields are set to be non-editable by your institution"
   }
 }

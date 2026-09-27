@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from '../BasePage';
 
 export class TopNavigationBar extends BasePage {
@@ -36,7 +36,7 @@ export class TopNavigationBar extends BasePage {
     this.searchInput = page.locator('input[name="globalSerchItem"]');
     // The search button loses its class when active, but the SVG id remains constant
     this.searchButton = page.locator('button').filter({ has: page.locator('#srcIcon') }).filter({ visible: true });
-    this.searchDropdown = page.locator('select.css-fwy7yy').or(page.locator('select').filter({ has: page.locator('option[value="doc_title"]') })).filter({ visible: true }).first();
+    this.searchDropdown = page.locator('select').filter({ has: page.locator('option[value="doc_title"]') }).first();
     // The actual notification bell icon locator based on the provided HTML
     this.notificationIcon = page.locator('.notification-badge').filter({ visible: true }).first();
     this.languageSelector = page.locator('#google_translate_element select').filter({ visible: true });
@@ -86,13 +86,33 @@ export class TopNavigationBar extends BasePage {
   }
 
   async openProfileMenu() {
-    await this.profileDropdown.click();
+    await this.page.locator('.overlay').waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+    await this.profileDropdown.click({ force: true });
   }
 
   async navigateToMyLibrary() {
     await this.openProfileMenu();
     await this.profileMenuMyLibraryLink.click();
-    // Removed networkidle wait because it causes flaky timeouts when background requests linger
-    await this.page.waitForURL(/my-library/i, { timeout: 15000 }).catch(() => {});
+    await this.page.waitForURL(/myLibrary|my-library/i, { timeout: 15000 }).catch(() => {});
+  }
+
+  async verifyLibrarianDashboardVisibility(shouldBeVisible: boolean) {
+    if (shouldBeVisible) {
+      await expect(this.profileMenuLibrarianDashboardLink).toBeVisible();
+    } else {
+      await expect(this.profileMenuLibrarianDashboardLink).toBeHidden();
+    }
+  }
+
+  async selectLanguage(value: string) {
+    await this.languageSelector.click();
+    await this.languageSelector.locator(`option[value="${value}"]`).waitFor({ state: 'attached', timeout: 20000 });
+    await this.languageSelector.selectOption({ value });
+  }
+
+  async resetLanguageToDefault(defaultLabel: string) {
+    const optionsText = await this.languageSelector.locator('option').allInnerTexts();
+    const hasDefault = optionsText.some(t => t.trim() === defaultLabel);
+    await this.languageSelector.selectOption({ label: hasDefault ? defaultLabel : 'Select Language' });
   }
 }

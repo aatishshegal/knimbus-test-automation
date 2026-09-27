@@ -1,6 +1,6 @@
 {
   "widgets": {
-    "_description": "Used in: tests/portal/home/widgets-visibility.spec.ts (Suite: 'Home Page - Widgets Visibility' -> Test: 'Verify [Widget] section is rendered on the Home Page')",
+    "_description": "Where: tests/portal/home/widgets-visibility.spec.ts | Class: HomePage | Tests: Home Page - Widgets Visibility (Verify presence and visibility of all dashboard widgets)",
     "data": [
       "Browse by Section",
       "Publishers & Databases",
@@ -11,6 +11,7 @@
     ]
   },
   "profile": {
+    "_description": "Where: tests/portal/profile/ (shared across basic-details, contact, enrollment-details) | Class: ProfilePage, ContactPage, EnrollmentDetailsPage | Tests: Temporary fallback values and admin overrides disabled messages for profile tabs",
     "basicDetails": {
       "temporaryName": "Temporary Cancel Name"
     },
@@ -19,10 +20,13 @@
     },
     "enrollment": {
       "temporaryId": "TEMP-ID-123"
+    },
+    "adminOverrides": {
+      "disabledMessage": "All the fields are set to be non-editable by your institution"
     }
   },
   "expectedPublishers": {
-    "_description": "Used in: tests/portal/home/publishers.spec.ts (Suite: 'Home Page - Publishers and Databases' -> Test: 'Verify [Publisher] is clickable and navigates correctly')",
+    "_description": "Where: tests/portal/home/publishers.spec.ts | Class: HomePage | Tests: Home Page - Publishers and Databases (Verify publisher cards are clickable and navigate to catalog)",
     "data": [
       "JSTOR",
       "IEEE",
@@ -30,7 +34,7 @@
     ]
   },
   "expectedSubjects": {
-    "_description": "Used in: tests/portal/home/subjects.spec.ts (Suite: 'Home Page - Academic Subjects' -> Test: 'Verify subject [Subject] is clickable and navigates correctly')",
+    "_description": "Where: tests/portal/home/subjects.spec.ts | Class: HomePage | Tests: Home Page - Academic Subjects (Verify subject items are clickable and navigate to catalog)",
     "data": [
       "Literature",
       "History",
@@ -38,14 +42,14 @@
     ]
   },
   "expectedContentTypes": {
-    "_description": "Used in: tests/portal/home/content-types.spec.ts (Suite: 'Home Page - Content Types Section' -> Test: 'Verify [Type] card is clickable and navigates correctly')",
+    "_description": "Where: tests/portal/home/content-types.spec.ts | Class: HomePage | Tests: Home Page - Content Types Section (Verify eBook and Journal cards are clickable and navigate)",
     "data": [
       "eBook",
       "Journal"
     ]
   },
   "searchBarData": {
-    "_description": "Used in: tests/portal/navigation/search-bar.spec.ts (Used across all tests in Suite: 'Global Navigation - Search Bar Validations @navigation')",
+    "_description": "Where: tests/portal/navigation/search-bar.spec.ts | Class: TopNavigationBar | Tests: Global Navigation - Search Bar Validations (Placeholder, dropdown options, invalid search, valid search, clear button)",
     "expectedPlaceholder": "Search journals, books, articles...",
     "expectedDropdownOptions": [
       "Title",
@@ -59,6 +63,7 @@
     "autoSuggestionTerm": "future energy"
   },
   "searchResultScenarios": {
+    "_description": "Where: tests/portal/search/ (search-results.spec.ts, detail-page.spec.ts, save-search.spec.ts, search-result-content.spec.ts, search-results-sorting.spec.ts) | Class: SearchResultPage, DetailPage | Tests: Search results rendering, pagination, grid/list view toggle, sorting, detail page view, and saved search operations",
     "globalSearch": {
       "_description": "Used in 3 files: (1) tests/portal/search/search-results.spec.ts (All tests in Suite: 'Search Results Validations @search'), (2) tests/portal/search/search-results-sorting.spec.ts (All tests in Suite: 'Search Results Sorting Validations'), (3) tests/portal/search/detail-page.spec.ts (Suite: 'Search Detail Page Functionality' -> Test: 'Verify search result landing, tabs... flow')",
       "triggerType": "searchBar",
@@ -116,7 +121,7 @@
     ]
   },
   "translationData": {
-    "_description": "Used in: tests/portal/navigation/language-translate.spec.ts (Suite: 'Global Navigation - Language Translate Validations @navigation' -> Test: 'Verify selecting [Target] and switching back to [Default]')",
+    "_description": "Where: tests/portal/navigation/language-translate.spec.ts | Class: TopNavigationBar | Tests: Navigation - Language translation dropdown changes interface language and persists across pages",
     "targetLanguageLabel": "Hindi",
     "targetLanguageValue": "hi",
     "defaultLanguageLabel": "English",
@@ -169,7 +174,7 @@
     }
   ],
   "researchPlus": {
-    "_description": "Used in: tests/portal/research-plus/research-plus.spec.ts (All tests in Suite: 'Research+ Functionality')",
+    "_description": "Where: tests/portal/research-plus/ (research-plus-results.spec.ts, research-plus-federated-refresh.spec.ts, research-plus-query-types.spec.ts) | Class: ResearchPlusPage | Tests: Research Plus search execution, guaranteed results query, query type selection, federated results count",
     "guaranteedResultsQuery": "Science",
     "guaranteedResultsSources": [
       "Directory of Open Access Journals (DOAJ)",
@@ -205,7 +210,7 @@
     ]
   },
   "researchPlusAdvancedSearch": {
-    "_description": "Used in: tests/portal/research-plus/advanced-search.spec.ts (All tests in Suite: 'Research+ Advanced Search')",
+    "_description": "Where: tests/portal/research-plus/ (research-plus-form-reset.spec.ts, research-plus-form-validation.spec.ts, research-plus-select-resources.spec.ts) | Class: ResearchPlusPage | Tests: Research Plus advanced search defaults, reset all, field validation, select resources modal",
     "defaultQueryType": "Title",
     "defaultMatch": "All",
     "searchPlaceholder": "Enter search query",
@@ -344,12 +349,14 @@
     }
   ],
   "invalidCredentials": {
-    "_description": "Used in: tests/portal/authentication/login-invalid-creds.spec.ts (Negative testing for invalid formatting and incorrect credentials)",
+    "_description": "Where: tests/portal/authentication/standard-login-negative.spec.ts | Class: PortalLoginPage | Tests: Standard Login Negative Flows (Invalid email format, unregistered email, incorrect password, empty input fields)",
     "invalidEmailFormat": "invalid_email_format.com",
     "unregisteredEmailPrefix": "nonexistent_user",
     "invalidPasswordSuffix": "_wrongpassword"
   },
   "forgotPasswordData": {
+    "_description": "Where: tests/portal/authentication/forgotpassword.spec.ts | Class: ForgotPasswordPage, PortalLoginPage | Tests: Forgot password scenarios (Registered user password reset, invalid email format, unregistered email, password length boundary validations)",
+    "registeredEmail": "aus01@yopmail.com",
     "invalidEmails": [
       {
         "email": "plainaddress",
@@ -383,12 +390,18 @@
     ]
   },
   "mandatoryUserDetails": {
-    "_description": "Used in: tests/portal/registration/unverified-user-registration.spec.ts (Tests dynamic mandatory field completion flow)",
+    "_description": "Where: tests/portal/authentication/ (new-user-mandatory-to-welcome, new-user-otp-to-mandatory, successful-login-flows), tests/portal/registration/ (registration, unverified-user-registration) | Class: MandatoryDetailsPage, RegistrationPage, WelcomePage | Tests: Mandatory details form completion post-registration/login",
     "gender": "Other",
     "department": "Engineering",
     "degree": "B.Tech",
     "designation": "QA Engineer",
     "batch": "2026",
     "nationality": "India"
+  },
+  "otpData": {
+    "_description": "Where: tests/portal/authentication/otp-authentication-flows.spec.ts | Class: OtpPage | Tests: OTP validation scenarios (Invalid short OTP format, invalid 6-digit OTP rejection, resend cooldown, and max resends limit)",
+    "invalidOtpFormat": "1",
+    "invalidOtpFull": "111111",
+    "maxResends": 3
   }
 }

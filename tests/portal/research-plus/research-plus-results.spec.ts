@@ -1,4 +1,5 @@
 import { test, expect } from '../../../src/fixtures';
+import { FilterPanelPage } from '../../../src/pages/portal/FilterPanelPage';
 import portalData from '../../test-data/portal-data.json';
 
 test.describe('Research+ Functionality', () => {
@@ -8,73 +9,62 @@ test.describe('Research+ Functionality', () => {
         await expect(homePage.homePageIdentifier).toBeVisible();
     });
 
-    test('Verify by performing search', async ({ topNavigationBar, researchPlusPage, page }) => {
+    test('Research Plus - Executing search navigates to search results and renders federated count without global tabs', async ({ topNavigationBar, researchPlusPage, page }) => {
         // Navigate to Research+
         await topNavigationBar.menuResearch.click();
         await expect(researchPlusPage.pageIdentifier).toBeVisible();
 
-        // Extract parameters from test data
         const searchData = portalData.researchPlus;
-
-        const randomQuery = searchData.queries[Math.floor(Math.random() * searchData.queries.length)];
+        const searchQuery = searchData.queries[0];
 
         // Perform the search
         await researchPlusPage.performSearch(
             searchData.queryTypeLabel,
             searchData.queryTypeValue,
-            randomQuery,
+            searchQuery,
             searchData.resourceTab
         );
 
-        // Verify that post clicking on search it will land result page of Research+
-        // Wait for the URL to change to the search results page
+        // Verify navigation to results page
         await expect(page).toHaveURL(/search/i);
-        
-        // Also verify that the Results are painted by checking the URL query parameters
-        // since we searched for "Agentic"
-        // since we searched for the randomly selected query
-        const currentUrl = page.url();
-        expect.soft(currentUrl).toContain(encodeURIComponent(randomQuery));
         
         // Confirm results are painted and global search tabs are absent
         await researchPlusPage.verifyResultsPaintedAndNoTabs();
     });
 
-    test('Verify History option retains selected resources after performing a search', async ({ topNavigationBar, researchPlusPage, page }) => {
-        // Step 2: Go to Research+
+    test('Research Plus - History tab retains previously selected search resources after query execution', async ({ topNavigationBar, researchPlusPage, page }) => {
+        // Go to Research+
         await topNavigationBar.menuResearch.click();
         await expect(researchPlusPage.pageIdentifier).toBeVisible();
 
-        // Step 3: Pick a random search query from the allowed list in portalData
-        const searchQuery = portalData.researchPlus.queries[Math.floor(Math.random() * portalData.researchPlus.queries.length)];
+        const searchQuery = portalData.researchPlus.queries[0];
         await researchPlusPage.searchBarInput.fill(searchQuery);
 
-        // Steps 4-5: Go to "All" tab and Clear All sources
+        // Go to "All" tab and Clear All sources
         await researchPlusPage.clearAllResources();
 
-        // Step 6: Randomly select 2 to 3 sources and store the list
-        const randomlySelectedSources = await researchPlusPage.selectRandomResources(3, portalData.researchPlus.allowedSources);
-        console.log(`[TEST] Randomly selected sources: ${randomlySelectedSources.join(', ')}`);
+        // Select 3 sources deterministically and store the list
+        const selectedSources = await researchPlusPage.selectResourcesByCount(3, portalData.researchPlus.allowedSources);
 
-        // Step 7: Perform search
+        // Perform search
         await researchPlusPage.searchButton.click();
         await page.waitForURL(/search/i, { timeout: 30000 }).catch(() => {});
         
         // Wait for results to be painted
         await researchPlusPage.verifyResultsPaintedAndNoTabs();
 
-        // Step 8: Click on Research+ from navigation bar again
+        // Click on Research+ from navigation bar again
         await topNavigationBar.menuResearch.click();
         await expect(researchPlusPage.pageIdentifier).toBeVisible();
 
-        // Step 9-10: Visit History tab and extract selected resources
+        // Visit History tab and extract selected resources
         const historySelectedSources = await researchPlusPage.getHistorySelectedResources();
-        console.log(`[TEST] History selected sources: ${historySelectedSources.join(', ')}`);
 
-        // Step 11: Match the selected sources
-        expect.soft(historySelectedSources).toEqual(randomlySelectedSources);
+        // Match the selected sources
+        expect(historySelectedSources).toEqual(selectedSources);
     });
-    test('Verify default sorting on result page after selecting one source is Source', async ({ topNavigationBar, researchPlusPage, searchResultPage, page }) => {
+
+    test('Research Plus - Single source search defaults result page sorting to Source', async ({ topNavigationBar, researchPlusPage, searchResultPage, page }) => {
         await topNavigationBar.menuResearch.click();
         await expect(researchPlusPage.pageIdentifier).toBeVisible();
 
@@ -82,7 +72,6 @@ test.describe('Research+ Functionality', () => {
         await researchPlusPage.searchBarInput.fill(searchQuery);
 
         await researchPlusPage.clearAllResources();
-
         await researchPlusPage.selectSpecificResources([portalData.researchPlus.guaranteedResultsSources[0]]);
 
         await researchPlusPage.searchButton.click();
@@ -90,10 +79,10 @@ test.describe('Research+ Functionality', () => {
         
         await researchPlusPage.verifyResultsPaintedAndNoTabs();
 
-        await expect.soft(searchResultPage.sortingDropdownToggle).toContainText('Source', { timeout: 15000 });
+        await expect(searchResultPage.sortingDropdownToggle).toContainText('Source', { timeout: 15000 });
     });
 
-    test('Verify default sorting on result page after selecting multiple sources is Best Matched', async ({ topNavigationBar, researchPlusPage, searchResultPage, page }) => {
+    test('Research Plus - Multiple sources search defaults result page sorting to Best Matched', async ({ topNavigationBar, researchPlusPage, searchResultPage, page }) => {
         await topNavigationBar.menuResearch.click();
         await expect(researchPlusPage.pageIdentifier).toBeVisible();
 
@@ -101,7 +90,6 @@ test.describe('Research+ Functionality', () => {
         await researchPlusPage.searchBarInput.fill(searchQuery);
 
         await researchPlusPage.clearAllResources();
-
         await researchPlusPage.selectSpecificResources(portalData.researchPlus.guaranteedResultsSources);
 
         await researchPlusPage.searchButton.click();
@@ -109,11 +97,10 @@ test.describe('Research+ Functionality', () => {
         
         await researchPlusPage.verifyResultsPaintedAndNoTabs();
 
-        await expect.soft(searchResultPage.sortingDropdownToggle).toContainText('Best Matched', { timeout: 15000 });
+        await expect(searchResultPage.sortingDropdownToggle).toContainText('Best Matched', { timeout: 15000 });
     });
 
-    test('Verify the result page contains data from selected Publication year range only', async ({ topNavigationBar, researchPlusPage, searchResultPage, page }) => {
-        const { FilterPanelPage } = require('../../../src/pages/portal/FilterPanelPage');
+    test('Research Plus - Publication year range filter restricts result years to specified boundary', async ({ topNavigationBar, researchPlusPage, page }) => {
         const filterPanelPage = new FilterPanelPage(page);
         
         await topNavigationBar.menuResearch.click();
@@ -133,19 +120,13 @@ test.describe('Research+ Functionality', () => {
         await researchPlusPage.searchButton.click();
         await page.waitForURL(/search/i, { timeout: 30000 }).catch(() => {});
         
-        // Wait for results to be painted! (User explicitly requested this)
         await researchPlusPage.verifyResultsPaintedAndNoTabs();
         
-        // Wait for the filter sidebar to be visible
         await filterPanelPage.filtersSidebar.waitFor({ state: 'visible', timeout: 15000 });
 
-        // Get the list of years from the Publication Year filter
         const yearLabels = await filterPanelPage.getFilterValues('Publication year');
-        console.log(`[TEST] Extracted Publication Years: ${yearLabels.join(', ')}`);
-        
         expect(yearLabels.length, 'There should be at least one publication year returned to validate the filter').toBeGreaterThan(0);
 
-        // Verify that all extracted years are within the provided range
         await filterPanelPage.verifyYearLabelsWithinRange(yearLabels, fromYear, toYear);
     });
 });

@@ -10,6 +10,7 @@ export class PasswordPage {
     readonly oldPasswordEyeIcon: Locator;
     readonly newPasswordEyeIcon: Locator;
     readonly confirmPasswordEyeIcon: Locator;
+    readonly successToast: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -29,6 +30,7 @@ export class PasswordPage {
         this.oldPasswordEyeIcon = page.locator('i.fa-eye, i.fa-eye-slash, .eye-icon, img[src*="eye"]').nth(0);
         this.newPasswordEyeIcon = page.locator('i.fa-eye, i.fa-eye-slash, .eye-icon, img[src*="eye"]').nth(1);
         this.confirmPasswordEyeIcon = page.locator('i.fa-eye, i.fa-eye-slash, .eye-icon, img[src*="eye"]').nth(2);
+        this.successToast = page.getByRole('heading', { name: /Updated successfully/i });
     }
 
     /**
@@ -68,5 +70,12 @@ export class PasswordPage {
     getErrorMessage(text: string): Locator {
         // The application might use toast messages or inline validation errors
         return this.page.getByText(text, { exact: false }).first();
+    }
+
+    /**
+     * Verifies that the success toast/alert is displayed after updating password.
+     */
+    async verifyUpdateSuccess() {
+        await this.successToast.first().waitFor({ state: 'visible', timeout: 10000 });
     }
 }

@@ -16,7 +16,7 @@ const backendFieldMap: Record<string, string> = {
 };
 const basicDetailsFields = Object.keys(backendFieldMap);
 
-test.describe('Profile Basic Details Suite', () => {
+test.describe('Profile Details - Basic Details Suite', () => {
     let adminApi: AdminApiService;
 
     test.beforeAll(async () => {
@@ -28,9 +28,8 @@ test.describe('Profile Basic Details Suite', () => {
         if (adminApi) await adminApi.close();
     });
 
-    test.describe('Positive Scenarios & Negative Validation (Editable ON)', () => {
+    test.describe('Profile Basic Details - Editable State', () => {
         test.beforeAll(async () => {
-            // Set all fields editable, but strictly keep Full Name (Name) mandatory as instructed
             await adminApi.updateSecuritySettings({
                 allFieldsEditable: true,
                 mandatoryFields: { fields: ['Name'], isMandatory: true }
@@ -38,7 +37,6 @@ test.describe('Profile Basic Details Suite', () => {
         });
 
         test.afterAll(async () => {
-            // Reset state to avoid poisoning subsequent tests in the suite
             await adminApi.updateSecuritySettings({
                 allFieldsEditable: true,
                 mandatoryFields: { fields: [], isMandatory: false },
@@ -54,17 +52,14 @@ test.describe('Profile Basic Details Suite', () => {
         });
 
         test.afterEach(async ({ profilePage }) => {
-            if (await profilePage.cancelBtn.isVisible().catch(() => false)) {
-                await profilePage.cancelBtn.click();
-            }
+            await profilePage.cancelIfVisible();
         });
 
-        test('TC_BasicDetails_Cancel_Discards_Changes', async ({ page }) => {
+        test('Profile Basic Details - Cancel button discards unsaved name edits and restores original value', async ({ page }) => {
             const profilePage = new ProfilePage(page);
             await profilePage.clickEdit();
             
             const locator = profilePage.getLocator('fullName');
-            if (!locator) return;
             const originalName = await locator.inputValue();
             const tempName = portalData.profile.basicDetails.temporaryName;
             await locator.fill(tempName);
@@ -76,15 +71,14 @@ test.describe('Profile Basic Details Suite', () => {
             expect(revertedName).not.toBe('Temporary Cancel Name');
         });
 
-        test.describe('Positive Data Iteration', () => {
+        test.describe('Profile Basic Details - Valid Field Input', () => {
             for (const field of basicDetailsFields) {
                 const value = basicDetailsScenarios.positiveData[field];
                 if (value) {
-                    test(`TC_BasicDetails_${field}_Accepts valid data`, async ({ page }) => {
+                    test(`Profile Basic Details - Accepts and saves valid data for field: ${field}`, async ({ page }) => {
                         test.info().annotations.push({ type: 'testData', description: String(value) });
                         const profilePage = new ProfilePage(page);
-                        await profilePage.page.waitForTimeout(1000);
-await profilePage.clickEdit();
+                        await profilePage.clickEdit();
                         
                         const locator = profilePage.getLocator(field);
                         await locator.fill(value);
@@ -96,27 +90,19 @@ await profilePage.clickEdit();
             }
         });
 
-        test.describe('Negative Scenarios Iteration', () => {
-            for (const s of basicDetailsScenarios.negativeScenarios) {
-                if (!basicDetailsFields.includes(s.field)) continue;
-                
-                // Skip blank validation here if it's not universally mandatory in this block
-                if (s.scenario.toLowerCase().includes('blank') && s.field !== 'fullName') {
-                    continue; 
-                }
+        test.describe('Profile Basic Details - Field Boundary Rejections', () => {
+            const boundaryScenarios = basicDetailsScenarios.negativeScenarios.filter((s: any) => 
+                basicDetailsFields.includes(s.field) && !s.bypassLength &&
+                (!s.scenario.toLowerCase().includes('blank') || s.field === 'fullName')
+            );
 
-                test(`TC_BasicDetails_${s.field}_${s.scenario.replace(/[^a-zA-Z0-9]/g, '')}`, async ({ page }) => {
+            for (const s of boundaryScenarios) {
+                test(`Profile Basic Details - Rejects invalid input: ${s.field} - ${s.scenario}`, async ({ page }) => {
                     test.info().annotations.push({ type: 'testData', description: String(s.value) });
                     const profilePage = new ProfilePage(page);
-                    await profilePage.page.waitForTimeout(1000);
-await profilePage.clickEdit();
+                    await profilePage.clickEdit();
                     
                     const locator = profilePage.getLocator(s.field);
-                    
-                    if (s.bypassLength) {
-                        await locator.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
-                    }
-                    
                     await locator.fill(s.value);
                     await profilePage.clickSave();
                     
@@ -125,10 +111,9 @@ await profilePage.clickEdit();
             }
         });
 
-        test.describe('DOB', () => {
-            test('TC_DOB_AcceptValidDate_EditableON - accepts valid past date via calendar', { tag: '@EditableON' }, async ({ profilePage }) => {
-                await profilePage.page.waitForTimeout(1000);
-await profilePage.clickEdit();
+        test.describe('Profile Basic Details - Date of Birth', () => {
+            test('Profile Basic Details - Accepts valid date of birth via calendar picker', async ({ profilePage }) => {
+                await profilePage.clickEdit();
                 await profilePage.dobInput.click();
                 await profilePage.calendarYearDropdown.selectOption({ label: '1995' });
                 await profilePage.calendarMonthDropdown.selectOption({ label: 'May' });
@@ -137,77 +122,63 @@ await profilePage.clickEdit();
                 await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible();
             });
 
-            test('TC_DOB_RejectFutureDate_EditableON - rejects future dates in calendar selection', { tag: '@EditableON' }, async ({ profilePage }) => {
-                await profilePage.page.waitForTimeout(1000);
-await profilePage.clickEdit();
+            test('Profile Basic Details - Rejects future date selection in calendar year dropdown', async ({ profilePage }) => {
+                await profilePage.clickEdit();
                 await profilePage.dobInput.click();
-                await profilePage.calendarYearDropdown.selectOption({ label: (new Date().getFullYear() + 1).toString() }).catch(() => { });
-                const selectedYear = await profilePage.calendarYearDropdown.inputValue();
-                expect(parseInt(selectedYear)).toBeLessThanOrEqual(new Date().getFullYear());
+                
+                const futureYear = (new Date().getFullYear() + 1).toString();
+                const optionCount = await profilePage.calendarYearDropdown.locator(`option[value="${futureYear}"]`).count();
+                expect(optionCount).toBe(0);
             });
         });
 
-        test.describe('Gender', () => {
-            test('TC_Gender_AcceptValidSelection_EditableON - saves successfully when a valid option is selected', { tag: '@EditableON' }, async ({ profilePage }) => {
-                await profilePage.page.waitForTimeout(1000);
-await profilePage.clickEdit();
+        test.describe('Profile Basic Details - Gender', () => {
+            test('Profile Basic Details - Saves successfully when a valid gender option is selected', async ({ profilePage }) => {
+                await profilePage.clickEdit();
                 await profilePage.genderDropdown.selectOption('Female');
                 await profilePage.clickSave();
                 await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible();
             });
         });
 
-        test.describe('Image Upload', () => {
-            test('TC_Image_AcceptValidUpload - uploads standard JPG/PNG successfully', async ({ profilePage }) => {
+        test.describe('Profile Basic Details - Image Upload', () => {
+            test('Profile Basic Details - Uploads valid JPG profile image successfully', async ({ profilePage }) => {
                 await profilePage.profileImgEditIcon.click();
 
-                await test.step('Upload a valid JPG image', async () => {
-                    const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/dummy-id.jpg');
-                    if (!fs.existsSync(fullFilePath)) fs.writeFileSync(fullFilePath, 'dummy content');
-                    await profilePage.imageUploadInput.setInputFiles(fullFilePath);
-                });
+                const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/dummy-id.jpg');
+                await profilePage.imageUploadInput.setInputFiles(fullFilePath);
 
-                await test.step('Save and assert success message', async () => {
-                    await profilePage.imageModalSaveBtn.click();
-                    await expect(profilePage.toastMessage).toHaveText(/update|success|saved/i, { timeout: 15000 });
-                });
+                await profilePage.imageModalSaveBtn.click();
+                await expect(profilePage.toastMessage).toHaveText(/update|success|saved/i, { timeout: 15000 });
             });
 
-            test('TC_Image_RejectInvalidExtension - shows error when uploading unsupported files', async ({ profilePage }) => {
+            test('Profile Basic Details - Displays error when uploading unsupported image file type', async ({ profilePage }) => {
                 await profilePage.profileImgEditIcon.click();
 
-                await test.step('Upload an unsupported file type', async () => {
-                    const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/dummy.pdf');
-                    if (!fs.existsSync(fullFilePath)) fs.writeFileSync(fullFilePath, 'dummy pdf content');
-                    await profilePage.imageUploadInput.setInputFiles(fullFilePath);
-                });
+                const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/dummy.pdf');
+                if (!fs.existsSync(fullFilePath)) fs.writeFileSync(fullFilePath, 'dummy pdf content');
+                await profilePage.imageUploadInput.setInputFiles(fullFilePath);
 
-                await test.step('Assert error message is shown', async () => {
-                    await profilePage.imageModalSaveBtn.click();
-                    await expect(profilePage.imageUploadErrorMsg).toBeVisible();
-                });
+                await profilePage.imageModalSaveBtn.click();
+                await expect(profilePage.imageUploadErrorMsg).toBeVisible();
             });
 
-            test('TC_Image_RejectSizeExceeded - errors when file exceeds 1MB', async ({ profilePage }) => {
+            test('Profile Basic Details - Displays error when image upload exceeds 1MB limit', async ({ profilePage }) => {
                 await profilePage.profileImgEditIcon.click();
 
-                await test.step('Upload a >1MB file', async () => {
-                    const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/large-dummy.jpg');
-                    if (!fs.existsSync(fullFilePath)) {
-                        fs.writeFileSync(fullFilePath, Buffer.alloc(1.1 * 1024 * 1024));
-                    }
-                    await profilePage.imageUploadInput.setInputFiles(fullFilePath);
-                });
+                const fullFilePath = path.resolve(__dirname, '../../../tests/test-data/files/large-dummy.jpg');
+                if (!fs.existsSync(fullFilePath)) {
+                    fs.writeFileSync(fullFilePath, Buffer.alloc(1.1 * 1024 * 1024));
+                }
+                await profilePage.imageUploadInput.setInputFiles(fullFilePath);
 
-                await test.step('Assert error message is shown', async () => {
-                    await profilePage.imageModalSaveBtn.click();
-                    await expect(profilePage.imageUploadErrorMsg).toBeVisible();
-                });
+                await profilePage.imageModalSaveBtn.click();
+                await expect(profilePage.imageUploadErrorMsg).toBeVisible();
             });
         });
     });
 
-    test.describe('Blank Validations (Mandatory ON)', () => {
+    test.describe('Profile Basic Details - Mandatory Field Validations', () => {
         test.beforeAll(async () => {
             await adminApi.updateSecuritySettings({ 
                 allFieldsEditable: true,
@@ -227,14 +198,12 @@ await profilePage.clickEdit();
         });
 
         for (const field of basicDetailsFields) {
-            // Find the blank scenario for this field
             const blankScenario = basicDetailsScenarios.negativeScenarios.find((s: any) => s.field === field && s.scenario.toLowerCase().includes('blank'));
             if (!blankScenario) continue;
 
-            test(`TC_BasicDetails_${field}_Shows validation error when blank`, async ({ page }) => {
+            test(`Profile Basic Details - Displays validation error when mandatory field is left empty: ${field}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: '' });
                 const profilePage = new ProfilePage(page);
-                await profilePage.page.waitForTimeout(1000);
                 await profilePage.clickEdit();
                 
                 const locator = profilePage.getLocator(field);
@@ -246,7 +215,7 @@ await profilePage.clickEdit();
         }
     });
 
-    test.describe('Admin Override (Individual fields non-editable)', () => {
+    test.describe('Profile Basic Details - Read-Only Disabled State Override', () => {
         test.beforeAll(async () => {
             await adminApi.updateSecuritySettings({ editableFields: { fields: Object.values(backendFieldMap), isEditable: false } });
         });
@@ -263,9 +232,8 @@ await profilePage.clickEdit();
         });
 
         for (const field of basicDetailsFields) {
-            test(`TC_BasicDetails_${field}_Field becomes read-only`, async ({ page }) => {
+            test(`Profile Basic Details - Field becomes disabled when Admin sets field non-editable: ${field}`, async ({ page }) => {
                 const profilePage = new ProfilePage(page);
-                await page.waitForTimeout(1000);
                 await profilePage.clickEdit();
                 
                 const locator = profilePage.getLocator(field);

@@ -277,6 +277,8 @@ export class AdminApiService {
     };
 
     const res = await context.post('/ws/addNewUser', { data: payload });
+    const text = await res.text();
+    console.log(`[AdminApiService] addNewUser response for ${email}: ${text}`);
     if (!res.ok()) throw new Error(`Failed to add user via API: ${res.status()}`);
     console.log(`[AdminApiService] User ${email} created successfully.`);
   }
@@ -323,6 +325,8 @@ export class AdminApiService {
     };
 
     const res = await context.post('/ws/resetUserPassword', { data: payload });
+    const text = await res.text();
+    console.log(`[AdminApiService] resetUserPassword response for ${email}: ${text}`);
     if (!res.ok()) throw new Error(`Failed to change password via API: ${res.status()}`);
     
     await context.post('/ws/addLogging', {

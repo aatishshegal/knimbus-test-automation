@@ -9,8 +9,7 @@ test.describe('Home Page - Publishers and Databases', () => {
     await expect(homePage.homePageIdentifier).toBeVisible();
   });
 
-  test('Verify all publisher cards are clickable and navigate correctly', async ({ homePage }) => {
-    // Calling the helper method to handle loop iteration inside the POM
+  test('Home Page - Publisher and database items navigate to corresponding publisher results when clicked', async ({ homePage }) => {
     await homePage.verifyWidgetItemsClickable(widgetTitle, portalData.expectedPublishers.data);
   });
 });

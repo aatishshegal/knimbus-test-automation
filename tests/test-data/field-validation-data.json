@@ -1,5 +1,5 @@
 {
-  "_description": "Used in: tests/portal/registration/registration-field-validation.spec.ts (Data-driven test covering 70+ boundary value validations for registration form)",
+  "_description": "Where: tests/portal/registration/registration-field-validation.spec.ts | Class: RegistrationPage | Tests: Data-driven suite covering 100+ granular boundary, format, HTML, script, SQL injection, and security validations across all Registration Form fields (FullName, Email, Password, ConfirmPassword, Mobile, Department, UserType)",
   "scenarios": [
     {
       "scenario": "Full Name - Blank field",

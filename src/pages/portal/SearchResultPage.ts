@@ -1,6 +1,7 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../BasePage';
 import { FilterPanelPage } from './FilterPanelPage';
+import { SortingValidator } from '../../utils/SortingValidator';
 
 export class SearchResultPage extends BasePage {
   readonly searchResultIdentifier: Locator;
@@ -27,8 +28,7 @@ export class SearchResultPage extends BasePage {
   constructor(page: Page) {
     super(page);
     // When a search is performed, the URL routes to /portal/v2/default/searchresult
-    // We will use the page header or generic body as a fallback to ensure the page has loaded.
-    this.searchResultIdentifier = page.locator('.page-title, h1, h2, h3').filter({ hasText: 'Search' }).or(page.locator('body')).first();
+    this.searchResultIdentifier = page.getByRole('listitem', { name: 'Search Result' });
     
     // Tabs (Container fallback if needed, but buttons are more direct)
     this.tabsContainer = page.locator('.result-page-tabs, .custom-tabs-container, .tabs-wrapper').first();
@@ -57,9 +57,42 @@ export class SearchResultPage extends BasePage {
     
     // Save Search & Toast
     this.saveSearchButton = page.locator('img[alt="Save"], img[title="Save"], .save-search-btn').first();
-    this.toastNotification = page.locator('.toast, .snackbar, #toast-container, .alert, .MuiSnackbar-root, .success-message, .toast-message, [role="alert"]').or(page.locator('text=/Your search has been saved|The search is already saved|You have already saved this search/i')).first();
+    this.toastNotification = page.locator('.toast, .snackbar, #toast-container, .alert, .MuiSnackbar-root, .success-message, .toast-message, [role="alert"]').first();
     
     this.filterPanel = new FilterPanelPage(page);
+  }
+
+  async clickSaveSearch() {
+    await this.saveSearchButton.click();
+  }
+
+  async verifyToastContains(textPattern: RegExp | string) {
+    const toast = this.page.getByRole('alert').first();
+    await expect(toast).toContainText(textPattern, { timeout: 10000 });
+  }
+
+  async triggerDuplicateSaveSearch() {
+    await this.clickSaveSearch();
+    const toast = this.page.getByRole('alert').first();
+    await toast.waitFor({ state: 'visible', timeout: 5000 });
+    const text = await toast.innerText();
+    if (!text.toLowerCase().includes('already')) {
+      await toast.waitFor({ state: 'hidden', timeout: 10000 });
+      await this.clickSaveSearch();
+      await expect(toast).toContainText(/already/i, { timeout: 10000 });
+    }
+  }
+
+  async switchToListView() {
+    await this.viewDropdownToggle.click();
+    await this.viewOptionList.click();
+    await expect(this.viewDropdownToggle).toHaveText(/List View/i);
+  }
+
+  async switchToGridView() {
+    await this.viewDropdownToggle.click();
+    await this.viewOptionGrid.click();
+    await expect(this.viewDropdownToggle).toHaveText(/Grid View/i);
   }
   
   /**
@@ -143,6 +176,45 @@ export class SearchResultPage extends BasePage {
     const randomIndex = Math.floor(Math.random() * count);
     return this.getSearchResultCard(randomIndex);
   }
+
+  async toggleFavoriteAndEnsureAdded(card: Locator): Promise<string> {
+    const titleElement = card.locator('.title').first();
+    const contentTitle = (await titleElement.innerText()).trim();
+    const favButton = card.locator('a[title*="favourite" i]');
+
+    await favButton.click({ force: true });
+    const toast = this.page.locator('text=/favourite list/i').last();
+    await expect(toast).toBeVisible({ timeout: 10000 });
+    let toastText = await toast.innerText();
+
+    if (toastText.includes('Removed')) {
+      await toast.waitFor({ state: 'hidden', timeout: 10000 });
+      await favButton.click({ force: true });
+      const newToast = this.page.locator('text=/favourite list/i').last();
+      await expect(newToast).toBeVisible({ timeout: 10000 });
+      toastText = await newToast.innerText();
+    }
+    expect(toastText).toContain('Added to your favourite list');
+    return contentTitle;
+  }
+
+  async toggleFavoriteAndEnsureRemoved(card: Locator): Promise<void> {
+    const favButton = card.locator('a[title*="favourite" i]');
+    await favButton.click({ force: true });
+
+    const toast = this.page.locator('text=/favourite list/i').last();
+    await expect(toast).toBeVisible({ timeout: 10000 });
+    let toastText = await toast.innerText();
+
+    if (!toastText.includes('Removed')) {
+      await toast.waitFor({ state: 'hidden', timeout: 10000 });
+      await favButton.click({ force: true });
+      const newToast = this.page.locator('text=/favourite list/i').last();
+      await expect(newToast).toBeVisible({ timeout: 10000 });
+      toastText = await newToast.innerText();
+    }
+    expect(toastText).toContain('Removed from your favourite list');
+  }
   /**
    * Gets the currently active sorting option text.
    */
@@ -201,5 +273,60 @@ export class SearchResultPage extends BasePage {
           logResultCallback('Apply Sorting', `Filter intact after sorting by ${option.text}`, isIntact, `Drilldown was ${isIntact ? 'intact' : 'lost'} after sorting`);
           expect.soft(isIntact).toBeTruthy();
       }
+  }
+
+  async selectSortOption(optionText: string) {
+      await this.sortingDropdownToggle.click();
+      await this.sortOptionsContainer.locator('a, .dropdown-item').filter({ hasText: optionText }).first().click();
+      await this.waitForResultsToReload();
+      await expect(this.sortingDropdownToggle).toHaveText(new RegExp(optionText, 'i'));
+  }
+
+  async verifySortingApplied(sortConfig: { option: string; validatorType: string }) {
+      await this.selectSortOption(sortConfig.option);
+      const newTitles = await this.getVisibleResultTitles();
+      const newYears = await this.getVisibleResultYears();
+
+      if (sortConfig.validatorType === 'alphabetical') {
+          const isValid = SortingValidator.isAlphabetical(newTitles);
+          expect(isValid, `Sort option "${sortConfig.option}" should sort titles alphabetically`).toBeTruthy();
+      } else if (sortConfig.validatorType === 'dateDescending') {
+          const isValid = SortingValidator.isDescendingDate(newYears);
+          expect(isValid, `Sort option "${sortConfig.option}" should sort years in descending order`).toBeTruthy();
+      } else if (sortConfig.validatorType === 'sjrRank') {
+          await expect(this.sortingDropdownToggle).toHaveText(new RegExp(sortConfig.option, 'i'));
+      }
+  }
+
+  async verifyAlphabeticalSortAcrossPagination() {
+      await this.selectSortOption('Alphabetically');
+      const page1Titles = await this.getVisibleResultTitles();
+      
+      await expect(this.nextPageButton).toBeVisible();
+      await this.nextPageButton.click();
+      await this.waitForResultsToReload();
+
+      const page2Titles = await this.getVisibleResultTitles();
+      const combinedTitles = [...page1Titles, ...page2Titles];
+      const isValid = SortingValidator.isAlphabetical(combinedTitles);
+      expect(isValid, 'Pagination should preserve alphabetical sorting').toBeTruthy();
+  }
+
+  async verifySortChangePreservesFilterAndResetsPage() {
+      await this.firstFilterCheckbox.evaluate((node: HTMLElement) => node.click());
+      await this.waitForResultsToReload();
+
+      if (await this.nextPageButton.isVisible()) {
+          await this.nextPageButton.click();
+          await this.waitForResultsToReload();
+          await expect(this.activePageIndicator).toHaveText('2');
+      }
+
+      await this.selectSortOption('Newest First');
+
+      if (await this.activePageIndicator.isVisible()) {
+          await expect(this.activePageIndicator).toHaveText('1');
+      }
+      await expect(this.firstFilterCheckbox).toBeChecked();
   }
 }
