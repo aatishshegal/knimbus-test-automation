@@ -12,6 +12,11 @@ export class TermsAndConditionsModal extends BasePage {
   }
 
   async handleTermsAndConditionsIfVisible() {
+    try {
+      await this.termsCheckbox.waitFor({ state: 'visible', timeout: 5000 });
+    } catch {
+      // Not visible within timeout
+    }
     if (await this.termsCheckbox.isVisible()) {
         console.log('[LOG] Terms & Conditions pop-up IS visible on the screen.');
         await this.termsCheckbox.check();
@@ -20,8 +25,8 @@ export class TermsAndConditionsModal extends BasePage {
         if (await this.termsAcceptButton.isVisible()) {
             await this.termsAcceptButton.click();
             console.log('[LOG] User clicked the Accept button for Terms & Conditions.');
-            await this.page.waitForLoadState('networkidle');
-            await this.page.waitForTimeout(2000);
+            await this.termsCheckbox.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+            await this.page.waitForTimeout(1000);
         }
     } else {
         console.log('[LOG] Terms & Conditions pop-up is NOT visible. Skipping checkbox logic.');

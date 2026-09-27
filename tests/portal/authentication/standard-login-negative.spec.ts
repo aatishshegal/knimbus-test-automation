@@ -1,15 +1,12 @@
 import { test, expect } from '../../../src/fixtures';
 import portalData from '../../test-data/portal-data.json';
-const invalidCredentials = portalData.invalidCredentials;
 import { AuthHelpers } from '../../../src/utils/AuthHelpers';
 
-test.describe('Portal Authentication - Standard Login Negative Scenarios', () => {
+const invalidCredentials = portalData.invalidCredentials;
 
-  test.afterEach(async ({ page }) => {
-    await page.waitForTimeout(2000);
-  });
+test.describe('Portal Authentication - Standard Login Field and Credential Validations', () => {
 
-  test('Verify the submit button stays disabled when login fields are empty', async ({ portalLoginPage }) => {
+  test('Standard Login - Submit button remains disabled when email or password fields are empty', async ({ portalLoginPage }) => {
     const email = process.env.NEGATIVE_USER_EMAIL as string;
     const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
@@ -26,7 +23,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     expect(await portalLoginPage.isSubmitButtonDisabled()).toBe(true);
   });
 
-  test('Verify an invalid email format disables the submit button and shows an error', async ({ portalLoginPage }) => {
+  test('Standard Login - Displays validation error and disables submit button for invalid email format', async ({ portalLoginPage }) => {
     const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
     await portalLoginPage.navigateTo(process.env.PORTAL_URL as string);
@@ -39,7 +36,7 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     await expect(portalLoginPage.invalidEmailFormatError).toBeVisible();
   });
 
-  test("Verify an unregistered email shows a 'user does not exist' error", async ({ portalLoginPage }) => {
+  test("Standard Login - Displays user does not exist error when logging in with unregistered email", async ({ portalLoginPage }) => {
     const unregisteredEmail = `${invalidCredentials.unregisteredEmailPrefix}_${Date.now()}@yopmail.com`;
     const password = process.env.NEGATIVE_USER_PASSWORD as string;
 
@@ -48,21 +45,15 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     await expect(portalLoginPage.unregisteredUserError).toBeVisible({ timeout: 15000 });
   });
 
-  test('Verify an invalid password shows a remaining-attempts error or locks the account', async ({ portalLoginPage }) => {
+  test('Standard Login - Displays remaining attempts warning or lockout notification for invalid password', async ({ portalLoginPage }) => {
     const email = process.env.LOCKED_USER_EMAIL as string;
     const password = process.env.LOCKED_USER_PASSWORD as string;
 
     await portalLoginPage.login(email, `${password}${invalidCredentials.invalidPasswordSuffix}`);
-
-    await portalLoginPage.page.waitForTimeout(2000);
-    const isWarningVisible = await portalLoginPage.invalidPasswordError.isVisible();
-    const isGenericErrorVisible = await portalLoginPage.page.getByText('Invalid login credential').isVisible();
-    const isLockedVisible = await portalLoginPage.accountLockedError.isVisible();
-
-    expect(isWarningVisible || isLockedVisible || isGenericErrorVisible).toBeTruthy();
+    await portalLoginPage.verifyInvalidPasswordFeedback();
   });
 
-  test('Verify multiple incorrect password attempts lock the account', async ({ portalLoginPage }) => {
+  test('Standard Login - Locks account after exceeding maximum permitted failed login attempts', async ({ portalLoginPage }) => {
     test.slow();
     const email = process.env.LOCKED_USER_EMAIL as string;
     const password = process.env.LOCKED_USER_PASSWORD as string;
@@ -72,7 +63,6 @@ test.describe('Portal Authentication - Standard Login Negative Scenarios', () =>
     await portalLoginPage.fillText(portalLoginPage.emailInput, email, 'Email Field');
 
     const isLocked = await AuthHelpers.lockUserAccount(portalLoginPage, email, password);
-
     expect(isLocked).toBe(true);
   });
 

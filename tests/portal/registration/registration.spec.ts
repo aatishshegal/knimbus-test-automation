@@ -5,7 +5,21 @@ import path from 'path';
 
 test.describe('Portal Authentication - Registration Flows', () => {
 
-  test('Verify a user can register without OTP, view the Welcome page, and land on Home', async ({
+  test.afterAll(async () => {
+    const adminApi = new AdminApiService();
+    await adminApi.login();
+    await adminApi.updateSecuritySettings({
+      selfRegistration: true,
+      twoFactorAuth: false,
+      automatedVerification: true,
+      domainRestriction: [],
+      authDenyPatterns: { denialPatterns: [], allowedPatterns: null },
+      mandatoryFields: { fields: [], isMandatory: false }
+    });
+    await adminApi.close();
+  });
+
+  test('Registration - User registers successfully without OTP, completes welcome page, and lands on Home', async ({
     page,
     portalLoginPage,
     registrationPage,
@@ -56,7 +70,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
   });
 
-  test('Verify a user can register, verify via OTP, view the Welcome page, and land on Home', async ({
+  test('Registration - User registers, verifies OTP via email, completes welcome page, and lands on Home', async ({
     portalLoginPage,
     registrationPage,
     otpPage,
@@ -113,7 +127,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
   });
 
-  test('Verify a user can register, complete the Mandatory Details page, view the Welcome page, and land on Home', async ({
+  test('Registration - User registers, completes mandatory details form, completes welcome page, and lands on Home', async ({
     portalLoginPage,
     registrationPage,
     mandatoryDetailsPage,
@@ -176,7 +190,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
   });
 
-  test('Verify signing up with a restricted email domain shows an error', async ({
+  test('Registration - Email with unapproved domain displays provider restriction error', async ({
     page,
     portalLoginPage,
     registrationPage
@@ -213,7 +227,7 @@ test.describe('Portal Authentication - Registration Flows', () => {
     await expect(errorLocator).toBeVisible({ timeout: 10000 });
   });
 
-  test('Verify signing up with a restricted email domain shows an Access Denied error', async ({
+  test('Registration - Email with denied domain pattern displays Access Denied error', async ({
     page,
     portalLoginPage,
     registrationPage

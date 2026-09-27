@@ -74,12 +74,22 @@ export class IdAndAccessInfoPage {
         }
     }
 
+    async uploadIdDocuments(frontPath?: string, backPath?: string) {
+        if (frontPath) {
+            await this.frontsideUploadInput.setInputFiles(frontPath);
+        }
+        if (backPath) {
+            await this.backsideUploadInput.setInputFiles(backPath);
+        }
+        await this.saveBtn.click();
+    }
+
     async raiseOcaRequest() {
         const { expect } = require('@playwright/test');
         await this.raiseRequestBtn.click();
         
-        // Handle the Raise a Request modal
-        const modal = this.page.getByRole('dialog', { name: 'Raise a Request' }).or(this.page.locator('.modal-content').filter({ hasText: 'Raise a Request' }));
+        // Handle the Raise a Request modal without banned .or()
+        const modal = this.page.locator('.modal-content, [role="dialog"]').filter({ hasText: 'Raise a Request' }).first();
         await expect(modal).toBeVisible({ timeout: 5000 });
         
         // Check Off-Campus Access

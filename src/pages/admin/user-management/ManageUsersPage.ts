@@ -37,12 +37,119 @@ export class ManageUsersPage extends AdminBasePage {
 
     // Notification Modal
     readonly notificationModal: Locator;
+    readonly notificationTitleInput: Locator;
+    readonly notificationDescTextarea: Locator;
+    readonly notificationCharCounter: Locator;
     readonly notificationTypeWeb: Locator;
     readonly notificationTypeMobile: Locator;
     readonly notificationTypeBoth: Locator;
+    readonly notificationSendBtn: Locator;
+    readonly notificationCancelBtn: Locator;
+    readonly notificationCloseCrossBtn: Locator;
+
+    // Export Usage Log Modal
+    readonly exportUsageLogModal: Locator;
+    readonly exportUsageLogDateRangeInput: Locator;
+    readonly exportUsageLogExportBtn: Locator;
+    readonly exportUsageLogCancelBtn: Locator;
+    readonly exportUsageLogCloseCrossBtn: Locator;
     readonly userProfileModal: Locator;
     readonly userProfileSaveBtn: Locator;
     readonly userProfileCancelBtn: Locator;
+
+    // Content Group Locators
+    readonly contentGroupInput: Locator;
+    readonly contentGroupDropdown: Locator;
+    readonly contentGroupOptionList: Locator;
+    readonly contentGroupOptions: Locator;
+    readonly contentGroupSelectAllBtn: Locator;
+    readonly contentGroupClearAllBtn: Locator;
+
+    // Service Group Locators (User Profile Modal)
+    readonly userProfileServiceGroupSelect: Locator;
+    readonly userProfileRaExpiryDateInput: Locator;
+    readonly userProfileServiceGroupExpiredWarning: Locator;
+
+    // Change Password Locators
+    readonly changePasswordTab: Locator;
+    readonly newPasswordInput: Locator;
+    readonly confirmPasswordInput: Locator;
+    readonly newPasswordEyeIcon: Locator;
+    readonly confirmPasswordEyeIcon: Locator;
+    readonly changePasswordUpdateBtn: Locator;
+    readonly changePasswordCloseBtn: Locator;
+    readonly newPasswordError: Locator;
+    readonly confirmPasswordError: Locator;
+    readonly passwordMismatchError: Locator;
+
+    // ID Document Locators
+    readonly idDocumentTab: Locator;
+    readonly idDocIntroText: Locator;
+    readonly idDocFrontContainer: Locator;
+    readonly idDocBackContainer: Locator;
+    readonly idDocFrontHeading: Locator;
+    readonly idDocBackHeading: Locator;
+    readonly idDocFrontInput: Locator;
+    readonly idDocBackInput: Locator;
+    readonly idDocFrontBrowseLabel: Locator;
+    readonly idDocBackBrowseLabel: Locator;
+    readonly idDocFrontMainInstruction: Locator;
+    readonly idDocBackMainInstruction: Locator;
+    readonly idDocFrontBestFitInfo: Locator;
+    readonly idDocBackBestFitInfo: Locator;
+    readonly idDocFrontFormatInfo: Locator;
+    readonly idDocBackFormatInfo: Locator;
+    readonly idDocFrontFileName: Locator;
+    readonly idDocBackFileName: Locator;
+    readonly idDocFrontPreviewImage: Locator;
+    readonly idDocBackPreviewImage: Locator;
+    readonly idDocFrontError: Locator;
+    readonly idDocBackError: Locator;
+    readonly idDocUpdateBtn: Locator;
+    readonly idDocCloseBtn: Locator;
+
+    async selectProfileServiceGroup(groupName: string) {
+        await this.scrollToGroupDetails();
+        await this.userProfileServiceGroupSelect.focus();
+        await this.userProfileServiceGroupSelect.selectOption({ label: groupName });
+        await this.userProfileServiceGroupSelect.evaluate(node => node.dispatchEvent(new Event('change', { bubbles: true })));
+    }
+
+    async getSelectedProfileServiceGroup(): Promise<string> {
+        await this.scrollToGroupDetails();
+        const checkedOption = this.userProfileServiceGroupSelect.locator('option:checked');
+        return (await checkedOption.innerText()).trim();
+    }
+
+    async getProfileRaExpiryDateValue(): Promise<string> {
+        return await this.userProfileRaExpiryDateInput.inputValue();
+    }
+
+    async isProfileServiceGroupExpiredWarningVisible(): Promise<boolean> {
+        return await this.userProfileServiceGroupExpiredWarning.isVisible();
+    }
+
+    async closeUserProfileModalViaCloseButton() {
+        const closeBtn = this.userProfileModal.getByRole('button', { name: 'Close', exact: true });
+        await closeBtn.click();
+        await this.userProfileModal.waitFor({ state: 'hidden', timeout: 5000 });
+    }
+
+    async closeUserProfileModalViaCrossIcon() {
+        const crossBtn = this.userProfileModal.locator('.fa-x, .btn-close, button.close').first();
+        await crossBtn.click();
+        await this.userProfileModal.waitFor({ state: 'hidden', timeout: 5000 });
+    }
+
+    async closeAssignGroupModalViaEscape() {
+        await this.page.keyboard.press('Escape');
+        await this.assignGroupModal.waitFor({ state: 'hidden', timeout: 5000 });
+    }
+
+    async closeAssignGroupModalViaBackdrop() {
+        await this.page.mouse.click(10, 10);
+        await this.assignGroupModal.waitFor({ state: 'hidden', timeout: 5000 });
+    }
 
     // Added to fix compilation
     getProfileLocator(name: string) {
@@ -65,6 +172,132 @@ export class ManageUsersPage extends AdminBasePage {
             }
         }
     }
+
+    async scrollToGroupDetails() {
+        await this.page.evaluate(() => {
+            const modalBody = document.querySelector('.modal-body') || document.querySelector('.modal-content');
+            if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
+        });
+        await this.contentGroupInput.scrollIntoViewIfNeeded();
+    }
+
+    async openContentGroupDropdown() {
+        await this.scrollToGroupDetails();
+        if (!(await this.contentGroupDropdown.isVisible())) {
+            await this.contentGroupInput.click();
+            await this.contentGroupDropdown.waitFor({ state: 'visible', timeout: 5000 });
+        }
+    }
+
+    async closeContentGroupDropdown() {
+        if (await this.contentGroupDropdown.isVisible()) {
+            await this.contentGroupInput.click();
+            await this.contentGroupDropdown.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        }
+    }
+
+    async closeContentGroupDropdownViaBackdrop() {
+        if (await this.contentGroupDropdown.isVisible()) {
+            await this.userProfileModal.getByText('Group details').click();
+            await this.contentGroupDropdown.waitFor({ state: 'hidden', timeout: 5000 });
+        }
+    }
+
+    async selectAllContentGroupsManually(groupNames: string[]) {
+        await this.openContentGroupDropdown();
+        const count = groupNames.length;
+        for (let i = 0; i < count; i++) {
+            const name = groupNames[i];
+            const option = this.getContentGroupOptionLocator(name);
+            const button = option.locator('button');
+            const isSelected = ((await button.getAttribute('class')) || '').includes('selected');
+            if (!isSelected) {
+                await option.click();
+            }
+        }
+    }
+
+    getContentGroupOptionLocator(groupName: string): Locator {
+        return this.contentGroupOptions.filter({ hasText: groupName }).first();
+    }
+
+    async selectContentGroup(groupName: string) {
+        await this.openContentGroupDropdown();
+        const option = this.getContentGroupOptionLocator(groupName);
+        await option.click();
+    }
+
+    async isContentGroupOptionSelected(groupName: string): Promise<boolean> {
+        await this.openContentGroupDropdown();
+        const option = this.getContentGroupOptionLocator(groupName);
+        const button = option.locator('button');
+        const classAttr = await button.getAttribute('class') || '';
+        return classAttr.includes('selected');
+    }
+
+    async clickSelectAllContentGroups() {
+        await this.openContentGroupDropdown();
+        await this.contentGroupSelectAllBtn.click();
+    }
+
+    async clickClearAllContentGroups() {
+        await this.openContentGroupDropdown();
+        if (!(await this.contentGroupClearAllBtn.isDisabled())) {
+            await this.contentGroupClearAllBtn.click();
+        }
+    }
+
+    async getContentGroupInputValue(): Promise<string> {
+        await this.scrollToGroupDetails();
+        return await this.contentGroupInput.inputValue();
+    }
+
+    async isClearAllContentGroupsDisabled(): Promise<boolean> {
+        await this.openContentGroupDropdown();
+        return await this.contentGroupClearAllBtn.isDisabled();
+    }
+
+    async saveProfileAndExpectSuccess() {
+        await this.closeContentGroupDropdown();
+        await this.userProfileSaveBtn.click();
+        await this.swalToast.waitFor({ state: 'visible', timeout: 10000 });
+        await this.userProfileModal.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+    }
+
+    async verifyOnlyContentGroupsSelected(expectedGroups: string[]) {
+        await this.openContentGroupDropdown();
+        const count = await this.contentGroupOptions.count();
+        for (let i = 0; i < count; i++) {
+            const opt = this.contentGroupOptions.nth(i);
+            const text = (await opt.innerText()).trim();
+            const btn = opt.locator('button');
+            const isSelected = ((await btn.getAttribute('class')) || '').includes('selected');
+            if (expectedGroups.includes(text)) {
+                if (!isSelected) {
+                    throw new Error(`Expected group "${text}" to be selected, but it was not.`);
+                }
+            } else {
+                if (isSelected) {
+                    throw new Error(`Expected group "${text}" NOT to be selected, but it was.`);
+                }
+            }
+        }
+    }
+
+    async verifyAllContentGroupsSelected() {
+        await this.openContentGroupDropdown();
+        const count = await this.contentGroupOptions.count();
+        for (let i = 0; i < count; i++) {
+            const opt = this.contentGroupOptions.nth(i);
+            const text = (await opt.innerText()).trim();
+            const btn = opt.locator('button');
+            const isSelected = ((await btn.getAttribute('class')) || '').includes('selected');
+            if (!isSelected) {
+                throw new Error(`Expected all groups to be selected, but "${text}" was not selected.`);
+            }
+        }
+    }
+
 
 
     constructor(page: Page) {
@@ -104,13 +337,165 @@ export class ManageUsersPage extends AdminBasePage {
 
         // Notification Modal
         this.notificationModal = page.locator('.modal.show, .modal').filter({ hasText: 'Send Notification' });
+        this.notificationTitleInput = this.notificationModal.locator('input[name="title"]');
+        this.notificationDescTextarea = this.notificationModal.locator('textarea[name="description"]');
+        this.notificationCharCounter = this.notificationModal.locator('.desc-remain-char');
         this.notificationTypeWeb = this.notificationModal.locator('input#Notification-Type-Web');
         this.notificationTypeMobile = this.notificationModal.locator('input#Notification-Type-Mobile');
         this.notificationTypeBoth = this.notificationModal.locator('input#Notification-Type-Both');
+        this.notificationSendBtn = this.notificationModal.locator('button[form="singleUserNotificationForm"]');
+        this.notificationCancelBtn = this.notificationModal.locator('.modal-footer button.btn-outline-danger');
+        this.notificationCloseCrossBtn = this.notificationModal.locator('button.custom-modal-close');
+
+        // Export Usage Log Modal
+        this.exportUsageLogModal = page.locator('.modal.show, .modal').filter({ hasText: 'Export Usage Log' });
+        this.exportUsageLogDateRangeInput = this.exportUsageLogModal.locator('input[name="usageDateRange"]');
+        this.exportUsageLogExportBtn = this.exportUsageLogModal.getByRole('button', { name: 'Export', exact: true });
+        this.exportUsageLogCancelBtn = this.exportUsageLogModal.getByRole('button', { name: 'Cancel', exact: true });
+        this.exportUsageLogCloseCrossBtn = this.exportUsageLogModal.locator('button.custom-modal-close');
         this.userProfileModal = page.locator('.modal.show, .swal2-popup, .offcanvas.show, [role=\"dialog\"]').filter({ hasText: 'User Profile' });
         this.userProfileSaveBtn = this.userProfileModal.getByRole('button', { name: 'Update', exact: true });
         this.userProfileCancelBtn = this.userProfileModal.getByRole('button', { name: 'Cancel', exact: true });
 
+        // Content Group Initializations
+        this.contentGroupInput = this.userProfileModal.locator('#content-group');
+        this.contentGroupDropdown = this.userProfileModal.locator('.multi-dropdown');
+        this.contentGroupOptionList = this.userProfileModal.locator('.multi-dropdown ul.option-list');
+        this.contentGroupOptions = this.userProfileModal.locator('.multi-dropdown ul.option-list li[role="option"]');
+        this.contentGroupSelectAllBtn = this.userProfileModal.locator('.multi-dropdown').getByRole('button', { name: 'Select all', exact: true });
+        this.contentGroupClearAllBtn = this.userProfileModal.locator('.multi-dropdown').getByRole('button', { name: 'Clear all', exact: true });
+
+        // Service Group Initializations
+        this.userProfileServiceGroupSelect = this.userProfileModal.locator('#serviceGroup');
+        this.userProfileRaExpiryDateInput = this.userProfileModal.locator('input[name="raExpiryDate"]');
+        this.userProfileServiceGroupExpiredWarning = this.userProfileModal.locator('.text-danger').filter({ hasText: 'This service group is already expired!!' });
+
+        // Change Password Initializations
+        this.changePasswordTab = this.userProfileModal.getByRole('tab', { name: 'Change password' });
+        this.newPasswordInput = this.userProfileModal.locator('input#password');
+        this.confirmPasswordInput = this.userProfileModal.locator('input#confirmPassword');
+        this.newPasswordEyeIcon = this.userProfileModal.locator('.input-group:has(#password) .password-eye-icon-wrapper');
+        this.confirmPasswordEyeIcon = this.userProfileModal.locator('.input-group:has(#confirmPassword) .password-eye-icon-wrapper');
+        this.changePasswordUpdateBtn = this.userProfileModal.locator('button[form="changePasswordForm"]');
+        this.changePasswordCloseBtn = this.userProfileModal.locator('#changePasswordForm button').filter({ hasText: 'Close' });
+        this.newPasswordError = this.userProfileModal.locator('.col-xl-6:has(#password) .text-danger, .col-xl-6:has(#password) span.text-danger');
+        this.confirmPasswordError = this.userProfileModal.locator('.col-xl-6:has(#confirmPassword) .text-danger, .col-xl-6:has(#confirmPassword) span.text-danger');
+        this.passwordMismatchError = this.userProfileModal.locator('.text-danger').filter({ hasText: 'New password and confirm password should be same!' });
+
+        // ID Document Initializations
+        this.idDocumentTab = this.userProfileModal.getByRole('tab', { name: 'ID document' });
+        this.idDocIntroText = this.userProfileModal.locator('.custom-modal-w-tab-padding .ft-14').first();
+        this.idDocFrontContainer = this.userProfileModal.locator('.id-doc-card-container:has(input[name="idCardFront"])');
+        this.idDocBackContainer = this.userProfileModal.locator('.id-doc-card-container:has(input[name="idCardBack"])');
+        this.idDocFrontHeading = this.idDocFrontContainer.locator('.id-doc-heading');
+        this.idDocBackHeading = this.idDocBackContainer.locator('.id-doc-heading');
+        this.idDocFrontInput = this.idDocFrontContainer.locator('input[name="idCardFront"]');
+        this.idDocBackInput = this.idDocBackContainer.locator('input[name="idCardBack"]');
+        this.idDocFrontBrowseLabel = this.idDocFrontContainer.locator('label.browse-button');
+        this.idDocBackBrowseLabel = this.idDocBackContainer.locator('label.browse-button');
+        this.idDocFrontMainInstruction = this.idDocFrontContainer.locator('.main-instruction');
+        this.idDocBackMainInstruction = this.idDocBackContainer.locator('.main-instruction');
+        this.idDocFrontBestFitInfo = this.idDocFrontContainer.locator('.best-fit-info');
+        this.idDocBackBestFitInfo = this.idDocBackContainer.locator('.best-fit-info');
+        this.idDocFrontFormatInfo = this.idDocFrontContainer.locator('.format-info');
+        this.idDocBackFormatInfo = this.idDocBackContainer.locator('.format-info');
+        this.idDocFrontFileName = this.idDocFrontContainer.locator('.fst-italic');
+        this.idDocBackFileName = this.idDocBackContainer.locator('.fst-italic');
+        this.idDocFrontPreviewImage = this.idDocFrontContainer.locator('.preview-image');
+        this.idDocBackPreviewImage = this.idDocBackContainer.locator('.preview-image');
+        this.idDocFrontError = this.idDocFrontContainer.locator('.text-danger').filter({ hasNotText: '*' });
+        this.idDocBackError = this.idDocBackContainer.locator('.text-danger').filter({ hasNotText: '*' });
+        this.idDocUpdateBtn = this.userProfileModal.locator('button[form="idDocumentForm"]');
+        this.idDocCloseBtn = this.userProfileModal.locator('#idDocumentForm button').filter({ hasText: 'Close' });
+    }
+
+    async clickChangePasswordTab() {
+        await this.changePasswordTab.click();
+        await this.newPasswordInput.waitFor({ state: 'visible', timeout: 5000 });
+    }
+
+    async fillNewPassword(value: string) {
+        await this.newPasswordInput.fill(value);
+        await this.newPasswordInput.blur();
+    }
+
+    async fillConfirmPassword(value: string) {
+        await this.confirmPasswordInput.fill(value);
+        await this.confirmPasswordInput.blur();
+    }
+
+    async clearNewPassword() {
+        await this.newPasswordInput.fill('');
+        await this.newPasswordInput.blur();
+    }
+
+    async clearConfirmPassword() {
+        await this.confirmPasswordInput.fill('');
+        await this.confirmPasswordInput.blur();
+    }
+
+    async clickNewPasswordEyeIcon() {
+        await this.newPasswordEyeIcon.click();
+    }
+
+    async clickConfirmPasswordEyeIcon() {
+        await this.confirmPasswordEyeIcon.click();
+    }
+
+    async getNewPasswordInputType(): Promise<string> {
+        return (await this.newPasswordInput.getAttribute('type')) || '';
+    }
+
+    async getConfirmPasswordInputType(): Promise<string> {
+        return (await this.confirmPasswordInput.getAttribute('type')) || '';
+    }
+
+    async clickChangePasswordUpdate() {
+        await this.changePasswordUpdateBtn.click();
+    }
+
+    async clickChangePasswordClose() {
+        await this.changePasswordCloseBtn.click();
+        await this.userProfileModal.waitFor({ state: 'hidden', timeout: 5000 });
+    }
+
+    // ID Document Actions
+    async clickIdDocumentTab() {
+        await this.idDocumentTab.click();
+        await this.idDocFrontContainer.waitFor({ state: 'visible', timeout: 5000 });
+    }
+
+    async uploadFrontIdFile(filePath: string) {
+        await this.idDocFrontInput.setInputFiles(filePath);
+    }
+
+    async uploadBackIdFile(filePath: string) {
+        await this.idDocBackInput.setInputFiles(filePath);
+    }
+
+    async getFrontMainInstructionText(): Promise<string> {
+        return (await this.idDocFrontMainInstruction.innerText()).trim();
+    }
+
+    async getBackMainInstructionText(): Promise<string> {
+        return (await this.idDocBackMainInstruction.innerText()).trim();
+    }
+
+    async getFrontErrorText(): Promise<string> {
+        return (await this.idDocFrontError.innerText()).trim();
+    }
+
+    async getBackErrorText(): Promise<string> {
+        return (await this.idDocBackError.innerText()).trim();
+    }
+
+    async clickIdDocUpdate() {
+        await this.idDocUpdateBtn.click();
+    }
+
+    async clickIdDocClose() {
+        await this.idDocCloseBtn.click();
+        await this.userProfileModal.waitFor({ state: 'hidden', timeout: 5000 });
     }
 
     async searchForUser(emailOrName: string) {
@@ -207,17 +592,54 @@ export class ManageUsersPage extends AdminBasePage {
     
     async clickUserDetailsOverview(email: string) {
         const row = this.getRowByEmail(email);
-        await row.locator('span[title="User Details Overview"] button, button[title="User Details Overview"]').first().click();
+        await row.waitFor({ state: 'visible', timeout: 10000 });
+        const btn = row.locator('span[title="User Details Overview"] button, button[title="User Details Overview"]').first();
+        await btn.waitFor({ state: 'visible', timeout: 10000 });
+        await btn.click();
+        await this.userProfileModal.waitFor({ state: 'visible', timeout: 10000 });
     }
     
     async clickSendNotification(email: string) {
         const row = this.getRowByEmail(email);
         await row.locator('span[title="Send Notification"] button, button[title="Send Notification"]').first().click();
+        await this.notificationModal.waitFor({ state: 'visible', timeout: 5000 });
     }
-    
+
+    async fillNotificationTitle(title: string) {
+        await this.notificationTitleInput.fill(title);
+    }
+
+    async fillNotificationDescription(description: string) {
+        await this.notificationDescTextarea.fill(description);
+    }
+
+    async selectNotificationType(type: 'Web' | 'Mobile' | 'Both') {
+        if (type === 'Web') {
+            await this.notificationTypeWeb.check();
+        } else if (type === 'Mobile') {
+            await this.notificationTypeMobile.check();
+        } else if (type === 'Both') {
+            await this.notificationTypeBoth.check();
+        }
+    }
+
+    async clickSendNotificationSubmit() {
+        await this.notificationSendBtn.click();
+        await this.notificationModal.waitFor({ state: 'hidden', timeout: 10000 });
+    }
+
     async clickExportUsageLog(email: string) {
         const row = this.getRowByEmail(email);
         await row.locator('span[title="Export Usage Log"] button, button[title="Export Usage Log"]').first().click();
+        await this.exportUsageLogModal.waitFor({ state: 'visible', timeout: 5000 });
+    }
+
+    async clickExportUsageLogSubmit(): Promise<any> {
+        const downloadPromise = this.page.waitForEvent('download');
+        await this.exportUsageLogExportBtn.click();
+        const download = await downloadPromise;
+        await this.exportUsageLogModal.waitFor({ state: 'hidden', timeout: 10000 });
+        return download;
     }
     async deleteUser(email: string) {
         await this.selectUserCheckbox(email);

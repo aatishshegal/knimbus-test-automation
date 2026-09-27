@@ -12,11 +12,18 @@ export class FilterPanelPage extends BasePage {
     this.filtersSidebar = page.locator('.filter-block, aside').first();
     
     // Applied filters area (typically at the top of the sidebar)
-    // The text "Applied Filters:" is inside a wrapper (e113). Its parent (e112) contains both this wrapper and all the filter chips.
-    this.appliedFiltersContainer = this.filtersSidebar.locator('.applied-filters-container, .filter-chip-container, .applied-filter').or(this.filtersSidebar.locator('text=/^Applied Filters:/i').locator('xpath=..'));
+    this.appliedFiltersContainer = this.filtersSidebar.locator('.applied-filters-container, .filter-chip-container, .applied-filter').first();
     
     // Clear All button
-    this.clearAllButton = this.filtersSidebar.getByText('Clear All', { exact: true }).or(this.filtersSidebar.locator('a.clear-all, button.clear-all'));
+    this.clearAllButton = this.filtersSidebar.locator('button:has-text("Clear All"), a:has-text("Clear All"), .clear-all').first();
+  }
+
+  assertResultCountMatches(currentCount: number, expectedCount: number, fallbackMax: number) {
+    if (expectedCount > 0) {
+      expect(currentCount).toBe(expectedCount);
+    } else {
+      expect(currentCount).toBeLessThanOrEqual(fallbackMax);
+    }
   }
 
   /**

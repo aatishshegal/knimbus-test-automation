@@ -1,8 +1,8 @@
 import { test, expect } from '../../../src/fixtures';
 
-test.describe('Portal Authentication - New User Flows', () => {
+test.describe('Portal Authentication - Welcome Page Routing', () => {
   
-  test('Verify a freshly registered user with no missing mandatory fields lands directly on the Welcome Page', async ({ portalLoginPage, welcomePage, welcomePageUser }) => {
+  test('Welcome Page Routing - Freshly registered user without pending mandatory fields lands directly on Welcome page', async ({ portalLoginPage, welcomePage, welcomePageUser }) => {
     // 1. Submit the credentials created dynamically in the setup fixture
     await portalLoginPage.login(
       welcomePageUser.email, 

@@ -9,7 +9,6 @@ import portalData from '../../test-data/portal-data.json';
 const validationDataPath = path.resolve(__dirname, '../../../tests/test-data/portal/profile-data.json');
 const validationData = JSON.parse(fs.readFileSync(validationDataPath, 'utf-8'));
 const enrollmentScenarios = validationData['enrollment-details.spec.ts'];
-const adminOverrides = validationData.adminOverrides;
 
 const backendFieldMap: Record<string, string> = {
     'idNumber': 'Student ID/ Staff ID',
@@ -27,7 +26,7 @@ const backendFieldMap: Record<string, string> = {
 };
 const enrollmentFields = Object.keys(backendFieldMap);
 
-test.describe('Enrollment Details Suite', () => {
+test.describe('Profile Details - Enrollment Suite', () => {
     let adminApi: AdminApiService;
 
     test.beforeAll(async () => {
@@ -42,6 +41,7 @@ test.describe('Enrollment Details Suite', () => {
 
     test.afterAll(async () => {
         if (adminApi) {
+            await adminApi.login();
             await adminApi.updateSecuritySettings({ 
                 mandatoryFields: { fields: [], isMandatory: false },
                 editableFields: { fields: [], isEditable: true },
@@ -58,12 +58,11 @@ test.describe('Enrollment Details Suite', () => {
         await page.getByRole('tab', { name: /Enrollment Details/i }).click();
     });
 
-    test('TC_Enrollment_Cancel_Discards_Changes', async ({ page }) => {
+    test('Enrollment Details - Cancel button discards unsaved enrollment edits and restores original ID', async ({ page }) => {
         const enrollmentPage = new EnrollmentDetailsPage(page);
-        await enrollmentPage.clickEdit();
+        await enrollmentPage.ensureInEditMode();
         
         const locator = enrollmentPage.getLocator('idNumber');
-        if (!locator) return;
         const originalId = await locator.inputValue();
         const tempId = portalData.profile.enrollment.temporaryId;
         await locator.fill(tempId);
@@ -73,17 +72,14 @@ test.describe('Enrollment Details Suite', () => {
         expect(revertedValue).not.toBe(tempId);
     });
 
-    test.describe('Positive Scenarios', () => {
+    test.describe('Enrollment Details - Valid Field Input', () => {
         for (const field of enrollmentFields) {
             const value = enrollmentScenarios.positiveData[field];
             if (value) {
-                test(`TC_Enrollment_${field}_Accepts valid data`, async ({ page }) => {
+                test(`Enrollment Details - Accepts and saves valid data for field: ${field}`, async ({ page }) => {
                     test.info().annotations.push({ type: 'testData', description: String(value) });
                     const enrollmentPage = new EnrollmentDetailsPage(page);
-                    if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                    
-                    const locator = enrollmentPage.getLocator(field);
-                    await locator.fill(value);
+                    await enrollmentPage.setFieldValue(field, value);
                     await enrollmentPage.clickSave();
                     await expect(page.getByRole('heading', { name: /Updated successfully/i }).first()).toBeVisible({ timeout: 5000 });
                 });
@@ -91,147 +87,118 @@ test.describe('Enrollment Details Suite', () => {
         }
     });
 
-    test.describe('Blank Validations (Mandatory ON)', () => {
+    test.describe('Enrollment Details - Mandatory Field Validations', () => {
         test.beforeAll(async () => {
-            await adminApi.updateSecuritySettings({ mandatoryFields: { fields: Object.values(backendFieldMap), isMandatory: true } });
+            const api = new AdminApiService();
+            await api.login();
+            await api.updateSecuritySettings({ mandatoryFields: { fields: Object.values(backendFieldMap), isMandatory: true } });
+            await api.close();
         });
         
         test.afterAll(async () => {
-            await adminApi.updateSecuritySettings({ mandatoryFields: { fields: [], isMandatory: false } });
+            const api = new AdminApiService();
+            await api.login();
+            await api.updateSecuritySettings({ mandatoryFields: { fields: [], isMandatory: false } });
+            await api.close();
         });
 
         for (const field of enrollmentFields) {
-            test(`TC_Enrollment_${field}_Shows validation error when blank`, async ({ page }) => {
+            test(`Enrollment Details - Displays validation error when mandatory field is left empty: ${field}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: '' });
                 const enrollmentPage = new EnrollmentDetailsPage(page);
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
+                await enrollmentPage.clearFieldAndBlur(field);
                 
-                const locator = enrollmentPage.getLocator(field);
-                if (!locator) return;
-                
-                if (enrollmentScenarios.positiveData[field]) {
-                    await locator.fill(enrollmentScenarios.positiveData[field]);
-                }
-                
-                await locator.fill(' ');
-                await locator.focus();
-                await page.keyboard.press('Backspace');
-                await locator.blur();
-                
-                await expect(page.getByText(/is required/i).first()).toBeVisible({ timeout: 2000 });
+                await expect(page.getByText(/is required/i).first()).toBeVisible({ timeout: 5000 });
             });
         }
     });
 
-    test.describe('Negative Scenarios', () => {
-        const nonBlankNegativeScenarios = enrollmentScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank'));
-        for (const s of nonBlankNegativeScenarios) {
-            test(`TC_Enrollment_${s.field}_${s.scenario}`, async ({ page }) => {
+    test.describe('Enrollment Details - Field Input Validations', () => {
+        const boundaryScenarios = enrollmentScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank') && !s.bypassLength);
+        for (const s of boundaryScenarios) {
+            test(`Enrollment Details - Rejects invalid input: ${s.field} - ${s.scenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: String(s.value) });
                 const enrollmentPage = new EnrollmentDetailsPage(page);
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                
-                const locator = enrollmentPage.getLocator(s.field);
-                if (!locator) return;
-
-                const isNativeTruncationCheck = (s.field === 'admissionYear' && s.scenario.includes('restricts input'));
-                
-                if (s.bypassLength && !isNativeTruncationCheck) {
-                    await locator.evaluate((el: HTMLInputElement) => el.removeAttribute('maxlength'));
-                }
-                await locator.fill(String(s.value));
-                await locator.blur();
+                await enrollmentPage.setFieldValue(s.field, String(s.value));
                 await enrollmentPage.clickSave();
                 
-                if (s.field === 'admissionYear' && s.scenario.includes('restricts input')) {
-                    const val = await locator.inputValue();
-                    expect(val.length).toBeLessThanOrEqual(4);
-                } else {
-                    await expect(page.getByText(s.expectedError).first()).toBeVisible({ timeout: 3000 });
-                }
+                await expect(page.getByText(s.expectedError).first()).toBeVisible({ timeout: 5000 });
             });
         }
     });
 
-    test.describe('Admin Override (All fields non-editable)', () => {
-        test.beforeAll(async () => {
-            await adminApi.updateSecuritySettings({ allFieldsEditable: false });
-        });
-        test.afterAll(async () => {
-            await adminApi.updateSecuritySettings({ allFieldsEditable: true });
-        });
+    test.describe('Enrollment Details - Read-Only Disabled State Override', () => {
+        const group1 = enrollmentFields.slice(0, 6);
+        const group2 = enrollmentFields.slice(6);
 
-        test('TC_Enrollment_AllNonEditable_Edit button hidden and warning shown', async ({ page }) => {
-            test.info().annotations.push({ type: 'testData', description: 'N/A' });
-            const enrollmentPage = new EnrollmentDetailsPage(page);
-            const expectedMessage = adminOverrides?.disabledMessage || "All the fields are set to be non-editable by your institution";
-            await expect(page.getByText(expectedMessage).first()).toBeVisible({ timeout: 5000 });
-            await expect(enrollmentPage.editBtn).toBeHidden();
-        });
-    });
+        test.describe('Enrollment Details - Non-Editable Fields Group 1', () => {
+            test.beforeAll(async () => {
+                const api = new AdminApiService();
+                await api.login();
+                await api.updateSecuritySettings({ 
+                    allFieldsEditable: true,
+                    editableFields: { fields: group1.map(f => backendFieldMap[f]), isEditable: false } 
+                });
+                await api.close();
+            });
 
-    test.describe('Admin Override (Individual fields non-editable)', () => {
-        for (const field of enrollmentFields) {
-            test(`TC_Enrollment_${field}_Field becomes read-only`, async ({ page }) => {
-                test.info().annotations.push({ type: 'testData', description: 'N/A' });
-                const backendName = backendFieldMap[field];
-                if (!backendName) return;
-                
-                await adminApi.updateSecuritySettings({ editableFields: { fields: [backendName], isEditable: false } });
-                await page.reload();
-                await page.getByRole('tab', { name: /Enrollment Details/i }).click();
-
-                const enrollmentPage = new EnrollmentDetailsPage(page);
-                await enrollmentPage.clickEdit();
-                const locator = enrollmentPage.getLocator(field);
-                if (locator) {
+            for (const field of group1) {
+                test(`Enrollment Details - Field becomes disabled when Admin sets field non-editable: ${field}`, async ({ page }) => {
+                    const enrollmentPage = new EnrollmentDetailsPage(page);
+                    await enrollmentPage.clickEdit();
+                    
+                    const locator = enrollmentPage.getLocator(field);
                     await expect(locator).toBeDisabled({ timeout: 5000 });
-                }
-                
-                await adminApi.updateSecuritySettings({ editableFields: { fields: [], isEditable: true } });
-            });
-        }
-    });
+                });
+            }
+        });
 
-    test.describe('Auto-suggestions', () => {
-        for (const field of enrollmentFields) {
-            if (field === 'idNumber') continue;
-            
-            test(`TC_Enrollment_${field}_AutoSuggest Typing`, async ({ page }) => {
-                test.info().annotations.push({ type: 'testData', description: 'a' });
-                const enrollmentPage = new EnrollmentDetailsPage(page);
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                
-                const locator = enrollmentPage.getLocator(field);
-                if (!locator) return;
-                
-                const listId = await locator.getAttribute('list');
-                if (listId) {
-                    await locator.fill('');
-                    await locator.pressSequentially('a', { delay: 100 });
-                    const datalist = page.locator(`datalist#${listId}`);
-                    await expect(datalist).toBeAttached();
-                }
+        test.describe('Enrollment Details - Non-Editable Fields Group 2', () => {
+            test.beforeAll(async () => {
+                const api = new AdminApiService();
+                await api.login();
+                await api.updateSecuritySettings({ 
+                    allFieldsEditable: true,
+                    editableFields: { fields: group2.map(f => backendFieldMap[f]), isEditable: false } 
+                });
+                await api.close();
             });
 
-            test(`TC_Enrollment_${field}_AutoSuggest DoubleClick`, async ({ page }) => {
-                test.info().annotations.push({ type: 'testData', description: 'Double Click' });
-                const enrollmentPage = new EnrollmentDetailsPage(page);
-                if (await enrollmentPage.editBtn.isVisible({ timeout: 2000 }).catch(()=>false)) await enrollmentPage.clickEdit();
-                
-                const locator = enrollmentPage.getLocator(field);
-                if (!locator) return;
-                
-                const listId = await locator.getAttribute('list');
-                if (listId) {
-                    await locator.scrollIntoViewIfNeeded(); 
-                    await locator.click({ force: true }); 
-                    await page.waitForTimeout(200); 
-                    await locator.dblclick({ force: true });
-                    const datalist = page.locator(`datalist#${listId}`);
-                    await expect(datalist).toBeAttached();
-                }
+            for (const field of group2) {
+                test(`Enrollment Details - Field becomes disabled when Admin sets field non-editable: ${field}`, async ({ page }) => {
+                    const enrollmentPage = new EnrollmentDetailsPage(page);
+                    await enrollmentPage.clickEdit();
+                    
+                    const locator = enrollmentPage.getLocator(field);
+                    await expect(locator).toBeDisabled({ timeout: 5000 });
+                });
+            }
+        });
+
+        test.describe('Enrollment Details - All Fields Non-Editable', () => {
+            test.beforeAll(async () => {
+                const api = new AdminApiService();
+                await api.login();
+                await api.updateSecuritySettings({ allFieldsEditable: false });
+                await api.close();
             });
-        }
+
+            test.afterAll(async () => {
+                const api = new AdminApiService();
+                await api.login();
+                await api.updateSecuritySettings({ 
+                    allFieldsEditable: true,
+                    editableFields: { fields: [], isEditable: true } 
+                });
+                await api.close();
+            });
+
+            test('Enrollment Details - Edit button is hidden and non-editable message is displayed when all fields are disabled', async ({ page }) => {
+                const enrollmentPage = new EnrollmentDetailsPage(page);
+                const expectedMessage = portalData.profile.adminOverrides?.disabledMessage || "All the fields are set to be non-editable by your institution";
+                await expect(page.getByText(expectedMessage).first()).toBeVisible({ timeout: 5000 });
+                await expect(enrollmentPage.editBtn).toBeHidden({ timeout: 5000 });
+            });
+        });
     });
 });

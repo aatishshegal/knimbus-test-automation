@@ -53,4 +53,30 @@ export class DetailPage extends BasePage {
   async clickShare() {
     await this.shareIcon.click();
   }
+
+  async ensureFavorited(): Promise<string> {
+    await this.toggleFavorite();
+    await this.toastNotification.waitFor({ state: 'visible', timeout: 10000 });
+    let text = await this.toastNotification.innerText();
+    if (text.toLowerCase().includes('remove')) {
+      await this.toastNotification.waitFor({ state: 'hidden', timeout: 10000 });
+      await this.toggleFavorite();
+      await this.toastNotification.waitFor({ state: 'visible', timeout: 10000 });
+      text = await this.toastNotification.innerText();
+    }
+    return text;
+  }
+
+  async ensureUnfavorited(): Promise<string> {
+    await this.toggleFavorite();
+    await this.toastNotification.waitFor({ state: 'visible', timeout: 10000 });
+    let text = await this.toastNotification.innerText();
+    if (!text.toLowerCase().includes('remove')) {
+      await this.toastNotification.waitFor({ state: 'hidden', timeout: 10000 });
+      await this.toggleFavorite();
+      await this.toastNotification.waitFor({ state: 'visible', timeout: 10000 });
+      text = await this.toastNotification.innerText();
+    }
+    return text;
+  }
 }

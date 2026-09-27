@@ -28,7 +28,7 @@ export class EnrollmentDetailsPage extends BasePage {
     // Core Elements scoped to Enrollment Details panel to avoid strict mode violations
     const panel = page.locator('.tab-pane.active').first();
     
-    this.pageHeader = panel.getByRole('heading', { name: 'Enrollment Details' }).or(page.getByRole('heading', { name: 'Enrollment Details' }));
+    this.pageHeader = panel.getByRole('heading', { name: 'Enrollment Details' });
     this.editBtn = panel.locator('.edit-btn');
     this.saveBtn = panel.getByRole('button', { name: 'Save' });
     this.cancelBtn = panel.getByRole('button', { name: 'Cancel' });
@@ -61,6 +61,27 @@ export class EnrollmentDetailsPage extends BasePage {
 
   async clickCancel() {
     await this.cancelBtn.click();
+  }
+
+  async ensureInEditMode() {
+    if (await this.editBtn.isVisible()) {
+      await this.clickEdit();
+    }
+  }
+
+  async setFieldValue(field: string, value: string) {
+    await this.ensureInEditMode();
+    const locator = this.getLocator(field);
+    await locator.fill(value);
+  }
+
+  async clearFieldAndBlur(field: string) {
+    await this.ensureInEditMode();
+    const locator = this.getLocator(field);
+    await locator.fill(' ');
+    await locator.focus();
+    await this.page.keyboard.press('Backspace');
+    await locator.blur();
   }
 
   getLocator(fieldName: string): Locator {
