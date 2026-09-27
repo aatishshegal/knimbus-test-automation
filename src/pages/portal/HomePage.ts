@@ -369,31 +369,51 @@ export class HomePage extends BasePage {
    * Returns visible widget titles in order.
    */
   async getVisibleWidgetTitles() {
-      const titles = this.page.locator('.grp-widget-title');
-      // Wait for at least one title to be attached to the DOM before counting
-      await titles.first().waitFor({ state: 'attached', timeout: 15000 }).catch(() => { });
-      const count = await titles.count();
-      const out: string[] = [];
-      for (let i = 0; i < count; i++) {
-        const t = (await titles.nth(i).innerText()).trim();
-        out.push(t);
-      }
-      return out;
+    const titles = this.page.locator('.grp-widget-title');
+    // Wait for at least one title to be attached to the DOM before counting
+    await titles.first().waitFor({ state: 'attached', timeout: 15000 }).catch(() => { });
+    const count = await titles.count();
+    const out: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const t = (await titles.nth(i).innerText()).trim();
+      out.push(t);
     }
+    return out;
+  }
 
   /**
    * Returns an array of title strings for cards in a widget.
    */
   async getWidgetCardTitles(widgetName: string) {
-      const cards = await this.getWidgetCards(widgetName);
-      const out: string[] = [];
-      for (const card of cards) {
-        const titleAttr = await card.getAttribute('title');
-        const text = titleAttr || (await card.innerText());
-        out.push((text || '').trim());
-      }
-      return out;
+    const cards = await this.getWidgetCards(widgetName);
+    const out: string[] = [];
+    for (const card of cards) {
+      const titleAttr = await card.getAttribute('title');
+      const text = titleAttr || (await card.innerText());
+      out.push((text || '').trim());
     }
-
+    return out;
   }
 
+  /*
+  *
+  */
+  async openTopCustomSearch(): Promise<void> {
+    await this.page.getByText('Top 10 Custom Search').click();
+  }
+
+  async openResultCard(): Promise<void> {
+    await this.page.getByText('Showing results for Testing').click();
+  }
+
+  async assertResultListVisible(): Promise<void> {
+    await expect(this.page.locator('#root')).toContainText('Top 10 Custom Search');
+    await expect(this.page.getByTitle(/Clinical evaluation of/i).first()).toBeVisible({ timeout: 15000 });
+    await expect(this.page.getByText('By Ali Aytac Seymen, Ezgi')).toBeVisible();
+    await expect(this.page.getByText('Nature Portfolio').first()).toBeVisible();
+    await expect(this.page.getByText('Directory of Open Access').first()).toBeVisible();
+    await expect(this.page.getByText('2023').first()).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'Read' }).first()).toBeVisible();
+    await expect(this.page.getByRole('button', { name: '1', exact: true })).toBeVisible();
+  }
+}

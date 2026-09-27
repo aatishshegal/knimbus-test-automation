@@ -30,6 +30,7 @@ export default defineConfig({
 
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: defaultViewport, deviceScaleFactor: undefined } },
+    // { name: 'chromium', use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport: defaultViewport, deviceScaleFactor: undefined } },
     //{ name: 'firefox', use: { ...devices['Desktop Firefox'], viewport: { width: 1920, height: 1080 }, deviceScaleFactor: undefined } },
     //{ name: 'webkit', use: { ...devices['Desktop Safari'], viewport: null, deviceScaleFactor: undefined } },
   ],

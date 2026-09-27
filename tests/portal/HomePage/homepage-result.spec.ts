@@ -496,5 +496,10 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
             await homePage.navigateBackToHome();
         }
     });
+    test('TC_HomePage_029 - should validate Top 10 Custom Search widget results @regression', async () => {
+
+        await homePage.openTopCustomSearch();
+        await homePage.assertResultListVisible();
+    });
 
 });
