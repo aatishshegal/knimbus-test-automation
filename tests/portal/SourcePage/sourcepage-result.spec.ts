@@ -221,7 +221,7 @@ test.describe.serial('Portal Source Page - Full Widgets Coverage Validation', ()
                 const card = cards[i];
                 const imgCount = await card.locator('img').count();
                 expect(imgCount).toBeGreaterThan(0);
-                
+
                 const text = await card.textContent();
                 expect(text?.trim()).not.toBe('');
             }
@@ -277,4 +277,25 @@ test.describe.serial('Portal Source Page - Full Widgets Coverage Validation', ()
             expect(hasSubscribed || hasOpenAccess).toBe(true);
         });
     }
+
+    test(`TC_SourcePage_Style_005 - "Publisher Directory" cards must be alphabetically sorted @regression`, async () => {
+        const widgetName = 'Publisher Directory';
+        if (!(await sharedPage.getByText(widgetName, { exact: true }).first().isVisible())) test.skip();
+
+        const cards = await sourcePage.getWidgetCards(widgetName);
+        if (cards.length === 0) test.skip();
+
+        const cardTexts: string[] = [];
+        for (const card of cards) {
+            const text = await card.textContent();
+            const titleAttr = await card.getAttribute('title');
+            const finalString = (text || titleAttr || '').trim().toLowerCase();
+            if (finalString) {
+                cardTexts.push(finalString);
+            }
+        }
+
+        const sortedTexts = [...cardTexts].sort((a, b) => a.localeCompare(b));
+        expect(cardTexts).toEqual(sortedTexts);
+    });
 });
