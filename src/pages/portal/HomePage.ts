@@ -8,7 +8,7 @@ export class HomePage extends BasePage {
   constructor(page: Page) {
     super(page);
     const libraryName = process.env.LIBRARY_NAME || 'Knimbus';
-    this.homePageIdentifier = page.getByText(libraryName).first().or(page.locator('.logo, .header-logo, .main-content, body').first());
+    this.homePageIdentifier = page.getByText(libraryName).first();
   }
 
   getWidgetContainer(widgetTitle: string) {

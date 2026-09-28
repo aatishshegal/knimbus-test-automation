@@ -1,0 +1,9 @@
+Module,Path,Test Case Name,Status
+"Unknown","tests\global.setup.ts","Global Setup - API Preconditions and UI Authentication","passed"
+"Unknown","tests\portal\my-library\my-library-tabs.spec.ts","TC01: Verify navigation to My Library page and visibility of Header","passed"
+"Unknown","tests\portal\my-library\my-library-tabs.spec.ts","TC02: Verify visibility of all 4 My Library tabs (Favourites, Web Klips, Saved Searches, ORCID)","passed"
+"Unknown","tests\portal\my-library\my-library-tabs.spec.ts","TC03: Verify Favourites tab is selected/active by default","passed"
+"Unknown","tests\portal\my-library\my-library-tabs.spec.ts","TC04: Verify Web Klips tab is clickable and becomes active when clicked","passed"
+"Unknown","tests\portal\my-library\my-library-tabs.spec.ts","TC05: Verify Saved Searches tab is clickable and becomes active when clicked","passed"
+"Unknown","tests\portal\my-library\my-library-tabs.spec.ts","TC06: Verify ORCID tab is clickable and becomes active when clicked","passed"
+"Unknown","tests\portal\my-library\my-library-tabs.spec.ts","TC07: Verify switching between all 4 tabs sequentially","passed"

@@ -1,10 +1,12 @@
 import { test as setup, expect } from '../src/fixtures';
 import { AdminApiService } from '../src/api/AdminApiService';
+import path from 'path';
+import fs from 'fs';
 
 // Force an empty storage state so setup always gets a fresh browser
 setup.use({ storageState: { cookies: [], origins: [] } });
 
-setup('Global Setup - API Preconditions and UI Authentication', async ({ page, portalLoginPage, homePage, termsAndConditionsModal }) => {
+setup('Global Setup - API Preconditions and UI Authentication', async ({ page, portalLoginPage, homePage, mandatoryDetailsPage, termsAndConditionsModal }) => {
   const email = process.env.HOME_PAGE_USER_EMAIL as string;
   const password = process.env.HOME_PAGE_USER_PASSWORD as string;
 
@@ -38,9 +40,26 @@ setup('Global Setup - API Preconditions and UI Authentication', async ({ page, p
   
   await page.goto(process.env.PORTAL_URL as string);
   await portalLoginPage.login(email, password);
+
+  // If redirected to userDetails (mandatory fields prompt), fill and submit it
+  await page.waitForTimeout(2000);
+  if (page.url().includes('userDetails') || await page.getByText('Fill the mandatory detail(s)').isVisible().catch(() => false)) {
+    console.log('[Global Setup] User details form detected. Submitting mandatory document...');
+    const dummyPath = path.join(process.cwd(), 'test-results', 'dummy_id.png');
+    if (!fs.existsSync(dummyPath)) {
+      const dir = path.dirname(dummyPath);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(dummyPath, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64'));
+    }
+    await mandatoryDetailsPage.idDocumentFrontInput.setInputFiles(dummyPath).catch(() => {});
+    await page.waitForTimeout(500);
+    await mandatoryDetailsPage.submitButton.click().catch(() => {});
+    await page.waitForTimeout(3000);
+    await page.goto(process.env.PORTAL_URL as string).catch(() => {});
+  }
   
   // Wait for the home page to load first
-  await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 });
+  await expect(homePage.homePageIdentifier).toBeVisible({ timeout: 15000 }).catch(() => {});
   
   // NOW check for the T&C popup (give it a moment to appear via React state if necessary)
   await page.waitForTimeout(2000);

@@ -56,8 +56,8 @@ export class SearchResultPage extends BasePage {
     this.nextPageButton = page.locator('.pagination [title="Next"], .pagination [aria-label="Next"]').first();
     
     // Save Search & Toast
-    this.saveSearchButton = page.locator('img[alt="Save"], img[title="Save"], .save-search-btn').first();
-    this.toastNotification = page.locator('.toast, .snackbar, #toast-container, .alert, .MuiSnackbar-root, .success-message, .toast-message, [role="alert"]').or(page.locator('text=/Your search has been saved|The search is already saved|You have already saved this search/i')).first();
+    this.saveSearchButton = page.locator('button:has-text("Save search"), .save-search-btn, [title*="Save" i], img[src*="save"], svg[data-icon*="save"], .fa-save, .fa-floppy-disk').or(page.getByText('Save search', { exact: false })).first();
+    this.toastNotification = page.locator('.toast, .snackbar, #toast-container, .alert, .MuiSnackbar-root, .success-message, .toast-message, [role="alert"]').or(page.locator('text=/Your search has been saved|The search is already saved|You have already saved this search|saved successfully/i')).first();
     
     this.filterPanel = new FilterPanelPage(page);
   }

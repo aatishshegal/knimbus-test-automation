@@ -1,0 +1,107 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<!--[if gte mso 9]>
+<xml>
+ <x:ExcelWorkbook>
+  <x:ExcelWorksheets>
+   <x:ExcelWorksheet>
+    <x:Name>Profile Details Test Report</x:Name>
+    <x:WorksheetOptions>
+     <x:DisplayGridlines/>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+  </x:ExcelWorksheets>
+ </x:ExcelWorkbook>
+</xml>
+<![endif]-->
+<style>
+  table { border-collapse: collapse; width: 100%; font-family: Calibri, Arial, sans-serif; }
+  th { background-color: #1F497D; color: #FFFFFF; font-weight: bold; border: 1px solid #000000; padding: 8px; text-align: center; }
+  td { border: 1px solid #D9D9D9; padding: 6px; vertical-align: top; font-size: 11pt; }
+  .center { text-align: center; }
+  .status-passed { background-color: #C6EFCE; color: #006100; font-weight: bold; text-align: center; }
+  tr:nth-child(even) { background-color: #F2F2F2; }
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr>
+      <th>S.NO.</th>
+      <th>Functional Area / Module</th>
+      <th>Playwright Executed Tests (Terminal Output)</th>
+      <th>Hidden Data-Driven Conditions (JSON)</th>
+      <th>Total Logical Scenarios Verified</th>
+      <th>Person Worked</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="center">1</td>
+      <td>Profile Details - Basic Information & Avatar</td>
+      <td>tests/portal/profile-details/profile-basic-info.spec.ts (TC01-TC09)</td>
+      <td>profile-data.json (Valid/invalid images, field values)</td>
+      <td class="center">9</td>
+      <td>QA Automation Team</td>
+      <td class="status-passed">PASSED</td>
+    </tr>
+    <tr>
+      <td class="center">2</td>
+      <td>Profile Details - Work Experience, Education & Studies</td>
+      <td>tests/portal/profile-details/work-education.spec.ts (TC01-TC41)</td>
+      <td>work-education-data.json (Numeric year rules, current company toggle, truncation)</td>
+      <td class="center">41</td>
+      <td>QA Automation Team</td>
+      <td class="status-passed">PASSED</td>
+    </tr>
+    <tr>
+      <td class="center">3</td>
+      <td>Profile Details - Password Management & Change</td>
+      <td>tests/portal/profile-details/password.spec.ts (TC18-TC31)</td>
+      <td>password-data.json (Weak strings, confirmation mismatches, valid updates)</td>
+      <td class="center">14</td>
+      <td>QA Automation Team</td>
+      <td class="status-passed">PASSED</td>
+    </tr>
+    <tr>
+      <td class="center">4</td>
+      <td>Profile Details - ID Card & Access Privileges</td>
+      <td>tests/portal/profile-details/id-access-info.spec.ts (TC32-TC52)</td>
+      <td>id-access-data.json; dummy-id.jpg (File size limits, file type rules)</td>
+      <td class="center">21</td>
+      <td>QA Automation Team</td>
+      <td class="status-passed">PASSED</td>
+    </tr>
+    <tr>
+      <td class="center">5</td>
+      <td>Profile Details - Contact Information</td>
+      <td>tests/portal/profile-details/contact.spec.ts (TC53-TC97)</td>
+      <td>contact-data.json (Phone length/regex, email syntax, address boundaries)</td>
+      <td class="center">45</td>
+      <td>QA Automation Team</td>
+      <td class="status-passed">PASSED</td>
+    </tr>
+    <tr>
+      <td class="center">6</td>
+      <td>Profile Details - Enrollment & Membership Details</td>
+      <td>tests/portal/profile-details/enrollment-details.spec.ts (TC98-TC115)</td>
+      <td>enrollment-details-data.json (XSS script tags, SQLi injection payloads, space trimming)</td>
+      <td class="center">18</td>
+      <td>QA Automation Team</td>
+      <td class="status-passed">PASSED</td>
+    </tr>
+    <tr>
+      <td class="center">7</td>
+      <td>Profile Details - Profile Summary & Status Cards</td>
+      <td>tests/portal/profile/profile-update.spec.ts<br>tests/portal/profile/profile-info.spec.ts<br>tests/portal/profile/profile-details.spec.ts</td>
+      <td>profile-data.json (User role badges, department info)</td>
+      <td class="center">12</td>
+      <td>QA Automation Team</td>
+      <td class="status-passed">PASSED</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

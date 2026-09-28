@@ -8,6 +8,8 @@ export class PortalLoginPage extends BasePage {
   readonly submitButton: Locator;
   readonly signUpLink: Locator;
 
+  readonly continueWithEmailAndPasswordBtn: Locator;
+
   // Negative Scenario Identifiers
   readonly invalidEmailFormatError: Locator;
   readonly unregisteredUserError: Locator;
@@ -17,6 +19,8 @@ export class PortalLoginPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.signInPopupTrigger = page.getByRole('button', { name: 'Sign in' });
+    this.continueWithEmailAndPasswordBtn = page.getByRole('button', { name: /Continue with Email & Password/i })
+      .or(page.getByText('Continue with Email & Password', { exact: false }));
     this.emailInput = page.locator('#email');
     this.passwordInput = page.locator('#password');
     this.submitButton = page.getByRole('button', { name: /Continue|Next/i });
@@ -36,12 +40,34 @@ export class PortalLoginPage extends BasePage {
   }
 
   async login(email: string, password?: string) {
-    const url = process.env.PORTAL_URL;
-    if (!url) throw new Error('PORTAL_URL is not defined in .env');
+    // 0. Check if user is already logged in (profile dropdown or notification bell visible)
+    const isProfileVisible = await this.page.locator('.profile-dropdwn-toggle, .notification-badge').first().isVisible({ timeout: 2000 }).catch(() => false);
+    if (isProfileVisible) {
+      console.log('[PortalLoginPage] User is already logged in. Skipping UI login.');
+      return;
+    }
 
-    await this.navigateTo(url);
-    await this.clickElement(this.signInPopupTrigger, 'Sign In Popup Trigger');
-    
+    // 1. Check if Sign In button is visible on current page
+    let isSignInVisible = await this.signInPopupTrigger.isVisible({ timeout: 3000 }).catch(() => false);
+
+    if (!isSignInVisible) {
+      const isEmailInputVisible = await this.emailInput.isVisible({ timeout: 1000 }).catch(() => false);
+      const isContinueWithEmailVisible = await this.continueWithEmailAndPasswordBtn.isVisible({ timeout: 1000 }).catch(() => false);
+      
+      if (!isEmailInputVisible && !isContinueWithEmailVisible) {
+        // User is already logged in
+        return;
+      }
+    } else {
+      await this.clickElement(this.signInPopupTrigger, 'Sign In Popup Trigger');
+    }
+
+    // 2. Handle 'Continue with Email & Password' if OIDC selection is present
+    if (await this.continueWithEmailAndPasswordBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await this.clickElement(this.continueWithEmailAndPasswordBtn, 'Continue with Email & Password');
+    }
+
+    // 3. Fill credentials & submit
     await this.fillText(this.emailInput, email, 'Email Field');
     if (password) {
       await this.fillText(this.passwordInput, password, 'Password Field');

@@ -1,0 +1,8 @@
+S.NO.,Functional Area / Module,Playwright Executed Tests (Terminal Output),Hidden Data-Driven Conditions (JSON),Total Logical Scenarios Verified,Person Worked,Status
+1,Profile Details - Basic Information & Avatar,"tests/portal/profile-details/profile-basic-info.spec.ts (TC01-TC09)","profile-data.json (Valid/invalid images, field values)",9,QA Automation Team,PASSED
+2,Profile Details - Work Experience, Education & Studies,"tests/portal/profile-details/work-education.spec.ts (TC01-TC41)","work-education-data.json (Numeric year rules, current company toggle, truncation)",41,QA Automation Team,PASSED
+3,Profile Details - Password Management & Change,"tests/portal/profile-details/password.spec.ts (TC18-TC31)","password-data.json (Weak strings, confirmation mismatches, valid updates)",14,QA Automation Team,PASSED
+4,Profile Details - ID Card & Access Privileges,"tests/portal/profile-details/id-access-info.spec.ts (TC32-TC52)","id-access-data.json; dummy-id.jpg (File size limits, file type rules)",21,QA Automation Team,PASSED
+5,Profile Details - Contact Information,"tests/portal/profile-details/contact.spec.ts (TC53-TC97)","contact-data.json (Phone length/regex, email syntax, address boundaries)",45,QA Automation Team,PASSED
+6,Profile Details - Enrollment & Membership Details,"tests/portal/profile-details/enrollment-details.spec.ts (TC98-TC115)","enrollment-details-data.json (XSS script tags, SQLi injection payloads, space trimming)",18,QA Automation Team,PASSED
+7,Profile Details - Profile Summary & Status Cards,"tests/portal/profile/profile-update.spec.ts; tests/portal/profile/profile-info.spec.ts; tests/portal/profile/profile-details.spec.ts","profile-data.json (User role badges, department info)",12,QA Automation Team,PASSED

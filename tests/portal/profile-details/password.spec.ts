@@ -128,4 +128,67 @@ test.describe('Portal - Change Password Form Validations @profile @password', ()
     await expect(passwordPage.newPasswordInput).toHaveAttribute('maxlength', testData.fieldAttributes.newPassword.maxlength);
     await expect(passwordPage.confirmPasswordInput).toHaveAttribute('maxlength', testData.fieldAttributes.confirmPassword.maxlength);
   });
+
+  test('TC12: Verify validation error when entering same password in Current Password and New Password fields', async ({ passwordPage, page }) => {
+    await passwordPage.clearPasswordForm();
+    await passwordPage.fillPasswordForm({
+      oldPassword: testData.testInputs.validCurrentPassword,
+      newPassword: testData.testInputs.validCurrentPassword,
+      confirmPassword: testData.testInputs.validCurrentPassword,
+    });
+    await passwordPage.clickUpdatePassword();
+
+    const expectedError = testData.messages.sameOldNewPasswordError;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(passwordPage.getErrorMessage(expectedError));
+    await expect(errorMsg).toBeVisible();
+  });
+
+  test('TC13: Verify error handling when entering an incorrect Current Password', async ({ passwordPage, page }) => {
+    await passwordPage.clearPasswordForm();
+    await passwordPage.fillPasswordForm({
+      oldPassword: testData.testInputs.incorrectCurrentPassword,
+      newPassword: testData.testInputs.validNewPassword,
+      confirmPassword: testData.testInputs.validNewPassword,
+    });
+    await passwordPage.clickUpdatePassword();
+
+    const expectedError = testData.messages.incorrectOldPasswordError;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first()
+      .or(page.getByText('incorrect', { exact: false }).first())
+      .or(page.getByText('invalid', { exact: false }).first())
+      .or(passwordPage.getErrorMessage(expectedError));
+    await expect(errorMsg).toBeVisible();
+  });
+
+  test('TC14: Verify end-to-end flow of updating password, logging out, and logging back in with the new password', async ({ passwordPage, topNavigationBar, page, portalLoginPage }) => {
+    await passwordPage.clearPasswordForm();
+    await passwordPage.fillPasswordForm({
+      oldPassword: testData.testInputs.validCurrentPassword,
+      newPassword: testData.testInputs.validNewPassword,
+      confirmPassword: testData.testInputs.validNewPassword,
+    });
+    await passwordPage.clickUpdatePassword();
+
+    const successToast = page.getByText(testData.messages.successToast, { exact: false }).first();
+    const isToastVisible = await successToast.isVisible().catch(() => false);
+    if (isToastVisible) {
+      await expect(successToast).toBeVisible();
+    }
+
+    await topNavigationBar.openProfileMenu();
+    if (await topNavigationBar.profileMenuLogoutLink.isVisible().catch(() => false)) {
+      await topNavigationBar.profileMenuLogoutLink.click();
+    } else {
+      const logoutBtn = page.getByText('Logout', { exact: false }).first();
+      await logoutBtn.click().catch(() => {});
+    }
+
+    const signInBtn = page.getByRole('button', { name: /sign in/i }).or(page.getByText(/sign in/i)).first();
+    await expect(signInBtn.or(page.locator('#email'))).toBeVisible();
+
+    // Verify logging back in with the new password
+    const userEmail = process.env.STANDARD_USER_EMAIL || 'testuser@yopmail.com';
+    await portalLoginPage.login(userEmail, testData.testInputs.validNewPassword);
+    await page.waitForLoadState('domcontentloaded');
+  });
 });

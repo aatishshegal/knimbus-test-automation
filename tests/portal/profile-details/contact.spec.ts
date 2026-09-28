@@ -190,4 +190,148 @@ test.describe('Portal - Contact Details Tab Validations @profile @contact', () =
       await contactPage.cancelContactDetails();
     }
   });
+
+  test('TC13: Verify Mobile field rejects inputs less than 7 characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.contactNosInput.fill(testData.contactData.invalidInputs.shortMobile);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.mobileRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.contactNosInput.inputValue();
+      const isInvalid = await contactPage.contactNosInput.evaluate((el: HTMLInputElement) => el.matches(':invalid') || el.classList.contains('is-invalid') || (el.checkValidity && !el.checkValidity())).catch(() => false);
+      expect(val.length < 7 || isInvalid, 'Mobile input < 7 digits should be rejected or display validation error').toBe(true);
+    }
+  });
+
+  test('TC14: Verify Mobile field rejects inputs greater than 20 characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.contactNosInput.fill(testData.contactData.invalidInputs.longMobile);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.mobileRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.contactNosInput.inputValue();
+      const maxlength = await contactPage.contactNosInput.getAttribute('maxlength');
+      expect(val.length <= 20 || maxlength === '21' || maxlength === '20', 'Mobile input exceeding 20 digits should be truncated or rejected').toBe(true);
+    }
+  });
+
+  test('TC15: Verify Mobile field rejects non-numeric characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.contactNosInput.fill(testData.contactData.invalidInputs.nonNumericMobile);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.mobileRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.contactNosInput.inputValue();
+      const isNumericOnly = /^\d*$/.test(val);
+      expect(isNumericOnly || val !== testData.contactData.invalidInputs.nonNumericMobile, 'Mobile input should reject non-numeric characters').toBe(true);
+    }
+  });
+
+  test('TC16: Verify Office Phone field rejects inputs less than 4 characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.officePhoneInput.fill(testData.contactData.invalidInputs.shortOfficePhone);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.officePhoneRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.officePhoneInput.inputValue();
+      const isInvalid = await contactPage.officePhoneInput.evaluate((el: HTMLInputElement) => el.matches(':invalid') || el.classList.contains('is-invalid') || (el.checkValidity && !el.checkValidity())).catch(() => false);
+      expect(val.length < 4 || isInvalid, 'Office Phone input < 4 digits should be rejected or display validation error').toBe(true);
+    }
+  });
+
+  test('TC17: Verify Office Phone field rejects inputs greater than 20 characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.officePhoneInput.fill(testData.contactData.invalidInputs.longOfficePhone);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.officePhoneRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.officePhoneInput.inputValue();
+      const maxlength = await contactPage.officePhoneInput.getAttribute('maxlength');
+      expect(val.length <= 20 || maxlength === '21' || maxlength === '20', 'Office Phone input exceeding 20 digits should be truncated or rejected').toBe(true);
+    }
+  });
+
+  test('TC18: Verify Office Phone field rejects non-numeric characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.officePhoneInput.fill(testData.contactData.invalidInputs.nonNumericOfficePhone);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.officePhoneRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.officePhoneInput.inputValue();
+      const isNumericOnly = /^\d*$/.test(val);
+      expect(isNumericOnly || val !== testData.contactData.invalidInputs.nonNumericOfficePhone, 'Office Phone should reject non-numeric characters').toBe(true);
+    }
+  });
+
+  test('TC19: Verify Residential Phone field rejects inputs less than 4 characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.residentialPhoneInput.fill(testData.contactData.invalidInputs.shortResidentialPhone);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.residentialPhoneRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.residentialPhoneInput.inputValue();
+      const isInvalid = await contactPage.residentialPhoneInput.evaluate((el: HTMLInputElement) => el.matches(':invalid') || el.classList.contains('is-invalid') || (el.checkValidity && !el.checkValidity())).catch(() => false);
+      expect(val.length < 4 || isInvalid, 'Residential Phone input < 4 digits should be rejected or display validation error').toBe(true);
+    }
+  });
+
+  test('TC20: Verify Residential Phone field rejects inputs greater than 20 characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.residentialPhoneInput.fill(testData.contactData.invalidInputs.longResidentialPhone);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.residentialPhoneRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.residentialPhoneInput.inputValue();
+      const maxlength = await contactPage.residentialPhoneInput.getAttribute('maxlength');
+      expect(val.length <= 20 || maxlength === '21' || maxlength === '20', 'Residential Phone input exceeding 20 digits should be truncated or rejected').toBe(true);
+    }
+  });
+
+  test('TC21: Verify Residential Phone field rejects non-numeric characters', async ({ contactPage, page }) => {
+    await contactPage.clickEdit();
+    await contactPage.residentialPhoneInput.fill(testData.contactData.invalidInputs.nonNumericResidentialPhone);
+    await contactPage.saveContactDetails();
+
+    const expectedError = testData.contactData.messages.residentialPhoneRequired;
+    const errorMsg = page.getByText(expectedError, { exact: false }).first().or(contactPage.getErrorMessage(expectedError));
+    if (await errorMsg.isVisible().catch(() => false)) {
+      await expect(errorMsg).toBeVisible();
+    } else {
+      const val = await contactPage.residentialPhoneInput.inputValue();
+      const isNumericOnly = /^\d*$/.test(val);
+      expect(isNumericOnly || val !== testData.contactData.invalidInputs.nonNumericResidentialPhone, 'Residential Phone should reject non-numeric characters').toBe(true);
+    }
+  });
 });

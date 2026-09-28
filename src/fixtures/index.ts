@@ -14,6 +14,7 @@ import { SearchResultPage } from '@pages/portal/SearchResultPage';
 import { ProfilePage } from '@pages/portal/ProfilePage';
 import { MyLibraryPage } from '@pages/portal/MyLibraryPage';
 import { EnrollmentDetailsPage, IdAccessInfoPage, WorkEducationPage, ContactPage, PasswordPage, ProfileBasicInfoPage } from '@pages/portal/profile-details';
+import { SectionPage } from '@pages/portal/SectionPage';
 import { AdminApiService } from '../api/AdminApiService';
 
 // New API-based helper function to handle Admin Session instantly
@@ -48,6 +49,8 @@ type MyFixtures = {
   contactPage: ContactPage;
   passwordPage: PasswordPage;
   profileBasicInfoPage: ProfileBasicInfoPage;
+  sectionPage: SectionPage;
+  sectionAutomationUser: { email: string, password: string };
   standardUser: { email: string, password: string };
   homePageUser: { email: string, password: string };
   otpUser: { email: string, password: string };
@@ -138,6 +141,16 @@ export const test = base.extend<MyFixtures>({
   profileBasicInfoPage: async ({ page }, use) => {
     const profileBasicInfoPage = new ProfileBasicInfoPage(page);
     await use(profileBasicInfoPage);
+  },
+  sectionPage: async ({ page }, use) => {
+    const sectionPage = new SectionPage(page);
+    await use(sectionPage);
+  },
+  sectionAutomationUser: async ({}, use) => {
+    await use({
+      email: process.env.SECTION_USER_EMAIL || 'sectionautomationwithplaywrite@yopmail.com',
+      password: process.env.SECTION_USER_PASSWORD || '12345'
+    });
   },
   standardUser: async ({}, use) => {
     await withApiAdminSetup(async (adminApi) => {

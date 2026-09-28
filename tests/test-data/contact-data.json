@@ -19,6 +19,17 @@
       "officeAddress": { "id": "officeAddress", "name": "officeAddress", "maxlength": "2001", "placeholder": " " },
       "residentialAddress": { "id": "residentialAddress", "name": "residentialAddress", "maxlength": "2001", "placeholder": " " }
     },
+    "invalidInputs": {
+      "shortMobile": "123456",
+      "longMobile": "123456789012345678901",
+      "nonNumericMobile": "abc1234",
+      "shortOfficePhone": "123",
+      "longOfficePhone": "123456789012345678901",
+      "nonNumericOfficePhone": "abc1234",
+      "shortResidentialPhone": "123",
+      "longResidentialPhone": "123456789012345678901",
+      "nonNumericResidentialPhone": "abc1234"
+    },
     "messages": {
       "mobileRequired": "Mobile is required (7-20 numbers)",
       "officePhoneRequired": "Office Phone is required (4-20 numbers)",

@@ -2,37 +2,7 @@
   "cookies": [
     {
       "name": "GCLB",
-      "value": "\"26afb2d73cee38e5\"",
-      "domain": "qa-qatesting-v2.knimbus.com",
-      "path": "/",
-      "expires": -1,
-      "httpOnly": true,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "userId",
-      "value": "testplaywrite_yopmail.com",
-      "domain": ".knimbus.com",
-      "path": "/",
-      "expires": 1787852585.351529,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "orgId",
-      "value": "org_0c22fb69-ca5a-4672-9b79-285fdbf9606a",
-      "domain": ".knimbus.com",
-      "path": "/",
-      "expires": 1787852585.352076,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "SESSION",
-      "value": "ZTkwNzEzMmItM2Q1Zi00ZmNjLTk3NDctMmEzNzQxMThkZGE3",
+      "value": "\"1dc7823cd855c1bd\"",
       "domain": "qa-qatesting-v2.knimbus.com",
       "path": "/",
       "expires": -1,
@@ -46,56 +16,36 @@
       "origin": "https://qa-qatesting-v2.knimbus.com",
       "localStorage": [
         {
-          "name": "hasLandingPage",
-          "value": "false"
-        },
-        {
-          "name": "userName",
-          "value": ""
-        },
-        {
-          "name": "consortiumIds",
-          "value": "[\"a09dbf68-c4e9-4610-91f4-a55267a17ee3\"]"
-        },
-        {
-          "name": "orgId",
-          "value": "org_0c22fb69-ca5a-4672-9b79-285fdbf9606a"
-        },
-        {
-          "name": "loginId",
-          "value": "testplaywrite_yopmail.com"
-        },
-        {
-          "name": "email",
-          "value": "testplaywrite@yopmail.com"
-        },
-        {
-          "name": "isSignedIn",
-          "value": "TRUE"
-        },
-        {
-          "name": "title",
-          "value": "null"
-        },
-        {
-          "name": "displayNames",
-          "value": "{\"Multimedia\":\"Multimedia Multimedia\",\"Notice\":\"Notice\",\"Content\":\"Content conTent Conntent\",\"eCatalog\":\"eCatalogg\",\"Research\":\"Research Research Research\",\"Course\":\"Course couRsse\",\"Weblinks\":\"Useful links Links\",\"Section\":\"Sectionnnn sectioON Section\",\"Source\":\"Sourcee SouRcce Source\",\"Subject\":\"Subject suBject Subject\"}"
-        },
-        {
           "name": "isSSOEnabled",
           "value": "false"
         },
         {
+          "name": "hasLandingPage",
+          "value": "false"
+        },
+        {
           "name": "profileUrl",
-          "value": "/profile-pic/1/ItrxFcxFPeFgZEiB8RfKnlox7TowWIH2G8Qck9kM58RZhusmqVZOzt8SXzpmWASbDOhTl-3KJNqYKlBQ2z01Eq--tHUSDz2fWUAaujTYMXg?_t=1787128509041?_t=1787131585899?_t=1787131599048?_t=1787131926432?_t=1787131944526?_t=1787133262013?_t=1787133287967?_t=1787133422926?_t=1787133461343?_t=1787146574945?_t=1787146695706?_t=1787146805552?_t=1787147011991?_t=1787147136217?_t=1787147667097?_t=1787147677277?_t=1787147832550?_t=1787198483355?_t=1787232899788?_t=1787554894210?_t=1787555018909?_t=1787555203786"
+          "value": "undefined"
+        },
+        {
+          "name": "userName",
+          "value": "undefined"
         },
         {
           "name": "isInCampus",
           "value": "false"
         },
         {
+          "name": "consortiumIds",
+          "value": "[\"a09dbf68-c4e9-4610-91f4-a55267a17ee3\"]"
+        },
+        {
           "name": "prevUrl",
           "value": "/v2/default/home"
+        },
+        {
+          "name": "orgId",
+          "value": "undefined"
         },
         {
           "name": "isPublicDiscovery",
@@ -103,7 +53,23 @@
         },
         {
           "name": "libraryId",
-          "value": "elib_ff08d23d-0326-43b9-98f5-2e17e9b9918e"
+          "value": "undefined"
+        },
+        {
+          "name": "loginId",
+          "value": "undefined"
+        },
+        {
+          "name": "email",
+          "value": "undefined"
+        },
+        {
+          "name": "isSignedIn",
+          "value": "undefined"
+        },
+        {
+          "name": "title",
+          "value": "undefined"
         },
         {
           "name": "eLibInfoDTO",
