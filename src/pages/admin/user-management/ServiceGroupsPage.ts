@@ -20,6 +20,7 @@ export class ServiceGroupsPage extends AdminBasePage {
     readonly groupNameInput: Locator;
     readonly expiryDateInput: Locator;
     readonly datePicker: Locator;
+    readonly nextMonthBtn: Locator;
     readonly disabledDateDays: Locator;
     readonly availableDateDays: Locator;
     readonly raCheckbox: Locator;
@@ -70,6 +71,7 @@ export class ServiceGroupsPage extends AdminBasePage {
         this.groupNameInput = this.modal.locator('input#group-name');
         this.expiryDateInput = this.modal.locator('input[name="expiryDate"]');
         this.datePicker = page.locator('.react-datepicker');
+        this.nextMonthBtn = page.locator('.react-datepicker__navigation--next');
         this.disabledDateDays = page.locator('.react-datepicker__day--disabled');
         this.availableDateDays = page.locator('.react-datepicker__day:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month)');
         this.raCheckbox = this.modal.locator('input#raService');
@@ -139,6 +141,23 @@ export class ServiceGroupsPage extends AdminBasePage {
         await this.expiryDateInput.fill(dateYYYYMMDD);
         await this.groupNameInput.click();
         await this.datePicker.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+    }
+
+    async selectRandomFutureExpiryDateViaCalendar(): Promise<string> {
+        await this.openCalendar();
+        if (await this.nextMonthBtn.isVisible()) {
+            await this.nextMonthBtn.click();
+        }
+        const availableDays = this.availableDateDays;
+        const count = await availableDays.count();
+        if (count === 0) {
+            throw new Error('No available future dates in calendar picker');
+        }
+        const randomIndex = Math.floor(Math.random() * count);
+        const selectedDay = availableDays.nth(randomIndex);
+        await selectedDay.click();
+        await this.datePicker.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        return (await this.expiryDateInput.inputValue()).trim();
     }
 
     async selectOffCampusAccess(): Promise<void> {
@@ -220,6 +239,14 @@ export class ServiceGroupsPage extends AdminBasePage {
         return this.tableRows.filter({ hasText: groupName });
     }
 
+    getExpiryDateCell(groupName: string): Locator {
+        return this.getGroupRow(groupName).locator('td:nth-child(5)');
+    }
+
+    async getExpiryDate(groupName: string): Promise<string> {
+        return (await this.getExpiryDateCell(groupName).innerText()).trim();
+    }
+
     async isGroupPresentInTable(groupName: string): Promise<boolean> {
         await this.page.waitForLoadState('networkidle');
         const row = this.getGroupRow(groupName);
@@ -233,6 +260,19 @@ export class ServiceGroupsPage extends AdminBasePage {
             await this.searchGroup(groupName);
         }
         await this.getGroupRow(groupName).first().waitFor({ state: 'visible', timeout: 10000 });
+    }
+
+    async createGroupIfNotPresent(groupName: string, expiryDateStr: string): Promise<void> {
+        await this.waitForTableLoaded();
+        const isPresent = await this.isGroupPresentInTable(groupName);
+        if (!isPresent) {
+            await this.clearSearch();
+            await this.clickCreateGroup();
+            await this.fillGroupName(groupName);
+            await this.setExpiryDate(expiryDateStr);
+            await this.saveGroupAndReload();
+        }
+        await this.ensureGroupVisibleInTable(groupName);
     }
 
     // --- Search Helpers ---
@@ -364,6 +404,12 @@ export class ServiceGroupsPage extends AdminBasePage {
         }
     }
 
+    async getUsersCount(groupName: string): Promise<number> {
+        const text = await this.getGroupRow(groupName).locator('td:nth-child(3)').innerText();
+        const match = text.match(/\d+/);
+        return match ? parseInt(match[0], 10) : 0;
+    }
+
     // --- Associated Resources Helpers ---
     getAddResourcesBtn(groupName: string): Locator {
         return this.getGroupRow(groupName).locator('td:nth-child(4) button[title="Add resources"]');
@@ -419,6 +465,10 @@ export class ServiceGroupsPage extends AdminBasePage {
         if (await this.expiredCancelBtn.isVisible()) {
             await this.clickExpiredCancel().catch(() => {});
         }
+        const selectUsersClose = this.page.locator('.modal.show button.custom-modal-close, .modal.show .modal-footer button:has-text("Cancel")');
+        if (await selectUsersClose.count() > 0 && await selectUsersClose.first().isVisible()) {
+            await selectUsersClose.first().click().catch(() => {});
+        }
     }
 
     async deleteExcessTestGroupsUntilCount(targetCount: number): Promise<void> {
@@ -446,5 +496,24 @@ export class ServiceGroupsPage extends AdminBasePage {
             await this.saveGroupAndReload();
             count = await this.getShowingCount();
         }
+    }
+
+    async ensureGroupHasAssociatedUsers(groupName: string, futureDateStr: string, modal: any, allUsersTabName: string): Promise<string[]> {
+        await this.createGroupIfNotPresent(groupName, futureDateStr);
+        await this.ensureGroupVisibleInTable(groupName);
+        const count = await this.getUsersCount(groupName);
+        if (count === 0) {
+            await this.clickAddOrEditUsers(groupName);
+            await modal.modal.waitFor({ state: 'visible', timeout: 5000 });
+            await modal.clickTab(allUsersTabName);
+            const u1 = (await modal.tableRows.nth(0).locator('.user-list-item-email').innerText()).trim();
+            const u2 = (await modal.tableRows.nth(1).locator('.user-list-item-email').innerText()).trim();
+            await modal.checkUser(u1);
+            await modal.checkUser(u2);
+            await modal.clickUpdate();
+            await modal.closeViaCross();
+            return [u1, u2];
+        }
+        return [];
     }
 }

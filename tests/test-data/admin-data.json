@@ -182,6 +182,40 @@
         "spacedName": "  Leading Space  ",
         "oversizedName": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "uniquePrefix": "AutoSG_"
+      },
+      "selectUsersModal": {
+        "title": "Select users",
+        "tabs": [
+          "All users",
+          "Selected",
+          "Unselected",
+          "Via CSV"
+        ],
+        "defaultTab": "All users",
+        "labels": {
+          "groupName": "Group Name:",
+          "allUsers": "All users:",
+          "unselectedUsers": "Unselected users:"
+        },
+        "searchPlaceholder": "Find user",
+        "searchKeyword": "codec",
+        "searchEmail": "codecnetwork@yopmail.com",
+        "invalidSearchTerm": "non_existent_search_query_999",
+        "loadMoreBtn": "Load more",
+        "buttons": {
+          "selectAll": "Select all",
+          "deselectAll": "Deselect All",
+          "update": "Update",
+          "cancel": "Cancel",
+          "undo": "Undo"
+        },
+        "noUserFound": "No user found",
+        "selectAllNote": "Note: Select All operation takes some time to be reflected after update",
+        "deselectAllNote": "Note: De-select All operation takes some time to be reflected after update",
+        "noChangesAlert": {
+          "title": "No changes in user selection",
+          "message": "Either select or de-select any user to update."
+        }
       }
     }
   }

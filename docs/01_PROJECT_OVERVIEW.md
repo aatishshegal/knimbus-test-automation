@@ -26,7 +26,8 @@ To build a production-ready, enterprise-grade Playwright automation framework us
 - **Design Pattern:** Page Object Model (POM) + Fixtures
 - **Test Runner:** Playwright Test
 - **Assertions:** Playwright built-in Web-First Assertions
-- **Linting/Formatting:** ESLint & Prettier (to be configured)
+- **Linting/Formatting:** ESLint & Prettier (Configured with automated code quality gates)
+- **Reporting:** Playwright HTML Reporter, Custom CSV Reporter (`CsvReporter.ts`), Clean Console Reporter
 
 ## Architecture Overview
-The framework employs a Page Object Model pattern combined with Playwright's Fixtures to separate test logic from page interaction logic. Because of the dynamic nature of the login flow (dependent on Dashboard settings), authentication state management will be a key architectural pillar. Tests will utilize `sessionStorage` manipulation and API calls for test data setup where possible.
+The framework employs a Page Object Model pattern combined with Playwright's Fixtures to strictly decouple test assertions from UI interactions. Backend administrative preconditions (such as enabling/disabling OTP, mandatory user fields, or self-registration) are fully automated via `AdminApiService`, bypassing slow UI configuration. Tests consume cached browser storage states (`.auth/`) created during initial setup projects, ensuring fast, deterministic, and isolated execution.

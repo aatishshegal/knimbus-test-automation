@@ -8,7 +8,7 @@ import portalData from '../../test-data/portal-data.json';
 // Load post-login profile data
 const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/portal/profile-data.json');
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
-const basicDetailsScenarios = postLoginData.basicDetailsScenarios || { positiveData: {}, negativeScenarios: [] };
+const basicDetailsScenarios = postLoginData['profile-basic-details.spec.ts'] || postLoginData.basicDetailsScenarios || { positiveData: {}, negativeScenarios: [] };
 
 const backendFieldMap: Record<string, string> = {
     'fullName': 'Name',
