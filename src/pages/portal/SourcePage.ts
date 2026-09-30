@@ -39,8 +39,8 @@ export class SourcePage extends BasePage {
 
   getWidgetCardLinks(widgetName: string): Locator {
     const container = this.getWidgetContainer(widgetName);
-    // Almost all styles (grid, slider, tabs, toggle) use `li a` for the clickable card.
-    return container.locator('li a');
+    // Match standard `li a` cards as well as `a.card` / `a.publisher-card` styles. Filter out View All links.
+    return container.locator('li a, a.card, a.publisher-card, div > a').filter({ hasNot: this.page.locator('img[alt="View All"]') }).filter({ hasNotText: /^View All$/i }).filter({ hasNotText: /^VIEW ALL$/i });
   }
 
   async getWidgetCards(widgetName: string) {
