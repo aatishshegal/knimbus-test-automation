@@ -691,6 +691,7 @@ test.describe('User Management - Service Groups Management', () => {
         await serviceGroupsPage.clickAddOrEditUsers(userTestGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
 
+        await selectUsersModal.ensureUserAssigned(sgData.selectUsersModal.searchEmail);
         await selectUsersModal.searchUser(sgData.selectUsersModal.searchEmail);
         const isAssigned = await selectUsersModal.isUserAssignedToAnyGroup(sgData.selectUsersModal.searchEmail);
         expect(isAssigned).toBeTruthy();
@@ -1563,6 +1564,597 @@ test.describe('User Management - Service Groups Management', () => {
         await serviceGroupsPage.confirmDelete();
         await expect(serviceGroupsPage.getGroupRow(opsUnselGroupName)).not.toBeVisible();
         await serviceGroupsPage.clearSearch();
+    });
+
+    // ==========================================
+    // EDIT SERVICE GROUP VALIDATIONS (Cases 85 - 97)
+    // ==========================================
+    const editTestGroupName = `${sgData.testInputs.uniquePrefix}Edit_${Date.now()}`;
+    const editedNewGroupName = `${sgData.testInputs.uniquePrefix}Edited_${Date.now()}`;
+    const futureExpiryDate = '2028-11-20';
+
+    // 85. Click Edit icon opens modal with pre-populated values
+    test('TC_ServiceGroups_85_EditGroup_OpenModal_DisplaysPrePopulatedValues - clicking edit icon opens Edit group modal with pre-filled details', async () => {
+        test.info().annotations.push({ type: 'testData', description: editTestGroupName });
+
+        await serviceGroupsPage.createGroupIfNotPresent(editTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        const currentName = await serviceGroupsPage.getEditGroupName();
+        expect(currentName).toBe(editTestGroupName);
+
+        const currentExpiry = await serviceGroupsPage.getEditExpiryDate();
+        expect(currentExpiry).toBe(validExpiryDateStr);
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 86. Cross icon closes modal
+    test('TC_ServiceGroups_86_EditGroup_CloseCrossIcon_ClosesModal - clicking cross icon closes Edit group modal', async () => {
+        test.info().annotations.push({ type: 'testData', description: editTestGroupName });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.closeEditModalViaCross();
+        await expect(serviceGroupsPage.editModal).not.toBeVisible();
+    });
+
+    // 87. Cancel button discards changes
+    test('TC_ServiceGroups_87_EditGroup_CancelButton_DiscardsChanges - modifying fields and clicking Cancel discards changes', async () => {
+        test.info().annotations.push({ type: 'testData', description: editTestGroupName });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.fillEditGroupName(`${editTestGroupName}_Mod`);
+        await serviceGroupsPage.closeEditModalViaCancel();
+        await expect(serviceGroupsPage.editModal).not.toBeVisible();
+
+        // Verify group name in table remains unchanged
+        await expect(serviceGroupsPage.getGroupRow(editTestGroupName)).toBeVisible();
+    });
+
+    // 88. Empty group name validation
+    test('TC_ServiceGroups_88_EditGroup_EmptyName_ErrorMessage - clearing group name shows required error message', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.messages.nameRequired });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.clearEditGroupName();
+        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.nameRequired);
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 89. HTML tags validation
+    test('TC_ServiceGroups_89_EditGroup_HtmlTags_ErrorMessage - entering HTML tags displays error message', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.messages.htmlUnsupported });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.fillEditGroupName(sgData.testInputs.htmlPayload);
+        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.htmlUnsupported);
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 90. Leading / trailing spaces validation
+    test('TC_ServiceGroups_90_EditGroup_Spaces_ErrorMessage - entering spaces displays error message', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.messages.leadingTrailingSpaces });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.fillEditGroupName(sgData.testInputs.spacedName);
+        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.leadingTrailingSpaces);
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 91. Max length (100 chars) exceeded
+    test('TC_ServiceGroups_91_EditGroup_MaxLength_ErrorMessage - entering over 100 characters displays error message', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.messages.max100Chars });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.fillEditGroupName(sgData.testInputs.oversizedName);
+        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.max100Chars);
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 92. Duplicate group name validation
+    test('TC_ServiceGroups_92_EditGroup_AlreadyExists_ErrorMessage - changing name to existing group name displays already exists alert', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.messages.alreadyExists });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.fillEditGroupName(sgData.existingGroup);
+        await serviceGroupsPage.clickEditSave();
+        await expect(serviceGroupsPage.editDuplicateGroupAlert).toBeVisible();
+        await expect(serviceGroupsPage.editDuplicateGroupAlert).toContainText(sgData.messages.alreadyExists);
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 93. Calendar past dates disabled
+    test('TC_ServiceGroups_93_EditGroup_Calendar_PastDatesDisabled - verifies past dates are disabled in datepicker', async () => {
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.openEditCalendar();
+        await expect(serviceGroupsPage.disabledDateDays.first()).toBeVisible();
+        const pastDate = serviceGroupsPage.disabledDateDays.first();
+        await expect(pastDate).toHaveAttribute('aria-disabled', 'true');
+
+        await serviceGroupsPage.closeCalendarViaEscape();
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 94. Access options dependency: checking Mobile App auto-selects Off Campus
+    test('TC_ServiceGroups_94_EditGroup_AccessOptions_SelectingMobile_AutoSelectsRA - selecting mobile app automatically selects off campus access', async () => {
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.toggleEditRa(false);
+        await serviceGroupsPage.toggleEditMobile(true);
+        const isRaChecked = await serviceGroupsPage.isEditRaChecked();
+        expect(isRaChecked).toBeTruthy();
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+    });
+
+    // 95. Update Group Name successfully
+    test('TC_ServiceGroups_95_EditGroup_UpdateName_Success - changing group name updates name in table row', async () => {
+        test.info().annotations.push({ type: 'testData', description: editedNewGroupName });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+        await serviceGroupsPage.clickEditGroup(editTestGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.fillEditGroupName(editedNewGroupName);
+        await serviceGroupsPage.saveEditedGroupAndReload();
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+        await expect(serviceGroupsPage.getGroupRow(editedNewGroupName)).toBeVisible();
+    });
+
+    // 96. Update Expiry Date successfully
+    test('TC_ServiceGroups_96_EditGroup_UpdateExpiryDate_Success - changing expiry date updates expiry cell in table row', async () => {
+        test.info().annotations.push({ type: 'testData', description: futureExpiryDate });
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+        await serviceGroupsPage.clickEditGroup(editedNewGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.setEditExpiryDate(futureExpiryDate);
+        await serviceGroupsPage.saveEditedGroupAndReload();
+
+        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+        const updatedExpiry = await serviceGroupsPage.getExpiryDate(editedNewGroupName);
+        expect(updatedExpiry).toBe(futureExpiryDate);
+    });
+
+    // 97. Update Access Options successfully
+    test('TC_ServiceGroups_97_EditGroup_ToggleAccessOptions_Success - toggling access options persists upon re-opening Edit modal', async () => {
+        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+        await serviceGroupsPage.clickEditGroup(editedNewGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        await serviceGroupsPage.toggleEditRa(true);
+        await serviceGroupsPage.toggleEditMobile(true);
+        await serviceGroupsPage.saveEditedGroupAndReload();
+
+        // Re-open and verify checkboxes persisted
+        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+        await serviceGroupsPage.clickEditGroup(editedNewGroupName);
+        await expect(serviceGroupsPage.editModal).toBeVisible();
+
+        expect(await serviceGroupsPage.isEditRaChecked()).toBeTruthy();
+        expect(await serviceGroupsPage.isEditMobileChecked()).toBeTruthy();
+
+        await serviceGroupsPage.closeEditModalViaCancel();
+
+        // Teardown editedNewGroupName
+        await serviceGroupsPage.clickDeleteGroup(editedNewGroupName);
+        await serviceGroupsPage.confirmDelete();
+        await expect(serviceGroupsPage.getGroupRow(editedNewGroupName)).not.toBeVisible();
+        await serviceGroupsPage.clearSearch();
+    });
+
+    // ==========================================
+    // MAIN TABLE SEARCH & ACTION VALIDATIONS (Cases 98 - 106)
+    // ==========================================
+    const searchTestGroupName = `${sgData.testInputs.uniquePrefix}Search_${Date.now()}`;
+
+    // 98. Search box & button initial state
+    test('TC_ServiceGroups_98_TableSearch_InitialState - verifies placeholder, title, disabled search button, and hidden clear button', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.placeholder });
+
+        await serviceGroupsPage.clearSearch();
+        await expect(serviceGroupsPage.searchInput).toBeVisible();
+        await expect(serviceGroupsPage.searchInput).toHaveAttribute('placeholder', sgData.tableSearch.placeholder);
+        await expect(serviceGroupsPage.searchInput).toHaveAttribute('title', sgData.tableSearch.inputTitle);
+        await expect(serviceGroupsPage.searchSubmitBtn).toBeDisabled();
+        await expect(serviceGroupsPage.searchClearBtn).not.toBeVisible();
+    });
+
+    // 99. Typing text enables search & displays clear icon
+    test('TC_ServiceGroups_99_TableSearch_TypingText_EnablesSearchAndShowsClearButton - entering text enables search button and shows red clear icon', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.partialKeyword });
+
+        await serviceGroupsPage.clearSearch();
+        await serviceGroupsPage.searchInput.fill(sgData.tableSearch.partialKeyword);
+
+        await expect(serviceGroupsPage.searchSubmitBtn).toBeEnabled();
+        await expect(serviceGroupsPage.searchClearBtn).toBeVisible();
+        await expect(serviceGroupsPage.searchClearBtn).toHaveAttribute('title', sgData.tableSearch.clearBtnTitle);
+
+        await serviceGroupsPage.clickClearSearchBtn();
+    });
+
+    // 100. Search by exact group name
+    test('TC_ServiceGroups_100_TableSearch_SearchExactGroupName_DisplaysMatchingRow - exact group search filters table to matching row', async () => {
+        test.info().annotations.push({ type: 'testData', description: searchTestGroupName });
+
+        await serviceGroupsPage.createGroupIfNotPresent(searchTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.searchGroup(searchTestGroupName);
+
+        await expect(serviceGroupsPage.getGroupRow(searchTestGroupName)).toBeVisible();
+        const showingCount = await serviceGroupsPage.getShowingCount();
+        expect(showingCount).toBe(1);
+
+        await serviceGroupsPage.clearSearch();
+    });
+
+    // 101. Search by partial keyword
+    test('TC_ServiceGroups_101_TableSearch_SearchPartialKeyword_DisplaysAllMatchingRows - partial keyword search returns matching groups', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.partialKeyword });
+
+        await serviceGroupsPage.searchGroup(sgData.tableSearch.partialKeyword);
+        const visibleNames = await serviceGroupsPage.getVisibleGroupNames();
+        expect(visibleNames.length).toBeGreaterThan(0);
+
+        await serviceGroupsPage.clearSearch();
+    });
+
+    // 102. Case-insensitive search
+    test('TC_ServiceGroups_102_TableSearch_CaseInsensitiveSearch - searching lowercase returns uppercase matching group', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.caseInsensitiveKeyword });
+
+        await serviceGroupsPage.searchGroup(sgData.tableSearch.caseInsensitiveKeyword);
+        await expect(serviceGroupsPage.getGroupRow(sgData.existingGroup)).toBeVisible();
+
+        await serviceGroupsPage.clearSearch();
+    });
+
+    // 103. Non-existent search query
+    test('TC_ServiceGroups_103_TableSearch_NonExistentKeyword_DisplaysNoResultsFound - searching non-existent term displays No results found', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.nonExistentKeyword });
+
+        await serviceGroupsPage.searchGroup(sgData.tableSearch.nonExistentKeyword);
+        await expect(serviceGroupsPage.tableNoResultsCell).toBeVisible();
+        await expect(serviceGroupsPage.tableNoResultsCell).toContainText(sgData.tableSearch.noResultsFound);
+
+        await serviceGroupsPage.clearSearch();
+    });
+
+    // 104. Click Clear button restores table
+    test('TC_ServiceGroups_104_TableSearch_ClickClearButton_RestoresFullTable - clicking red clear button restores full table listing', async () => {
+        await serviceGroupsPage.searchGroup(sgData.tableSearch.nonExistentKeyword);
+        await expect(serviceGroupsPage.tableNoResultsCell).toBeVisible();
+
+        await serviceGroupsPage.clickClearSearchBtn();
+        await expect(serviceGroupsPage.tableRows.first()).toBeVisible();
+        const showingCount = await serviceGroupsPage.getShowingCount();
+        expect(showingCount).toBeGreaterThan(0);
+        await expect(serviceGroupsPage.searchClearBtn).not.toBeVisible();
+    });
+
+    // 105. Delete modal — Close cross icon
+    test('TC_ServiceGroups_105_TableActions_DeleteModal_CloseCrossIcon_ClosesModal - clicking cross icon on delete modal discards delete', async () => {
+        test.info().annotations.push({ type: 'testData', description: searchTestGroupName });
+
+        await serviceGroupsPage.createGroupIfNotPresent(searchTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(searchTestGroupName);
+        await serviceGroupsPage.clickDeleteGroup(searchTestGroupName);
+        await expect(serviceGroupsPage.deleteModal).toBeVisible();
+
+        await serviceGroupsPage.closeDeleteModalViaCross();
+        await expect(serviceGroupsPage.deleteModal).not.toBeVisible();
+
+        // Verify group is still present
+        await expect(serviceGroupsPage.getGroupRow(searchTestGroupName)).toBeVisible();
+    });
+
+    // 106. Delete modal — Cancel button
+    test('TC_ServiceGroups_106_TableActions_DeleteModal_CancelButton_DiscardsDelete - clicking Cancel on delete modal discards delete', async () => {
+        test.info().annotations.push({ type: 'testData', description: searchTestGroupName });
+
+        await serviceGroupsPage.createGroupIfNotPresent(searchTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(searchTestGroupName);
+        await serviceGroupsPage.clickDeleteGroup(searchTestGroupName);
+        await expect(serviceGroupsPage.deleteModal).toBeVisible();
+
+        await serviceGroupsPage.cancelDelete();
+        await expect(serviceGroupsPage.deleteModal).not.toBeVisible();
+
+        // Verify group is still present
+        await expect(serviceGroupsPage.getGroupRow(searchTestGroupName)).toBeVisible();
+
+        // Teardown searchTestGroupName
+        await serviceGroupsPage.clickDeleteGroup(searchTestGroupName);
+        await serviceGroupsPage.confirmDelete();
+        await expect(serviceGroupsPage.getGroupRow(searchTestGroupName)).not.toBeVisible();
+        await serviceGroupsPage.clearSearch();
+    });
+
+    // ==========================================
+    // ASSOCIATED USERS - VIA CSV TAB (Cases 107 - 114)
+    // ==========================================
+    const csvTestGroupName = `${sgData.testInputs.uniquePrefix}CSV_${Date.now()}`;
+    const csvData = sgData.selectUsersModal.viaCsv;
+
+    // 107. Tab presence, active state, and header details
+    test('TC_ServiceGroups_107_ViaCsvTab_TabPresenceAndActiveState - clicking Via CSV tab marks it active with matching group name', async () => {
+        test.info().annotations.push({ type: 'testData', description: csvTestGroupName });
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await expect(selectUsersModal.activeTab).toHaveText(sgData.selectUsersModal.tabs[3]);
+        await expect(selectUsersModal.viaCsvDesc).toContainText(csvData.description);
+        await expect(selectUsersModal.groupNameContainer).toContainText(csvTestGroupName);
+
+        await selectUsersModal.clickCancel();
+    });
+
+    // 108. Upload area elements presence
+    test('TC_ServiceGroups_108_ViaCsvTab_UploadAreaElements_Presence - verifies file upload dropzone and format instructions', async () => {
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await expect(selectUsersModal.viaCsvDropzone).toBeVisible();
+        await expect(selectUsersModal.viaCsvDropzone).toContainText(csvData.instructionMain);
+        await expect(selectUsersModal.viaCsvDropzone).toContainText(csvData.instructionSub);
+        await expect(selectUsersModal.viaCsvDropzone).toContainText(csvData.formatInfo);
+        await expect(selectUsersModal.viaCsvDropzone).toContainText(csvData.browseBtn);
+        await expect(selectUsersModal.viaCsvFileInput).toHaveAttribute('accept', '.csv,text/csv');
+
+        await selectUsersModal.clickCancel();
+    });
+
+    // 109. Download sample CSV
+    test('TC_ServiceGroups_109_ViaCsvTab_DownloadSampleCsv_DownloadsFile - clicking download sample CSV downloads valid template', async () => {
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        const downloaded = await selectUsersModal.clickDownloadSampleCsv();
+        expect(downloaded.filename).toBe(csvData.sampleFilename);
+        expect(downloaded.content).toContain(csvData.sampleHeader);
+
+        await selectUsersModal.clickCancel();
+    });
+
+    // 110. Empty file submission error
+    test('TC_ServiceGroups_110_ViaCsvTab_EmptyFile_ClickUpdate_ShowsError - clicking update without choosing file displays inline error', async () => {
+        test.info().annotations.push({ type: 'testData', description: csvData.missingFileError });
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.updateBtn.click();
+
+        await expect(selectUsersModal.viaCsvErrorText).toBeVisible();
+        await expect(selectUsersModal.viaCsvErrorText).toContainText(csvData.missingFileError);
+
+        await selectUsersModal.clickCancel();
+    });
+
+    // 111. File selection displays filename
+    test('TC_ServiceGroups_111_ViaCsvTab_SelectValidCsv_DisplaysFilename - selecting CSV renders filename in dropzone', async () => {
+        const fs = require('fs');
+        const path = require('path');
+        const tempCsv = path.resolve('./test-results/temp_display_check.csv');
+        fs.writeFileSync(tempCsv, `${csvData.sampleHeader}\n${sgData.selectUsersModal.searchEmail}\n`);
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.selectCsvFile(tempCsv);
+
+        const displayedName = await selectUsersModal.getUploadedFileName();
+        expect(displayedName).toBe('temp_display_check.csv');
+
+        await selectUsersModal.clickCancel();
+        fs.unlinkSync(tempCsv);
+    });
+
+    // 112. Invalid header CSV alert
+    test('TC_ServiceGroups_112_ViaCsvTab_InvalidHeaderCsv_ShowsMissingHeaderAlert - uploading CSV with wrong header displays missing header alert', async () => {
+        test.info().annotations.push({ type: 'testData', description: csvData.missingHeaderAlert });
+
+        const fs = require('fs');
+        const path = require('path');
+        const invalidCsv = path.resolve('./test-results/temp_invalid_header.csv');
+        fs.writeFileSync(invalidCsv, `Wrong_Header\n${sgData.selectUsersModal.searchEmail}\n`);
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.selectCsvFile(invalidCsv);
+        await selectUsersModal.updateBtn.click();
+
+        await expect(selectUsersModal.alertPopup).toBeVisible();
+        await expect(selectUsersModal.alertTitle).toContainText(csvData.missingHeaderAlert);
+        await selectUsersModal.alertOkBtn.click();
+
+        await selectUsersModal.clickCancel();
+        fs.unlinkSync(invalidCsv);
+    });
+
+    // 113. Valid CSV bulk user association
+    test('TC_ServiceGroups_113_ViaCsvTab_ValidCsvUpload_AssociatesUsersSuccessfully - uploading valid CSV associates user and displays in Selected tab', async () => {
+        test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.searchEmail });
+
+        const fs = require('fs');
+        const path = require('path');
+        const validCsv = path.resolve('./test-results/temp_valid_users.csv');
+        fs.writeFileSync(validCsv, `${csvData.sampleHeader}\n${sgData.selectUsersModal.searchEmail}\n`);
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.selectCsvFile(validCsv);
+        await selectUsersModal.clickUpdateViaCsvAndConfirm();
+
+        // Switch to Selected tab in the open modal and verify user appears
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[1]);
+        await expect(selectUsersModal.getUserRow(sgData.selectUsersModal.searchEmail)).toBeVisible();
+
+        await selectUsersModal.clickCancel();
+        fs.unlinkSync(validCsv);
+    });
+
+    // 114. Cancel button discards upload
+    test('TC_ServiceGroups_114_ViaCsvTab_CancelButton_DiscardsUpload - selecting file and clicking Cancel discards upload', async () => {
+        const fs = require('fs');
+        const path = require('path');
+        const discardCsv = path.resolve('./test-results/temp_discard.csv');
+        fs.writeFileSync(discardCsv, `${csvData.sampleHeader}\n${sgData.selectUsersModal.searchEmail}\n`);
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.selectCsvFile(discardCsv);
+        await selectUsersModal.clickCancel();
+        await expect(selectUsersModal.modal).not.toBeVisible();
+        fs.unlinkSync(discardCsv);
+    });
+
+    // 115. Unregistered user CSV alert
+    test('TC_ServiceGroups_115_ViaCsvTab_UnregisteredUser_ShowsNotRegisteredAlert - uploading CSV with unregistered user displays users not registered alert', async () => {
+        test.info().annotations.push({ type: 'testData', description: csvData.unregisteredUserAlert });
+
+        const fs = require('fs');
+        const path = require('path');
+        const unregCsv = path.resolve('./test-results/temp_unreg_user.csv');
+        fs.writeFileSync(unregCsv, `${csvData.sampleHeader}\n${csvData.unregisteredEmail}\n`);
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.selectCsvFile(unregCsv);
+        await selectUsersModal.updateBtn.click();
+
+        await expect(selectUsersModal.alertPopup).toBeVisible();
+        await expect(selectUsersModal.alertTitle).toContainText(csvData.unregisteredUserAlert);
+        await selectUsersModal.alertOkBtn.click();
+
+        await selectUsersModal.clickCancel();
+        fs.unlinkSync(unregCsv);
+    });
+
+    // 116. More than 100 users CSV limit alert
+    test('TC_ServiceGroups_116_ViaCsvTab_Over100Users_ShowsLimitAlert - uploading CSV with more than 100 users displays limit alert', async () => {
+        test.info().annotations.push({ type: 'testData', description: csvData.moreThan100UsersAlert });
+
+        const path = require('path');
+        const over100Csv = path.resolve('./tests/test-data', csvData.moreThan100UsersFile);
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.selectCsvFile(over100Csv);
+        await selectUsersModal.updateBtn.click();
+
+        await expect(selectUsersModal.alertPopup).toBeVisible();
+        await expect(selectUsersModal.alertTitle).toContainText(csvData.moreThan100UsersAlert);
+        await selectUsersModal.alertOkBtn.click();
+
+        await selectUsersModal.clickCancel();
+    });
+
+    // 117. Double dot filename invalid format error
+    test('TC_ServiceGroups_117_ViaCsvTab_DoubleDotFilename_ShowsInvalidFormatError - selecting CSV file with double dot in name displays invalid format error', async () => {
+        test.info().annotations.push({ type: 'testData', description: csvData.invalidFileFormatError });
+
+        const fs = require('fs');
+        const path = require('path');
+        const doubleDotCsv = path.resolve('./test-results', csvData.doubleDotFile);
+        fs.writeFileSync(doubleDotCsv, `${csvData.sampleHeader}\n${sgData.selectUsersModal.searchEmail}\n`);
+
+        await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
+        await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
+        await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
+        await expect(selectUsersModal.modal).toBeVisible();
+
+        await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[3]);
+        await selectUsersModal.selectCsvFile(doubleDotCsv);
+        await selectUsersModal.updateBtn.click();
+
+        await expect(selectUsersModal.viaCsvInvalidFormatError).toBeVisible();
+        await expect(selectUsersModal.viaCsvInvalidFormatError).toContainText(csvData.invalidFileFormatError);
+
+        await selectUsersModal.clickCancel();
+        await expect(selectUsersModal.modal).not.toBeVisible();
+
+        // Teardown csvTestGroupName
+        await serviceGroupsPage.clickDeleteGroup(csvTestGroupName);
+        await serviceGroupsPage.confirmDelete();
+        await expect(serviceGroupsPage.getGroupRow(csvTestGroupName)).not.toBeVisible();
+        await serviceGroupsPage.clearSearch();
+        fs.unlinkSync(doubleDotCsv);
     });
 });
 

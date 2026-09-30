@@ -13,9 +13,15 @@ export class WelcomePage extends BasePage {
 
   async proceedToHome() {
     try {
-      await this.welcomePageIdentifier.waitFor({ state: 'visible', timeout: 8000 });
-      await this.clickElement(this.continueButton, 'Continue');
-      await this.welcomePageIdentifier.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+      const isVisible = await this.continueButton.isVisible().catch(() => false);
+      if (isVisible) {
+        await this.clickElement(this.continueButton, 'Continue');
+        await this.continueButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+      } else {
+        await this.continueButton.waitFor({ state: 'visible', timeout: 2000 });
+        await this.clickElement(this.continueButton, 'Continue');
+        await this.continueButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+      }
     } catch {
       // Welcome page not present, user landed directly on home page
     }

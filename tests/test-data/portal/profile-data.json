@@ -1039,6 +1039,10 @@
         "workExpFromYr": "2018",
         "workExpToYr": "2023"
       },
+      "updateData": {
+        "jobTitle": "Lead QA Engineer",
+        "companyName": "Tech Innovators Global"
+      },
       "negativeScenarios": [
         {
           "scenario": "Validation - JobTitle is Required",
@@ -1240,6 +1244,10 @@
         "eduFromYr": "2015",
         "eduToYr": "2017"
       },
+      "updateData": {
+        "institutionName": "UTS Global Campus",
+        "eduDegree": "Doctor of Computer Science"
+      },
       "negativeScenarios": [
         {
           "scenario": "Validation - InstitutionName is Required",
@@ -1260,20 +1268,70 @@
           "invalidData": {
             "institutionName": "Global Tech University",
             "eduDegree": "Bachelor of Information Technology",
-            "eduFromYr": "2014",
-            "eduToYr": "2012"
+            "eduFromYr": "2024",
+            "eduToYr": "2020"
           },
-          "expectedMessage": "From year value can't be greater than To year value "
+          "expectedMessage": "From year value can't be greater than To year value"
         },
         {
-          "scenario": "Validation - Future Year",
+          "scenario": "Validation - 'From Year' Non-numeric",
           "invalidData": {
-            "institutionName": "MIT",
-            "eduDegree": "BSc",
+            "institutionName": "Global Tech University",
+            "eduDegree": "Bachelor of Information Technology",
+            "eduFromYr": "abcd",
+            "eduToYr": "2024"
+          },
+          "expectedMessage": "Only numbers are allowed"
+        },
+        {
+          "scenario": "Validation - 'From Year' Minimum Length",
+          "invalidData": {
+            "institutionName": "Global Tech University",
+            "eduDegree": "Bachelor of Information Technology",
+            "eduFromYr": "20",
+            "eduToYr": "2024"
+          },
+          "expectedMessage": "Atleast 4 characters required"
+        },
+        {
+          "scenario": "Validation - 'From Year' Future Year",
+          "invalidData": {
+            "institutionName": "Global Tech University",
+            "eduDegree": "Bachelor of Information Technology",
+            "eduFromYr": "2050",
+            "eduToYr": "2050"
+          },
+          "expectedMessage": "Year value can't be greater than current year"
+        },
+        {
+          "scenario": "Validation - 'To Year' Non-numeric",
+          "invalidData": {
+            "institutionName": "Global Tech University",
+            "eduDegree": "Bachelor of Information Technology",
+            "eduFromYr": "2020",
+            "eduToYr": "abcd"
+          },
+          "expectedMessage": "Only numbers are allowed"
+        },
+        {
+          "scenario": "Validation - 'To Year' Minimum Length",
+          "invalidData": {
+            "institutionName": "Global Tech University",
+            "eduDegree": "Bachelor of Information Technology",
+            "eduFromYr": "2020",
+            "eduToYr": "20"
+          },
+          "expectedMessage": "Atleast 4 characters required"
+        },
+        {
+          "scenario": "Validation - 'To Year' Future Year",
+          "invalidData": {
+            "institutionName": "Global Tech University",
+            "eduDegree": "Bachelor of Information Technology",
             "eduFromYr": "2020",
             "eduToYr": "2050"
           },
-          "expectedMessage": "Year value can't be greater than current year "
+          "expectedMessage": "Year value can't be greater than current year"
         },
         {
           "scenario": "Validation_-_InstitutionName_RejectSpaces",
@@ -1308,6 +1366,9 @@
     "fieldOfStudiesData": {
       "positiveData": {
         "studySub": "SE AI"
+      },
+      "updateData": {
+        "studySub": "SE AI Robotics"
       },
       "negativeScenarios": [
         {

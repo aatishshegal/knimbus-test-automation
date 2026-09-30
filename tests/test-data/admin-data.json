@@ -41,6 +41,16 @@
       "expiryDate": "2026-10-10",
       "dob": "2000-01-01"
     },
+    "filters": {
+      "_description": "Where: tests/admin/user-management/manage-users-filters.spec.ts | Class: ManageUsersPage | Tests: Filter visibility, initial state, service group filter, user type filter, incomplete registrations filter",
+      "expandTitle": "Expand Filters",
+      "collapseTitle": "Collapse Filters",
+      "serviceGroup": "tester",
+      "userType": "STUDENT",
+      "incompleteRegistrationsLabel": "Incomplete Registrations",
+      "mandatoryFieldForPrecondition": "Mobile",
+      "incompleteUserEmail": "incomplete_tester_manage@yopmail.com"
+    },
     "notification": {
       "_description": "Where: tests/admin/user-management/manage-users.spec.ts | Class: ManageUsersPage | Tests: TC_UserMgmt_ManageUsers_SendNotification_Modal (Modal title, sample title, description, character countdown)",
       "modalTitle": "Send Notification",
@@ -183,6 +193,16 @@
         "oversizedName": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "uniquePrefix": "AutoSG_"
       },
+      "tableSearch": {
+        "placeholder": "Find group",
+        "inputTitle": "Enter group name",
+        "searchBtnTitle": "Search",
+        "clearBtnTitle": "Clear",
+        "noResultsFound": "No results found",
+        "partialKeyword": "AutoSG",
+        "caseInsensitiveKeyword": "ra",
+        "nonExistentKeyword": "non_existent_search_query_999"
+      },
       "selectUsersModal": {
         "title": "Select users",
         "tabs": [
@@ -215,7 +235,31 @@
         "noChangesAlert": {
           "title": "No changes in user selection",
           "message": "Either select or de-select any user to update."
+        },
+        "viaCsv": {
+          "description": "Quickly associate multiple users to this group by uploading a CSV file.",
+          "instructionMain": "Choose a file",
+          "instructionSub": "Refer the sample below for data format",
+          "formatInfo": "CSV format only",
+          "browseBtn": "Browse File",
+          "downloadSampleText": "Download sample CSV",
+          "sampleFilename": "sampleUsersCsv.csv",
+          "sampleHeader": "Email_Id",
+          "missingFileError": "Please select a file",
+          "missingHeaderAlert": "Header is missing, update csv and try again.",
+          "associationSuccessText": "users associated with group.",
+          "unregisteredUserAlert": "users not registered.",
+          "unregisteredEmail": "unregistered_user_random_9999@yopmail.com",
+          "moreThan100UsersAlert": "Only 100 users selected at once, please update csv and try again.",
+          "invalidFileFormatError": "Invalid file format.",
+          "moreThan100UsersFile": "service_group_more_than_100_user.csv",
+          "doubleDotFile": "name.test.csv"
         }
+      },
+      "editGroupModal": {
+        "title": "Edit group",
+        "saveBtn": "Save",
+        "cancelBtn": "Cancel"
       }
     }
   }

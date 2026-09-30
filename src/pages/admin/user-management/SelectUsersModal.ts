@@ -30,6 +30,15 @@ export class SelectUsersModal extends AdminBasePage {
     readonly alertOkBtn: Locator;
     readonly searchClearCrossBtn: Locator;
 
+    // Via CSV elements
+    readonly viaCsvDesc: Locator;
+    readonly viaCsvDropzone: Locator;
+    readonly viaCsvFileInput: Locator;
+    readonly viaCsvSelectedFileName: Locator;
+    readonly viaCsvDownloadSampleLink: Locator;
+    readonly viaCsvErrorText: Locator;
+    readonly viaCsvInvalidFormatError: Locator;
+
     constructor(page: Page) {
         super(page);
         this.modal = page.locator('.modal.show').filter({ hasText: /select users/i });
@@ -59,6 +68,15 @@ export class SelectUsersModal extends AdminBasePage {
         this.alertTitle = this.alertPopup.locator('.swal2-title');
         this.alertMessage = this.alertPopup.locator('.swal2-html-container');
         this.alertOkBtn = this.alertPopup.locator('.swal2-confirm');
+
+        // Via CSV locators
+        this.viaCsvDesc = this.modal.locator('.group-association-info .ft-16');
+        this.viaCsvDropzone = this.modal.locator('.custom-file-upload-input');
+        this.viaCsvFileInput = this.modal.locator('input#userFile');
+        this.viaCsvSelectedFileName = this.modal.locator('.format-info.fst-italic');
+        this.viaCsvDownloadSampleLink = this.modal.locator('a:has-text("Download sample CSV")');
+        this.viaCsvErrorText = this.modal.locator('.text-danger').filter({ hasText: /please select a file/i });
+        this.viaCsvInvalidFormatError = this.modal.locator('.text-danger').filter({ hasText: /invalid file format/i });
     }
 
     async clickCancel(): Promise<void> {
@@ -284,6 +302,41 @@ export class SelectUsersModal extends AdminBasePage {
             }
         }
         return true;
+    }
+
+    // --- Via CSV Action Helpers ---
+    async selectCsvFile(filePath: string): Promise<void> {
+        await this.viaCsvFileInput.setInputFiles(filePath);
+    }
+
+    async getUploadedFileName(): Promise<string> {
+        return (await this.viaCsvSelectedFileName.innerText()).trim();
+    }
+
+    async clickDownloadSampleCsv(): Promise<{ filename: string, content: string }> {
+        const [download] = await Promise.all([
+            this.page.waitForEvent('download'),
+            this.viaCsvDownloadSampleLink.click()
+        ]);
+        const path = await download.path();
+        const fs = require('fs');
+        const content = fs.readFileSync(path, 'utf8');
+        return {
+            filename: download.suggestedFilename(),
+            content
+        };
+    }
+
+    async clickUpdateViaCsvAndConfirm(): Promise<void> {
+        const responsePromise = this.page.waitForResponse(
+            resp => resp.url().includes('updateBulkUserInGroup') && resp.status() === 200,
+            { timeout: 15000 }
+        ).catch(() => null);
+        await this.updateBtn.click();
+        await responsePromise;
+        await this.alertOkBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await this.alertOkBtn.click();
+        await this.alertPopup.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
     }
 }
 

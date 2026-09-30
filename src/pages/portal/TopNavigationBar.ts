@@ -6,8 +6,12 @@ export class TopNavigationBar extends BasePage {
   readonly searchButton: Locator;
   readonly searchDropdown: Locator;
   readonly notificationIcon: Locator;
+  readonly notificationCountBadge: Locator;
   readonly languageSelector: Locator;
   readonly profileDropdown: Locator;
+  
+  readonly autoSuggestionBox: Locator;
+  readonly autoSuggestionItems: Locator;
   
   // Profile Dropdown items
   readonly profileName: Locator;
@@ -39,8 +43,11 @@ export class TopNavigationBar extends BasePage {
     this.searchDropdown = page.locator('select').filter({ has: page.locator('option[value="doc_title"]') }).first();
     // The actual notification bell icon locator based on the provided HTML
     this.notificationIcon = page.locator('.notification-badge').filter({ visible: true }).first();
-    this.languageSelector = page.locator('#google_translate_element select').filter({ visible: true });
-    this.profileDropdown = page.locator('.profile-dropdwn-toggle').filter({ visible: true }).first();
+    this.notificationCountBadge = page.locator('.notification-badge .notification-count');
+    this.languageSelector = page.locator('#google_translate_element select');
+    this.profileDropdown = page.locator('.profile-dropdwn-toggle, #basic-nav-dropdown, .profile-dropdown').first();
+    this.autoSuggestionBox = page.locator('div.suggested-result').first();
+    this.autoSuggestionItems = page.locator('div.suggested-result li.list-group-item');
     
     // Profile Dropdown Locators
     this.profileName = page.locator('.profile-info-name');
@@ -85,9 +92,51 @@ export class TopNavigationBar extends BasePage {
     await this.page.mouse.click(10, 10);
   }
 
+  async typeSearchWithSuggestions(term: string) {
+    await this.searchInput.click();
+    await this.searchInput.clear();
+    const suggestResponsePromise = this.page.waitForResponse(
+      response => response.url().includes('/getAutoSuggestSearch') && response.status() === 200,
+      { timeout: 15000 }
+    ).catch(() => null);
+    await this.searchInput.pressSequentially(term, { delay: 100 });
+    await suggestResponsePromise;
+    await this.autoSuggestionBox.waitFor({ state: 'visible', timeout: 15000 });
+  }
+
   async openProfileMenu() {
     await this.page.locator('.overlay').waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+
+    // Auto-dismiss T&C popup if it rendered asynchronously
+    const tcCheckbox = this.page.locator('#termsAccepted, .term-and-condition-check-box').first();
+    if (await tcCheckbox.isVisible().catch(() => false)) {
+      const label = this.page.locator('label[for="termsAccepted"], .term-and-condition-check-box-label').first();
+      if (await label.count() > 0 && await label.isVisible().catch(() => false)) {
+        await label.click({ force: true });
+      } else {
+        await tcCheckbox.check({ force: true }).catch(() => {});
+      }
+      const acceptBtn = this.page.getByRole('button', { name: /Accept|I Agree|Continue|Next/i }).last();
+      if (await acceptBtn.isVisible().catch(() => false)) {
+        await acceptBtn.click({ force: true }).catch(() => {});
+        await this.page.waitForTimeout(500);
+      }
+    }
+
+    await this.profileDropdown.waitFor({ state: 'visible', timeout: 15000 });
     await this.profileDropdown.click({ force: true });
+    try {
+      await this.profileMenuProfileLink.waitFor({ state: 'visible', timeout: 2000 });
+    } catch {
+      await this.profileDropdown.click({ force: true });
+      await this.profileMenuProfileLink.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+    }
+  }
+
+  async navigateToProfile() {
+    await this.openProfileMenu();
+    await this.profileMenuProfileLink.click({ force: true });
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async navigateToMyLibrary() {
@@ -114,5 +163,38 @@ export class TopNavigationBar extends BasePage {
     const optionsText = await this.languageSelector.locator('option').allInnerTexts();
     const hasDefault = optionsText.some(t => t.trim() === defaultLabel);
     await this.languageSelector.selectOption({ label: hasDefault ? defaultLabel : 'Select Language' });
+  }
+
+  async openNotificationModal() {
+    await this.page.locator('.overlay').waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+
+    // Auto-dismiss T&C popup if it rendered asynchronously
+    const tcCheckbox = this.page.locator('#termsAccepted, .term-and-condition-check-box').first();
+    if (await tcCheckbox.isVisible().catch(() => false)) {
+      await tcCheckbox.check({ force: true }).catch(() => {});
+      const acceptBtn = this.page.getByRole('button', { name: /Accept|I Agree|Continue|Next/i }).last();
+      if (await acceptBtn.isVisible().catch(() => false)) {
+        await acceptBtn.click({ force: true }).catch(() => {});
+        await this.page.waitForTimeout(500);
+      }
+    }
+
+    await this.notificationIcon.waitFor({ state: 'visible', timeout: 10000 });
+    await this.page.evaluate(() => {
+      const gTranslate = document.getElementById('google_translate_element');
+      if (gTranslate) gTranslate.style.display = 'none';
+      const skiptranslate = document.querySelector('.skiptranslate');
+      if (skiptranslate) (skiptranslate as HTMLElement).style.display = 'none';
+    }).catch(() => {});
+    await this.notificationIcon.click({ force: true });
+    await this.page.locator('.modal.show').filter({ has: this.page.locator('.notif-title') }).first().waitFor({ state: 'visible', timeout: 15000 });
+  }
+
+  async getNotificationBadgeCount(): Promise<number> {
+    if (await this.notificationCountBadge.isVisible()) {
+      const text = (await this.notificationCountBadge.innerText()).trim();
+      return parseInt(text, 10) || 0;
+    }
+    return 0;
   }
 }

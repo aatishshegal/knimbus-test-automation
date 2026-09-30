@@ -15,6 +15,7 @@ const defaultViewport = { width: 1280, height: 720 };
 
 export default defineConfig({
   testDir: './tests',
+  testMatch: /.*(\.spec|\.setup)\.ts/,
   // Increased timeout to 90s to account for federated external publisher queries
   timeout: 90 * 1000,
   fullyParallel: false,
@@ -54,13 +55,30 @@ export default defineConfig({
     },
     
     // --- PORTAL UI TESTS ---
-    // 1. Read-Only fast suites: Search, Navigation, Home (61 tests)
+    // 1. Read-Only fast suites: Search, Navigation, Home
     // Run concurrently with 4 workers using the cached authenticated session
     { 
       name: 'Portal - Read-Only',
       testMatch: /portal\/(search|navigation|home)\/.*\.spec\.ts/,
+      testIgnore: /portal\/navigation\/notification-icon\.spec\.ts/,
       fullyParallel: true,
       workers: 4,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined,
+        storageState: storageState 
+      },
+      dependencies: ['portal-setup'],
+    },
+
+    // 2. Notification suite: Mutates inbox notifications & validates fresh user state
+    // Run sequentially with 1 worker to ensure inbox state isolation
+    { 
+      name: 'Portal - Notification',
+      testMatch: /portal\/navigation\/notification-icon\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
       use: { 
         ...devices['Desktop Chrome'], 
         viewport: defaultViewport, 
@@ -87,11 +105,11 @@ export default defineConfig({
       dependencies: ['portal-setup'],
     },
 
-    // 2. Pre-login mutating suites: Authentication & Registration (43 tests)
-    // Run sequentially with 1 worker to protect tenant admin security state
+    // 3. Mutating suites: Authentication, Registration, and Profile
+    // Run sequentially with 1 worker to protect tenant admin security state and prevent backend race conditions
     { 
-      name: 'Portal - Pre-Login',
-      testMatch: /portal\/(authentication|registration)\/.*\.spec\.ts/,
+      name: 'Portal - Mutating',
+      testMatch: /portal\/(authentication|registration|profile)\/.*\.spec\.ts/,
       fullyParallel: false,
       workers: 1,
       use: { 
@@ -100,23 +118,6 @@ export default defineConfig({
         deviceScaleFactor: undefined 
       },
       dependencies: ['portal-setup'],
-    },
-
-    // 3. Post-login mutating suites: Profile details, contact, enrollment, password
-    // Run sequentially with 1 worker to prevent race conditions during editability/field toggling
-    { 
-      name: 'Portal - Profile',
-      testMatch: /portal\/profile\/.*\.spec\.ts/,
-      testIgnore: /work-and-education\.spec\.ts/,
-      fullyParallel: false,
-      workers: 1,
-      use: { 
-        ...devices['Desktop Chrome'], 
-        viewport: defaultViewport, 
-        deviceScaleFactor: undefined,
-        storageState: storageState 
-      },
-      dependencies: ['Portal - Pre-Login'],
     },
 
     // --- ADMIN DASHBOARD UI TESTS ---

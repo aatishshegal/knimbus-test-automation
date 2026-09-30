@@ -6,7 +6,9 @@ test.describe('Admin Header - Bulk Email Limit', () => {
     test.beforeEach(async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         await page.goto(process.env.ADMIN_TEST_URL + "/librarian/v2/elibrarySetup/dashboard");
+        await dashboard.ensureLoggedIn();
         await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
+        await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
     });
 
     test('TC_AdminHeader_BulkEmailLimit_VisibleOnDashboard', async ({ page }) => {

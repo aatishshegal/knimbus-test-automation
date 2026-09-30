@@ -65,17 +65,14 @@ test.describe('Global Navigation - Search Bar Validations', () => {
     await expect(searchResultPage.searchResultIdentifier).toBeVisible({ timeout: 10000 });
   });
 
-  test('Search Bar - Displays live auto-suggestion list as user types search query', async ({ topNavigationBar, page }) => {
-    await topNavigationBar.searchInput.clear();
-    await topNavigationBar.searchInput.pressSequentially(portalData.searchBarData.autoSuggestionTerm, { delay: 100 });
+  test('Search Bar - Displays live auto-suggestion list as user types search query', async ({ topNavigationBar }) => {
+    test.info().annotations.push({ type: 'testData', description: portalData.searchBarData.autoSuggestionTerm });
+    await topNavigationBar.typeSearchWithSuggestions(portalData.searchBarData.autoSuggestionTerm);
     
-    const autoSuggestionBox = page.locator('div.suggested-result').first();
-    await expect(autoSuggestionBox).toBeVisible({ timeout: 10000 });
+    await expect(topNavigationBar.autoSuggestionBox).toBeVisible({ timeout: 10000 });
+    await expect(topNavigationBar.autoSuggestionItems.first()).toBeVisible({ timeout: 10000 });
     
-    const firstSuggestionItem = autoSuggestionBox.locator('li.list-group-item').first();
-    await expect(firstSuggestionItem).toBeVisible({ timeout: 10000 });
-    
-    const suggestionItemsCount = await autoSuggestionBox.locator('li.list-group-item').count();
+    const suggestionItemsCount = await topNavigationBar.autoSuggestionItems.count();
     expect(suggestionItemsCount).toBeGreaterThan(0);
   });
 });
