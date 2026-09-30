@@ -15,6 +15,7 @@ import { ProfilePage } from '@pages/portal/ProfilePage';
 import { MyLibraryPage } from '@pages/portal/MyLibraryPage';
 import { EnrollmentDetailsPage, IdAccessInfoPage, WorkEducationPage, ContactPage, PasswordPage, ProfileBasicInfoPage } from '@pages/portal/profile-details';
 import { SectionPage } from '@pages/portal/SectionPage';
+import { ContentPage } from '@pages/portal/ContentPage';
 import { AdminApiService } from '../api/AdminApiService';
 
 // New API-based helper function to handle Admin Session instantly
@@ -50,6 +51,7 @@ type MyFixtures = {
   passwordPage: PasswordPage;
   profileBasicInfoPage: ProfileBasicInfoPage;
   sectionPage: SectionPage;
+  contentPage: ContentPage;
   sectionAutomationUser: { email: string, password: string };
   standardUser: { email: string, password: string };
   homePageUser: { email: string, password: string };
@@ -145,6 +147,10 @@ export const test = base.extend<MyFixtures>({
   sectionPage: async ({ page }, use) => {
     const sectionPage = new SectionPage(page);
     await use(sectionPage);
+  },
+  contentPage: async ({ page }, use) => {
+    const contentPage = new ContentPage(page);
+    await use(contentPage);
   },
   sectionAutomationUser: async ({}, use) => {
     await use({

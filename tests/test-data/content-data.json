@@ -1,0 +1,40 @@
+{
+  "targetUrl": "https://qa-dummyqatesting-v2.knimbus.com/portal/v2/default/home",
+  "widgetHeadings": {
+    "allContentTypes": "All Content Types",
+    "contentTypesStandard": "Content Types — Standard",
+    "contentTypesStyle1": "Content Types — Style 1",
+    "contentTypesStyle2": "Content Types — Style 2",
+    "contentTypesCards": "Content Types — Cards",
+    "selectedContentTypes": "Selected Content Types"
+  },
+  "expectedDescription": "Browse every format — journals, books, proceedings, and more.",
+  "expectedDescriptionStandard": "Standard card view of all available content formats.",
+  "expectedDescriptionStyle1": "Alternative layout for browsing journals, books, and multimedia.",
+  "expectedDescriptionStyle2": "Second layout variant for exploring content formats.",
+  "expectedDescriptionCards": "Card-based browse across all subscribed content formats.",
+  "expectedDescriptionSelected": "Focused view of designated content format categories.",
+  "expectedContentTypes": [
+    "Case Study",
+    "Course Material",
+    "Database",
+    "eBook",
+    "Journal",
+    "Magazine",
+    "Multimedia and News",
+    "News",
+    "Other"
+  ],
+  "expectedContentTypesStandard": [
+    "Journal",
+    "eBook",
+    "News",
+    "Video",
+    "Other",
+    "Proceeding",
+    "Database"
+  ],
+  "searchQuery": "Journal",
+  "invalidSearchQuery": "NON_EXISTENT_CONTENT_TYPE_XYZ_999"
+}
+
