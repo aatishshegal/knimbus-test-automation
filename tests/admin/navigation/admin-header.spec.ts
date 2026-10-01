@@ -11,13 +11,13 @@ test.describe('Admin Header - Bulk Email Limit', () => {
         await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
     });
 
-    test('TC_AdminHeader_BulkEmailLimit_VisibleOnDashboard', async ({ page }) => {
+    test('Admin Header - Bulk Email Widget - Displays remaining email quota on dashboard header', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         // Assert the widget is visible on the initial Dashboard load
         await dashboard.header.verifyBulkEmailLimitVisible();
     });
 
-    test('TC_AdminHeader_BulkEmailLimit_DropdownClickable', async ({ page }) => {
+    test('Admin Header - Bulk Email Widget - Expands usage popover and opens more info modal on click', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         await dashboard.header.verifyBulkEmailLimitVisible();
@@ -51,7 +51,7 @@ test.describe('Admin Header - Bulk Email Limit', () => {
         await expect(dashboard.header.bulkEmailInfoModal).toBeHidden();
     });
 
-    test('TC_AdminHeader_BulkEmailLimit_GlobalPresence', async ({ page }) => {
+    test('Admin Header - Bulk Email Widget - Persists globally across admin page navigations', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         // Verify it's visible on the Dashboard

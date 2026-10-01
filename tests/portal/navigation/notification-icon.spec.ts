@@ -24,17 +24,17 @@ test.describe('Global Navigation - Notification Icon & Modal Presence', () => {
     await notificationModal.ensureMinimumUnreadNotifications(adminApi, userEmail, 1, sampleTitle, sampleDesc);
   });
 
-  test('TC_Notification_Icon_Presence - Bell icon is visible in top navigation bar', async ({ topNavigationBar }) => {
+  test('Global Navigation - Notification Bell - Bell icon is visible in top navigation bar', async ({ topNavigationBar }) => {
     await expect(topNavigationBar.notificationIcon).toBeVisible();
   });
 
-  test('TC_Notification_BadgeCount_DisplaysUnreadCount - Notification icon displays unread count badge', async ({ topNavigationBar }) => {
+  test('Global Navigation - Notification Badge - Displays unread notification count badge', async ({ topNavigationBar }) => {
     await expect(topNavigationBar.notificationCountBadge).toBeVisible();
     const count = await topNavigationBar.getNotificationBadgeCount();
     expect(count).toBeGreaterThan(0);
   });
 
-  test('TC_Notification_Modal_PresenceAndTabs - Clicking notification icon opens modal with Unread and Read tabs', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Notification Modal - Clicking bell icon opens modal with Unread and Read tabs', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await expect(notificationModal.modal).toBeVisible();
     await expect(notificationModal.modalHeaderTitle).toContainText(portalData.notificationData.modalTitle);
@@ -63,7 +63,7 @@ test.describe('Notification - View and Read Lifecycle', () => {
     await notificationModal.ensureMinimumReadNotifications(adminApi, userEmail, 1, sampleTitle, sampleDesc);
   });
 
-  test('TC_Notification_Unread_ClickView_ExpandsContent - Clicking View on unread notification expands content and changes button to Hide', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Unread Notifications - Clicking View expands content and changes button to Hide', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await notificationModal.switchToUnreadTab();
 
@@ -80,7 +80,7 @@ test.describe('Notification - View and Read Lifecycle', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_Unread_ClickSameViewAgain_MarksAsReadAndMovesToReadTab - Clicking Hide marks notification as read and moves it to Read tab', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Unread Notifications - Clicking Hide marks notification as read and moves it to Read tab', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await notificationModal.switchToUnreadTab();
 
@@ -103,7 +103,7 @@ test.describe('Notification - View and Read Lifecycle', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_Unread_ClickAnotherView_DecreasesUnreadCount - Opening another notification view marks the previous one as read and decrements unread count', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Unread Notifications - Opening another view marks previous notification as read and decrements unread count', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await notificationModal.switchToUnreadTab();
 
@@ -124,7 +124,7 @@ test.describe('Notification - View and Read Lifecycle', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_ReadTab_DisplaysReadCount - Read tab displays total read count and showing counter', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Read Notifications - Displays total read count and showing counter', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await notificationModal.switchToReadTab();
 
@@ -138,7 +138,7 @@ test.describe('Notification - View and Read Lifecycle', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_ReadTab_ClickView_ExpandsContent - Clicking View on read notification expands modal content to read it', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Read Notifications - Clicking View expands modal content to read details', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await notificationModal.switchToReadTab();
 
@@ -162,7 +162,7 @@ test.describe('Notification - Pagination & Show More', () => {
     if (adminApi) await adminApi.close();
   });
 
-  test('TC_Notification_Unread_Over10Items_DisplaysShowMoreButton - Shows Show more button when unread list exceeds 10 items', async ({ page, topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Unread Notifications - Displays Show more button when unread list exceeds 10 items', async ({ page, topNavigationBar, notificationModal }) => {
     test.setTimeout(120000);
     await page.goto(process.env.PORTAL_URL as string);
     await notificationModal.ensureMinimumUnreadNotifications(adminApi, userEmail, 11, sampleTitle, sampleDesc);
@@ -177,7 +177,7 @@ test.describe('Notification - Pagination & Show More', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_Unread_ClickShowMore_LoadsMoreItems - Clicking Show more button loads additional items and increases visible count', async ({ page, topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Unread Notifications - Clicking Show more button loads additional items and increases visible count', async ({ page, topNavigationBar, notificationModal }) => {
     test.setTimeout(120000);
     await page.goto(process.env.PORTAL_URL as string);
     await notificationModal.ensureMinimumUnreadNotifications(adminApi, userEmail, 11, sampleTitle, sampleDesc);
@@ -196,7 +196,7 @@ test.describe('Notification - Pagination & Show More', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_ReadTab_Over10Items_DisplaysShowMoreButton - Shows Show more button when read list exceeds 10 items', async ({ page, topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Read Notifications - Displays Show more button when read list exceeds 10 items', async ({ page, topNavigationBar, notificationModal }) => {
     test.setTimeout(120000);
     await page.goto(process.env.PORTAL_URL as string);
     await notificationModal.ensureMinimumReadNotifications(adminApi, userEmail, 11, sampleTitle, sampleDesc);
@@ -211,7 +211,7 @@ test.describe('Notification - Pagination & Show More', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_ReadTab_ClickShowMore_LoadsMoreItems - Clicking Show more button loads additional items and increases visible count', async ({ page, topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Read Notifications - Clicking Show more button loads additional items and increases visible count', async ({ page, topNavigationBar, notificationModal }) => {
     test.setTimeout(120000);
     await page.goto(process.env.PORTAL_URL as string);
     await notificationModal.ensureMinimumReadNotifications(adminApi, userEmail, 11, sampleTitle, sampleDesc);
@@ -268,12 +268,12 @@ test.describe('Notification - Empty State (Fresh User)', () => {
     await expect(topNavigationBar.notificationIcon).toBeVisible({ timeout: 15000 });
   });
 
-  test('TC_Notification_FreshUser_NoCountBadgeDisplayed - Fresh user with zero notifications displays no count badge on notification icon', async ({ topNavigationBar }) => {
+  test('Global Navigation - Notification Badge - Fresh user with zero notifications displays no count badge on notification icon', async ({ topNavigationBar }) => {
     await expect(topNavigationBar.notificationIcon).toBeVisible({ timeout: 15000 });
     await expect(topNavigationBar.notificationCountBadge).not.toBeVisible();
   });
 
-  test('TC_Notification_FreshUser_EmptyUnread_DisplaysNoNotificationFound - Modal displays No notification found message on Unread tab for fresh user', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Unread Notifications - Fresh user displays No notification found message on Unread tab', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await notificationModal.verifyEmptyState(portalData.notificationData.emptyStateMessage);
     const unreadCount = await notificationModal.getTabCount('unread');
@@ -281,7 +281,7 @@ test.describe('Notification - Empty State (Fresh User)', () => {
     await notificationModal.close();
   });
 
-  test('TC_Notification_FreshUser_EmptyRead_DisplaysNoNotificationFound - Modal displays No notification found message on Read tab for fresh user', async ({ topNavigationBar, notificationModal }) => {
+  test('Global Navigation - Read Notifications - Fresh user displays No notification found message on Read tab', async ({ topNavigationBar, notificationModal }) => {
     await topNavigationBar.openNotificationModal();
     await notificationModal.switchToReadTab();
     await notificationModal.verifyEmptyState(portalData.notificationData.emptyStateMessage);

@@ -19,7 +19,7 @@ test.describe('User Management - Manage Users Filters', () => {
         await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
     });
 
-    test('TC_ManageUsers_Filters_ToggleVisibility - Expanding and collapsing filter panel', async ({ page }) => {
+    test('Manage Users - Filter Panel - Expands and collapses filter options on toggle click', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
 
         // Verify initial collapsed state
@@ -37,7 +37,7 @@ test.describe('User Management - Manage Users Filters', () => {
         await expect(manageUsersPage.serviceGroupSelect).not.toBeVisible();
     });
 
-    test('TC_ManageUsers_Filters_InitialStateDisabled - Apply and Clear buttons disabled initially', async ({ page }) => {
+    test('Manage Users - Filter Panel - Apply and Clear buttons are disabled by default', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
 
         // Expand filters without selecting any option
@@ -54,7 +54,7 @@ test.describe('User Management - Manage Users Filters', () => {
         await manageUsersPage.closeFilters();
     });
 
-    test('TC_ManageUsers_Filters_FilterByServiceGroup - Filters user table by selected service group', async ({ page }) => {
+    test('Manage Users - Filter Panel - Filters user table records by selected service group', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         const manageUsersPage = new ManageUsersPage(page);
         const targetGroup = filterData.serviceGroup;
@@ -87,7 +87,7 @@ test.describe('User Management - Manage Users Filters', () => {
         await manageUsersPage.clickClearFilters();
     });
 
-    test('TC_ManageUsers_Filters_FilterByUserType - Filters user table by selected user type', async ({ page }) => {
+    test('Manage Users - Filter Panel - Filters user table records by selected user type', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         const targetUserType = filterData.userType;
 
@@ -138,7 +138,7 @@ test.describe('User Management - Manage Users Filters', () => {
             }
         });
 
-        test('TC_ManageUsers_Filters_IncompleteRegistrations - Displays users with missing mandatory fields', async ({ page }) => {
+        test('Manage Users - Filter Panel - Filters and displays users with incomplete mandatory registrations', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             test.info().annotations.push({ type: 'testData', description: `Incomplete User Email: ${incompleteUserEmail}` });

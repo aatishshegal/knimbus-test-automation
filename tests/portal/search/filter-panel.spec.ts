@@ -22,7 +22,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     expect(initialResultCount).toBeGreaterThan(0);
   });
 
-  test('Verify filter categories and their counts display correctly in the default state', async ({ searchResultPage }) => {
+  test('Search Filter Panel - Category Counts - Displays categories and item counts in default state', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Validate counts are visible for category "${category1}"`, async () => {
@@ -36,7 +36,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('Verify filter categories can be expanded and collapsed', async ({ searchResultPage }) => {
+  test('Search Filter Panel - Category Toggle - Expands and collapses filter categories on click', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const catBtn = filterPanel.getCategoryButton(category1);
     
@@ -56,7 +56,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('Verify the View All popup opens for categories with many filters', async ({ searchResultPage }) => {
+  test('Search Filter Panel - View All Modal - Opens modal for categories with more than 5 filters', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Open "View All" popup for category "${category1}"`, async () => {
@@ -69,7 +69,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('Verify the View All popup does not display for categories with 5 or fewer filters', async ({ searchResultPage }) => {
+  test('Search Filter Panel - View All Link - Hidden for categories with 5 or fewer filters', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const categoryName = 'Access Type';
     
@@ -85,7 +85,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('Verify applying a single filter updates the search results', async ({ searchResultPage }) => {
+  test('Search Filter Panel - Single Filter - Updates results and displays applied chip', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Apply filter "${category1Values[0]}" in category "${category1}"`, async () => {
@@ -103,7 +103,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('Verify removing an applied filter reverts the search results', async ({ searchResultPage }) => {
+  test('Search Filter Panel - Remove Filter - Removes filter chip and restores original result count', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Setup: Apply a filter first`, async () => {
@@ -126,7 +126,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('Verify clearing all applied filters at once works correctly', async ({ searchResultPage }) => {
+  test('Search Filter Panel - Clear All - Removes all active filter chips and resets result count', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     
     await test.step(`Setup: Apply multiple filters`, async () => {
@@ -150,7 +150,7 @@ test.describe('Search Filter Panel Scenarios', () => {
     });
   });
 
-  test('Verify applying multiple filters across different categories updates the result count correctly', async ({ searchResultPage }) => {
+  test('Search Filter Panel - Multi-Category Filters - Updates result count and displays multiple filter chips', async ({ searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     let expectedCountCategory1 = 0;
     let expectedCountCategory2 = 0;
@@ -196,7 +196,7 @@ test.describe('Custom Flow Search Scenarios', () => {
     await page.goto(process.env.PORTAL_URL as string);
   });
 
-  test('Verify applied filters are preserved when switching tabs', async ({ topNavigationBar, searchResultPage }) => {
+  test('Search Filter Panel - Tab Switching - Preserves applied filter state across tab navigation', async ({ topNavigationBar, searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const scenarioData2 = portalData.filterPanelScenarios[1];
     const customQuery = scenarioData2.query;
@@ -233,7 +233,7 @@ test.describe('Custom Flow Search Scenarios', () => {
     });
   });
 
-  test('Verify using the inner search box reduces the result count and shows an applied chip', async ({ topNavigationBar, searchResultPage }) => {
+  test('Search Filter Panel - Inner Search - Filters current results and displays drilldown filter chip', async ({ topNavigationBar, searchResultPage }) => {
     const filterPanel = searchResultPage.filterPanel;
     const scenarioData3 = portalData.filterPanelScenarios[2];
     const baseQuery = scenarioData3.query;

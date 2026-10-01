@@ -38,7 +38,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
     });
 
-    test('TC_Manage_Users Search for user by email', async ({ page }) => {
+    test('Manage Users - Search Filter - Displays matching user record when searching by email', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         await manageUsersPage.searchForUser(testEmail1);
@@ -48,7 +48,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(userRow).toBeVisible();
     });
 
-    test('TC_Manage_Users Bulk export all users shows success toast', async ({ page }) => {
+    test('Manage Users - Bulk Export - Initiates bulk export and displays success confirmation toast', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await manageUsersPage.exportAllUsersBtn.click();
         await expect(manageUsersPage.swalToast).toBeVisible();
@@ -57,7 +57,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.page.locator('.swal2-close').click().catch(() => {});
     });
     
-    test('TC_Manage_Users Search with invalid term shows no results', async ({ page }) => {
+    test('Manage Users - Search Filter - Displays empty state when searching with non-existent keyword', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         const invalidSearch = adminData.userManagement.invalidSearchTerm;
         
@@ -67,7 +67,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(page.locator('text=No data found')).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
 
-    test('TC_Manage_Users Cancel bulk selection unchecks all boxes', async ({ page }) => {
+    test('Manage Users - Bulk Selection - Cancel action unchecks all selected user checkboxes', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail2);
         await createApiUser(testEmail3);
@@ -92,7 +92,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(page.locator('text=2 users selected')).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Click on user row opens user profile overview', async ({ page }) => {
+    test('Manage Users - User Profile Overview - Clicking user row opens user profile overview modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         await manageUsersPage.clearSearchSafely();
@@ -110,7 +110,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(modal).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Assign service group updates the user table', async ({ page }) => {
+    test('Manage Users - Assign Service Group - Assigns service group and updates group cell in table', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         // 1-4: Navigate to User Management > Add Single User & Create User
@@ -147,7 +147,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.verifyAssignedServiceGroup(testEmail4, targetServiceGroup);
     });
 
-    test('TC_Manage_Users Assign service group updates the user tableWithDate', async ({ page }) => {
+    test('Manage Users - Assign Service Group - Assigns service group with custom expiry date and updates table', async ({ page }) => {
         // Required for navigating to other sub-menus in User Management
         const dashboard = new AdminDashboardLoginPage(page);
         
@@ -190,7 +190,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.verifyAssignedServiceGroupWithDate(testEmail5, targetServiceGroup, expiryDate);
     });
 
-    test('TC_Manage_Users Assign service group updates the user table_ExpiredValidation', async ({ page }) => {
+    test('Manage Users - Assign Service Group - Displays expired warning when assigning an expired service group', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         // 1. Navigate to Add Single User & Create User
@@ -228,7 +228,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.cancelAssignGroupModal();
     });
 
-    test('TC_Manage_Users Assign service group updates the user table_Cancel', async ({ page }) => {
+    test('Manage Users - Assign Service Group - Cancel action discards modal and preserves original group', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         
         // 1. Navigate to Add Single User & Create User
@@ -280,7 +280,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(row.getByText('tester', { exact: true })).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Cancel send notification discards modal', async ({ page }) => {
+    test('Manage Users - Send Notification - Cancel button discards notification modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         await manageUsersPage.clearSearchSafely();
@@ -294,7 +294,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.notificationModal).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Send notification close via top cross icon discards modal', async ({ page }) => {
+    test('Manage Users - Send Notification - Close cross icon closes notification modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         await manageUsersPage.clearSearchSafely();
@@ -307,7 +307,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.notificationModal).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Send notification form fields validation and dynamic send button state', async ({ page }) => {
+    test('Manage Users - Send Notification - Validates form fields and dynamic submit button state', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         const notifData = adminData.userManagement.notification;
         await createApiUser(testEmail1);
@@ -345,7 +345,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.notificationCancelBtn.click();
     });
 
-    test('TC_Manage_Users Send notification submit sends notification and closes modal', async ({ page }) => {
+    test('Manage Users - Send Notification - Submitting valid form dispatches notification and closes modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         const notifData = adminData.userManagement.notification;
         await createApiUser(testEmail1);
@@ -371,7 +371,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.notificationModal).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Send notification pop up shows only Email option for unassigned user', async ({ page }) => {
+    test('Manage Users - Send Notification - Displays only Email channel for user without service group', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
@@ -398,7 +398,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.notificationCancelBtn.click();
     });
 
-    test('TC_Manage_Users Send notification pop up shows multiple options for user assigned to service group', async ({ page }) => {
+    test('Manage Users - Send Notification - Displays multiple notification channels for assigned user', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         await dashboard.sidebar.navigateToAddSingleUser();
         const addUserPage = new AddSingleUserPage(page);
@@ -429,7 +429,7 @@ test.describe('User Management - Manage Users', () => {
         await manageUsersPage.notificationCancelBtn.click();
     });
 
-    test('TC_Manage_Users Export usage log opens export modal and displays date range', async ({ page }) => {
+    test('Manage Users - Export Usage Log - Opens export modal and displays date range picker', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         const exportData = adminData.userManagement.exportUsageLog;
         await createApiUser(testEmail1);
@@ -447,7 +447,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.exportUsageLogModal).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Export usage log close via top cross icon discards modal', async ({ page }) => {
+    test('Manage Users - Export Usage Log - Close cross icon closes export modal', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         await manageUsersPage.clearSearchSafely();
@@ -460,7 +460,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.exportUsageLogModal).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Export usage log triggers CSV download successfully', async ({ page }) => {
+    test('Manage Users - Export Usage Log - Submitting date range downloads usage log CSV file', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         const exportData = adminData.userManagement.exportUsageLog;
         await createApiUser(testEmail1);
@@ -479,7 +479,7 @@ test.describe('User Management - Manage Users', () => {
 
 
 
-    test('TC_Manage_Users Cancel single user deletion discards changes', async ({ page }) => {
+    test('Manage Users - Delete User - Cancel confirmation preserves single user record', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         await manageUsersPage.clearSearchSafely();
@@ -500,7 +500,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.getRowByEmail(testEmail1)).toBeVisible();
     });
     
-    test('TC_Manage_Users Cancel bulk user deletion discards changes', async ({ page }) => {
+    test('Manage Users - Bulk Delete - Cancel confirmation preserves selected user records', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail2);
         await createApiUser(testEmail3);
@@ -525,7 +525,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(manageUsersPage.getRowByEmail(testEmail3)).toBeVisible();
     });
 
-    test('TC_Manage_Users Delete single user removes them from table', async ({ page }) => {
+    test('Manage Users - Delete User - Confirmed single deletion removes user record from table', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail1);
         // Ensure we find the user first
@@ -543,7 +543,7 @@ test.describe('User Management - Manage Users', () => {
         await expect(userRow).not.toBeVisible();
     });
 
-    test('TC_Manage_Users Delete multiple selected users removes them from table', async ({ page }) => {
+    test('Manage Users - Bulk Delete - Confirmed bulk deletion removes selected user records from table', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await createApiUser(testEmail2);
         await createApiUser(testEmail3);

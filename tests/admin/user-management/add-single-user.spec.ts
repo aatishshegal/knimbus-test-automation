@@ -13,7 +13,7 @@ test.describe('User Management - Add Single User', () => {
         await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.addSingleUser));
     });
 
-    test('TC_UserMgmt_AddSingleUser_Success', async ({ page }) => {
+    test('Add Single User - User Creation - Creates single user successfully with valid profile data', async ({ page }) => {
         const addUserPage = new AddSingleUserPage(page);
 
         // We append a timestamp to the email to ensure it's always unique and avoid "User already exists" errors

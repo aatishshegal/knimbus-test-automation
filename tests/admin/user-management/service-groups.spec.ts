@@ -46,7 +46,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 1. Check option of creating + Create group
-    test('TC_ServiceGroups_01_CreateGroupButton_Present - verifies create group button is visible and enabled', async () => {
+    test('Service Groups - Create Group - verifies create group button is visible and enabled', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.createGroupBtnText });
         await expect(serviceGroupsPage.createGroupBtn).toBeVisible();
         await expect(serviceGroupsPage.createGroupBtn).toBeEnabled();
@@ -54,7 +54,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 2. Check clicking on + Create group option, it should open a pop up
-    test('TC_ServiceGroups_02_ClickCreateGroup_OpensModal - clicking create group button opens modal', async () => {
+    test('Service Groups - Create Group Modal - clicking create group button opens modal', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.modalTitle });
         await serviceGroupsPage.clickCreateGroup();
         await expect(serviceGroupsPage.modal).toBeVisible();
@@ -62,7 +62,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 3. in Pop up cross button click should close the pop up
-    test('TC_ServiceGroups_03_CrossButton_ClosesModal - clicking top cross button closes popup', async () => {
+    test('Service Groups - Create Group Modal - clicking top cross button closes popup', async () => {
         await serviceGroupsPage.clickCreateGroup();
         await expect(serviceGroupsPage.modal).toBeVisible();
 
@@ -71,7 +71,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 4. pop up has Group name when its empty it display error message "Group name is required"
-    test('TC_ServiceGroups_04_GroupName_Empty_ErrorMessage - displays required error when group name is empty', async () => {
+    test('Service Groups - Create Group Modal - displays required error when group name is empty', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.messages.nameRequired });
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.clickSave();
@@ -80,7 +80,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 5. If in Group name enter html tags the error message will be : "Only plain text is allowed..."
-    test('TC_ServiceGroups_05_GroupName_HtmlTags_ErrorMessage - displays error when html tags are entered in group name', async () => {
+    test('Service Groups - Create Group Modal - displays error when html tags are entered in group name', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.testInputs.htmlPayload });
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.fillGroupName(sgData.testInputs.htmlPayload);
@@ -89,7 +89,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 6. When entered leading trailing spaces the message should be : "Leading or trailing spaces not allowed"
-    test('TC_ServiceGroups_06_GroupName_LeadingTrailingSpaces_ErrorMessage - displays error when leading or trailing spaces are entered', async () => {
+    test('Service Groups - Create Group Modal - displays error when leading or trailing spaces are entered', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.testInputs.spacedName });
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.fillGroupName(sgData.testInputs.spacedName);
@@ -98,7 +98,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 7. when entered more than 100 characters then message would be: "Maximum 100 characters allowed"
-    test('TC_ServiceGroups_07_GroupName_MaxLengthExceeded_ErrorMessage - displays error when entering more than 100 characters', async () => {
+    test('Service Groups - Create Group Modal - displays error when entering more than 100 characters', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.testInputs.oversizedName });
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.fillGroupName(sgData.testInputs.oversizedName);
@@ -107,7 +107,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 8. When entered Group name which is already taken Example "RA" then on clicking save button then message would be : The group name already exists! Please enter a different group name.
-    test('TC_ServiceGroups_08_GroupName_AlreadyExists_ErrorMessage - displays error alert when saving already existing group name', async () => {
+    test('Service Groups - Create Group Modal - displays error alert when saving already existing group name', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.existingGroup });
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.fillGroupName(sgData.existingGroup);
@@ -119,7 +119,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 9. Enter only group name and directly click on save then it should open Expiry calendar and error message: "Expiry date is required"
-    test('TC_ServiceGroups_09_OnlyGroupName_SaveTriggersCalendarAndError - opening calendar and displaying expiry required error on save', async () => {
+    test('Service Groups - Create Group Modal - opening calendar and displaying expiry required error on save', async () => {
         const uniqueName = `${sgData.testInputs.uniquePrefix}${Date.now()}`;
         test.info().annotations.push({ type: 'testData', description: uniqueName });
         await serviceGroupsPage.clickCreateGroup();
@@ -132,7 +132,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 10. even without selecting access options it should allow creating Group (group name and expiry is important)
-    test('TC_ServiceGroups_10_CreateGroup_WithoutAccessSelection_Success - creates group without selecting access options', async () => {
+    test('Service Groups - Create Group Modal - creates group without selecting access options', async () => {
         const uniqueName = `${sgData.testInputs.uniquePrefix}NoAcc_${Date.now()}`;
         test.info().annotations.push({ type: 'testData', description: uniqueName });
         await serviceGroupsPage.clickCreateGroup();
@@ -144,7 +144,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 11. Automate calendar popup (does not allow selecting back date from current date)
-    test('TC_ServiceGroups_11_Calendar_PastDatesDisabled - verifies past dates are disabled in datepicker', async () => {
+    test('Service Groups - Create Group Modal - verifies past dates are disabled in datepicker', async () => {
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.openCalendar();
         await expect(serviceGroupsPage.disabledDateDays.first()).toBeVisible();
@@ -153,7 +153,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 12. verify in select access option there will be 2 options
-    test('TC_ServiceGroups_12_AccessOptions_TwoOptionsVisible - verifies exactly 2 access options are visible', async () => {
+    test('Service Groups - Create Group Modal - verifies exactly 2 access options are visible', async () => {
         test.info().annotations.push({ type: 'testData', description: `${sgData.accessOptions.offCampus}, ${sgData.accessOptions.mobileApp}` });
         await serviceGroupsPage.clickCreateGroup();
         await expect(serviceGroupsPage.accessLabels).toHaveCount(2);
@@ -162,7 +162,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 13. verify that select option when user selects only off campus access option then it should not select Mobile app automatically
-    test('TC_ServiceGroups_13_AccessOptions_SelectingRA_DoesNotSelectMobile - selecting off campus does not automatically select mobile app', async () => {
+    test('Service Groups - Create Group Modal - selecting off campus does not automatically select mobile app', async () => {
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.selectOffCampusAccess();
         await expect(serviceGroupsPage.raCheckbox).toBeChecked();
@@ -170,7 +170,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 14. When user selects mobile app then automatically it should select off-campus access
-    test('TC_ServiceGroups_14_AccessOptions_SelectingMobile_AutoSelectsRA - selecting mobile app automatically selects off campus access', async () => {
+    test('Service Groups - Create Group Modal - selecting mobile app automatically selects off campus access', async () => {
         await serviceGroupsPage.clickCreateGroup();
         await serviceGroupsPage.selectMobileApp();
         await expect(serviceGroupsPage.mobileCheckbox).toBeChecked();
@@ -178,7 +178,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 15. after filling form when cancel button is clicked it should not create group
-    test('TC_ServiceGroups_15_CancelButton_DiscardsGroupCreation - clicking cancel does not create group', async () => {
+    test('Service Groups - Create Group Modal - clicking cancel does not create group', async () => {
         const uniqueName = `${sgData.testInputs.uniquePrefix}Canceled_${Date.now()}`;
         test.info().annotations.push({ type: 'testData', description: uniqueName });
         await serviceGroupsPage.clickCreateGroup();
@@ -194,7 +194,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 16. Fill all the field then should able to create group
-    test('TC_ServiceGroups_16_CreateGroup_WithAllFields_Success - creates group with all fields filled', async () => {
+    test('Service Groups - Create Group Modal - creates group with all fields filled', async () => {
         const uniqueName = `${sgData.testInputs.uniquePrefix}AllFields_${Date.now()}`;
         test.info().annotations.push({ type: 'testData', description: uniqueName });
         await serviceGroupsPage.clickCreateGroup();
@@ -207,7 +207,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 17. when group gets created then on Service group page Showing count gets increased by one
-    test('TC_ServiceGroups_17_CreateGroup_IncrementsShowingCount - verifies showing count increases by one after group creation', async () => {
+    test('Service Groups - Table - verifies showing count increases by one after group creation', async () => {
         const initialCount = await serviceGroupsPage.getShowingCount();
         const uniqueName = `${sgData.testInputs.uniquePrefix}Count_${Date.now()}`;
         test.info().annotations.push({ type: 'testData', description: `Initial: ${initialCount} | Name: ${uniqueName}` });
@@ -227,7 +227,7 @@ test.describe('User Management - Service Groups Management', () => {
     // ==========================================
 
     // 1. clicking delete icon should delete the Group
-    test('TC_ServiceGroups_18_DeleteGroup_Success - clicking delete icon deletes the group', async () => {
+    test('Service Groups - Table Actions - clicking delete icon deletes the group', async () => {
         const delGroup = `${sgData.testInputs.uniquePrefix}Del_${Date.now()}`;
         test.info().annotations.push({ type: 'testData', description: delGroup });
 
@@ -247,7 +247,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 2. Validate showing out of count should get decreased post deleting
-    test('TC_ServiceGroups_19_DeleteGroup_DecrementsShowingCount - verifies showing count decreases after deleting group', async () => {
+    test('Service Groups - Table Actions - verifies showing count decreases after deleting group', async () => {
         const initialCount = await serviceGroupsPage.getShowingCount();
         const countDelGroup = `${sgData.testInputs.uniquePrefix}CntDel_${Date.now()}`;
         test.info().annotations.push({ type: 'testData', description: `Initial: ${initialCount} | Name: ${countDelGroup}` });
@@ -270,7 +270,7 @@ test.describe('User Management - Service Groups Management', () => {
     // ==========================================
 
     // 3. If there are more than 10 groups then "LOAD MORE" button should get appeared
-    test('TC_ServiceGroups_20_LoadMore_VisibleWhenOverTenGroups - verifies LOAD MORE button appears when more than 10 groups exist', async () => {
+    test('Service Groups - Pagination - verifies LOAD MORE button appears when more than 10 groups exist', async () => {
         test.setTimeout(90000);
         await serviceGroupsPage.ensureAtLeastNGroups(11, validExpiryDateStr);
         const totalCount = await serviceGroupsPage.getShowingCount();
@@ -282,7 +282,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 4. Clicking "LOAD MORE" button list another set to groups as well
-    test('TC_ServiceGroups_21_LoadMore_LoadsAdditionalGroups - clicking LOAD MORE lists another set of groups', async () => {
+    test('Service Groups - Pagination - clicking LOAD MORE lists another set of groups', async () => {
         test.setTimeout(90000);
         await serviceGroupsPage.ensureAtLeastNGroups(11, validExpiryDateStr);
         const initialRowCount = await serviceGroupsPage.tableRows.count();
@@ -294,7 +294,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 5. deleting the group and out of count is less than 10 then LOAD MORE button should get disappeared
-    test('TC_ServiceGroups_22_LoadMore_DisappearsWhenCountTenOrLess - LOAD MORE button disappears when count is 10 or less', async () => {
+    test('Service Groups - Pagination - LOAD MORE button disappears when count is 10 or less', async () => {
         test.setTimeout(90000);
         await serviceGroupsPage.deleteExcessTestGroupsUntilCount(10);
         const count = await serviceGroupsPage.getShowingCount();
@@ -305,7 +305,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 6. Clicking on group name will sorted the list alphabetical order if clicked twice then list will sorted from z-a
-    test('TC_ServiceGroups_23_Sort_ByGroupName_AscendingAndDescending - clicking group name header sorts A-Z and then Z-A', async () => {
+    test('Service Groups - Table Sorting - clicking group name header sorts A-Z and then Z-A', async () => {
         // 1st click: Sort A-Z
         await serviceGroupsPage.sortByGroupName();
         await expect(serviceGroupsPage.groupNameSortIcon).toHaveAttribute('class', /fa-caret-down/);
@@ -328,7 +328,7 @@ test.describe('User Management - Service Groups Management', () => {
     // ==========================================
 
     // 7. Click on "+ ADD Users" from a expired group, first it will open message alert pop up saying "Group expired!"
-    test('TC_ServiceGroups_24_ExpiredGroup_AddUsers_ShowsExpiredAlert - clicking Add users from expired group opens Group expired alert', async () => {
+    test('Service Groups - Expired Groups - clicking Add users from expired group opens Group expired alert', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.expiredGroup });
 
         await serviceGroupsPage.searchGroup(sgData.expiredGroup);
@@ -343,7 +343,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 8. Click on "+ ADD Users" from a expired group, alert has cancel button; if clicked on cancel then pop up should get closed
-    test('TC_ServiceGroups_25_ExpiredGroup_AddUsers_AlertCancelDismisses - clicking cancel in Group expired alert closes the popup', async () => {
+    test('Service Groups - Expired Groups - clicking cancel in Group expired alert closes the popup', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.expiredGroup });
 
         await serviceGroupsPage.searchGroup(sgData.expiredGroup);
@@ -357,7 +357,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 9. Click on "+ ADD Users" from a expired group, if clicked on Continue then it will open Select Users pop up
-    test('TC_ServiceGroups_26_ExpiredGroup_AddUsers_AlertContinueOpensSelectUsers - clicking continue opens Select Users modal', async () => {
+    test('Service Groups - Expired Groups - clicking continue opens Select Users modal', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.expiredGroup });
 
         await serviceGroupsPage.searchGroup(sgData.expiredGroup);
@@ -381,7 +381,7 @@ test.describe('User Management - Service Groups Management', () => {
     const resTestGroupName = `${sgData.testInputs.uniquePrefix}ResTest_${Date.now()}`;
 
     // 10. check "Associated Resources" rows, if no resources are allocated then it will display "+ Add resources" button
-    test('TC_ServiceGroups_27_AssociatedResources_DisplaysAddResourcesButtonWhenEmpty - displays Add resources button when no resources are allocated', async () => {
+    test('Service Groups - Associated Resources - displays Add resources button when no resources are allocated', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.clickCreateGroup();
@@ -395,7 +395,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 11. if clicked on "+ ADD resources" then it should open a pop up window called "Select resources"
-    test('TC_ServiceGroups_28_AssociatedResources_ClickAddResourcesOpensModal - clicking Add resources opens Select resources popup', async () => {
+    test('Service Groups - Associated Resources - clicking Add resources opens Select resources popup', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -406,7 +406,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 12. when clicked on "+ ADD resources" then verify selected count it must be 0
-    test('TC_ServiceGroups_29_SelectResourcesModal_DefaultSelectedCountIsZero - verifies default selected count is 0', async () => {
+    test('Service Groups - Select Resources Modal - verifies default selected count is 0', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -417,7 +417,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 13. select few sources from list by clicking on checkbox, verify clicking checkbox gets selected or ticked
-    test('TC_ServiceGroups_30_SelectResourcesModal_CheckboxTickedOnClick - clicking checkbox marks it checked', async () => {
+    test('Service Groups - Select Resources Modal - clicking checkbox marks it checked', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -429,7 +429,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 14. select few sources, verify selected count is also getting increased
-    test('TC_ServiceGroups_31_SelectResourcesModal_SelectedCountIncreasesOnSelection - selected count increases upon checking checkboxes', async () => {
+    test('Service Groups - Select Resources Modal - selected count increases upon checking checkboxes', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -442,7 +442,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 15. click on cancel button, selected resources must not get added; when reopened same no selection should be there
-    test('TC_ServiceGroups_32_SelectResourcesModal_CancelDoesNotAddResources - clicking cancel discards selection and no selection on reopen', async () => {
+    test('Service Groups - Select Resources Modal - clicking cancel discards selection and no selection on reopen', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -460,7 +460,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 16. click on update button, same number of sources get added
-    test('TC_ServiceGroups_33_SelectResourcesModal_UpdateAddsResources - clicking update adds selected resources to the group', async () => {
+    test('Service Groups - Select Resources Modal - clicking update adds selected resources to the group', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -475,7 +475,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 17. verify "Associated Resources" where in group some sources already added and along with count it should have edit button
-    test('TC_ServiceGroups_34_AssociatedResources_ShowsCountAndEditButtonWhenAllocated - verifies count and edit button when resources are added', async () => {
+    test('Service Groups - Associated Resources - verifies count and edit button when resources are added', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -485,7 +485,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 18. verify by clicking on edit button it should open a pop window of selected Resources
-    test('TC_ServiceGroups_35_AssociatedResources_ClickEditOpensSelectResourcesModal - clicking edit button opens Select resources popup', async () => {
+    test('Service Groups - Associated Resources - clicking edit button opens Select resources popup', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -496,7 +496,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 19. Match the count of selected in pop up it should have same count which is displayed in service group page of associated resources
-    test('TC_ServiceGroups_36_SelectResourcesModal_SelectedCountMatchesTableRowCount - selected count in popup matches table row count', async () => {
+    test('Service Groups - Select Resources Modal - selected count in popup matches table row count', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -509,7 +509,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 20. validate by removing one or 2 sources and click on update, its count should get decreased
-    test('TC_ServiceGroups_37_SelectResourcesModal_RemoveResourceDecreasesCount - unchecking resource and clicking update decreases resources count', async () => {
+    test('Service Groups - Select Resources Modal - unchecking resource and clicking update decreases resources count', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -524,7 +524,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 21. validate by adding one or 2 sources and click on update, its count should get increased
-    test('TC_ServiceGroups_38_SelectResourcesModal_AddResourceIncreasesCount - checking resource and clicking update increases resources count', async () => {
+    test('Service Groups - Select Resources Modal - checking resource and clicking update increases resources count', async () => {
         test.info().annotations.push({ type: 'testData', description: resTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(resTestGroupName);
@@ -545,7 +545,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 39. validate When A Group is created using create group the date entered while creating group is displaying same date on EXPIRY DATE post creation when group is created list
-    test('TC_ServiceGroups_39_CreateGroup_EnteredExpiryDate_MatchesTableList - verifies entered expiry date matches table list expiry date post creation', async () => {
+    test('Service Groups - Table - verifies entered expiry date matches table list expiry date post creation', async () => {
         const uniqueName = `${sgData.testInputs.uniquePrefix}Expiry_${Date.now()}`;
 
         await serviceGroupsPage.clickCreateGroup();
@@ -576,7 +576,7 @@ test.describe('User Management - Service Groups Management', () => {
     const userTestGroupName = `${sgData.testInputs.uniquePrefix}Users_${Date.now()}`;
 
     // 1. click on cross icon, it should close the pop up
-    test('TC_ServiceGroups_40_AssociatedUsers_CloseCrossIcon_ClosesModal - clicking cross icon closes Select users popup', async () => {
+    test('Service Groups - Select Users Modal - clicking cross icon closes Select users popup', async () => {
         test.info().annotations.push({ type: 'testData', description: userTestGroupName });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -588,7 +588,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 2. Validate 4 tabs are present "All users", "Selected", "Unselected" and "Via CSV"
-    test('TC_ServiceGroups_41_SelectUsersModal_FourTabsPresent - verifies four tabs are present in Select users popup', async () => {
+    test('Service Groups - Select Users Modal - verifies four tabs are present in Select users popup', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.tabs.join(', ') });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -600,7 +600,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 3. Validate by default would be "All users" tab
-    test('TC_ServiceGroups_42_SelectUsersModal_DefaultTabIsAllUsers - verifies All users tab is active by default', async () => {
+    test('Service Groups - Select Users Modal - verifies All users tab is active by default', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.defaultTab });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -612,7 +612,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 4. Validate the name is same present below the All users is same as you clicked
-    test('TC_ServiceGroups_43_SelectUsersModal_GroupNameMatchesClickedGroup - verifies group name displayed below tabs matches clicked group', async () => {
+    test('Service Groups - Select Users Modal - verifies group name displayed below tabs matches clicked group', async () => {
         test.info().annotations.push({ type: 'testData', description: userTestGroupName });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -627,7 +627,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 5. Validate count "All Users: 12" (it should display total user count) this count you need to verify from User Management > Overview > Total registered users count
-    test('TC_ServiceGroups_44_SelectUsersModal_AllUsersCountMatchesOverviewTotalUsers - verifies All users count matches Overview total registered users count', async ({ page }) => {
+    test('Service Groups - Select Users Modal - verifies All users count matches Overview total registered users count', async ({ page }) => {
         // Step 1: Navigate to Overview and read the Total registered users count
         const overviewPage = new UserMgmtOverviewPage(page);
         await page.goto(`${process.env.ADMIN_TEST_URL}/librarian/v2/elibrarySetup${overviewUrl}`);
@@ -655,7 +655,7 @@ test.describe('User Management - Service Groups Management', () => {
     // ==========================================
 
     // 1. Find user search box presence
-    test('TC_ServiceGroups_45_SelectUsersModal_FindUserSearchBox_Present - verifies search box presence and placeholder in Select users popup', async () => {
+    test('Service Groups - Select Users Modal - verifies search box presence and placeholder in Select users popup', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.searchPlaceholder });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -670,7 +670,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 2. In Find user search with register user ex. "codec" it should display all the matching result either in email or as name in user listing box
-    test('TC_ServiceGroups_46_SelectUsersModal_SearchRegisteredUser_DisplaysMatchingResults - searches registered keyword and verifies all matching results in name or email', async () => {
+    test('Service Groups - Select Users Modal - searches registered keyword and verifies all matching results in name or email', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.searchKeyword });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -684,7 +684,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 3. using Find the user search for the user "codec@yopmail.com", once the list populates check below email id the service group is already assigned or not
-    test('TC_ServiceGroups_47_SelectUsersModal_SearchSpecificUser_DisplaysAssignedGroup - searches for specific user email and verifies assigned service group badge', async () => {
+    test('Service Groups - Select Users Modal - searches for specific user email and verifies assigned service group badge', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.searchEmail });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -703,7 +703,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 4. When the list shows more than 10 user verify that "Load more >" button is present
-    test('TC_ServiceGroups_48_SelectUsersModal_LoadMoreButton_PresentWhenRowsExceedTen - verifies Load more button is present when user list exceeds 10', async () => {
+    test('Service Groups - Select Users Modal - verifies Load more button is present when user list exceeds 10', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.loadMoreBtn });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -719,7 +719,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 5. Validate clicking on "LOAD MORE" button increases the Showing count
-    test('TC_ServiceGroups_49_SelectUsersModal_ClickLoadMore_IncreasesShowingCount - clicking Load more increases the showing count', async () => {
+    test('Service Groups - Select Users Modal - clicking Load more increases the showing count', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.loadMoreBtn });
 
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
@@ -735,7 +735,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 6. check in Name/ email listing check box is present for all the user
-    test('TC_ServiceGroups_50_SelectUsersModal_CheckboxesPresentForAllUsers - verifies checkbox is present for all users in the listing', async () => {
+    test('Service Groups - Select Users Modal - verifies checkbox is present for all users in the listing', async () => {
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
         await serviceGroupsPage.clickAddOrEditUsers(userTestGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
@@ -746,7 +746,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 7. Validate if user is in same group which you have opened, it should display check box as already ticked do this using find user
-    test('TC_ServiceGroups_51_SelectUsersModal_UserInSameGroup_CheckboxTicked - verifies assigned user has checkbox ticked by default when searched', async () => {
+    test('Service Groups - Select Users Modal - verifies assigned user has checkbox ticked by default when searched', async () => {
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
         await serviceGroupsPage.clickAddOrEditUsers(userTestGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
@@ -773,7 +773,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 8. validate on selecting the unselected user and clicking on update button the user gets assigned to that group and same group name will be visible below to the email text
-    test('TC_ServiceGroups_52_SelectUsersModal_SelectUnselectedUser_UpdateAssignsGroup - selecting unselected user and clicking update displays group badge below email', async () => {
+    test('Service Groups - Select Users Modal - selecting unselected user and clicking update displays group badge below email', async () => {
         await serviceGroupsPage.createGroupIfNotPresent(userTestGroupName, validExpiryDateStr);
         await serviceGroupsPage.clickAddOrEditUsers(userTestGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
@@ -800,7 +800,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 9. register a user and then come to service group, choose one service group, note the count of existing user, click edit/add users, find registered user, check checkbox and update, close modal, verify service group user count increased
-    test('TC_ServiceGroups_53_ServiceGroups_RegisterUserAndAssign_IncreasesTableUserCount - registers user, assigns to service group, and verifies table user count increases', async ({ page }) => {
+    test('Service Groups - User Allocation - registers user, assigns to service group, and verifies table user count increases', async ({ page }) => {
         // Step 1: Register a new user via AdminApiService
         const uniqueSuffix = Date.now();
         const newUserName = `AutoUser_${uniqueSuffix}`;
@@ -848,7 +848,7 @@ test.describe('User Management - Service Groups Management', () => {
     const deselectOneGroupName = `${sgData.testInputs.uniquePrefix}SelOne_${Date.now()}`;
 
     // 1. verify When + add user button is clicked of a service group then on pop up when moves to selected tab it display list as "No user found"
-    test('TC_ServiceGroups_54_SelectedTab_EmptyGroup_DisplaysNoUserFound - verifies Selected tab displays No user found for newly created service group', async () => {
+    test('Service Groups - Selected Tab - verifies Selected tab displays No user found for newly created service group', async () => {
         test.info().annotations.push({ type: 'testData', description: emptyTestGroupName });
 
         await serviceGroupsPage.createGroupIfNotPresent(emptyTestGroupName, validExpiryDateStr);
@@ -864,7 +864,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 2. verify When + add user button is clicked of a service group then on pop up when moves to selected tab the "Selected users" count will 0
-    test('TC_ServiceGroups_55_SelectedTab_EmptyGroup_SelectedUsersCountIsZero - verifies Selected users count is 0 for newly created service group', async () => {
+    test('Service Groups - Selected Tab - verifies Selected users count is 0 for newly created service group', async () => {
         test.info().annotations.push({ type: 'testData', description: emptyTestGroupName });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyTestGroupName);
@@ -879,7 +879,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 3. verify When + add user button is clicked of a service group then on pop up when moves to selected tab and perform Find user of already registered user it still displays "No user found"
-    test('TC_ServiceGroups_56_SelectedTab_EmptyGroup_SearchRegisteredUser_DisplaysNoUserFound - searching registered user on empty Selected tab displays No user found', async () => {
+    test('Service Groups - Selected Tab - searching registered user on empty Selected tab displays No user found', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.searchKeyword });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyTestGroupName);
@@ -897,7 +897,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 4. verify When + add user button is clicked of a service group then on pop up when moves to selected tab and clicked on update button then it should open a modal saying "No changes in user selection"
-    test('TC_ServiceGroups_57_SelectedTab_EmptyGroup_ClickUpdateWithoutChanges_ShowsAlertModal - clicking update without changes displays No changes in user selection alert', async () => {
+    test('Service Groups - Selected Tab - clicking update without changes displays No changes in user selection alert', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.noChangesAlert.title });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyTestGroupName);
@@ -922,7 +922,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 5. verify when Edit icon clicked for Associated users (choose that which already had user associated), it opens selected pop up modal then move to selected tab, verify here it has same count on Selected users that present while clicking edit icon
-    test('TC_ServiceGroups_58_SelectedTab_AssocGroup_SelectedUsersCountMatchesTableRowCount - Selected users count matches table row count for group with associated users', async () => {
+    test('Service Groups - Selected Tab - Selected users count matches table row count for group with associated users', async () => {
         // Setup group with 2 associated users
         await serviceGroupsPage.createGroupIfNotPresent(assocTestGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(assocTestGroupName);
@@ -954,7 +954,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 6. verify when Edit icon clicked for Associated users (choose that which already had user associated), it opens selected pop up modal then move to selected tab, verify here "Deselect All" button should be present
-    test('TC_ServiceGroups_59_SelectedTab_AssocGroup_DeselectAllButton_Present - verifies Deselect All button is present on Selected tab for group with users', async () => {
+    test('Service Groups - Selected Tab - verifies Deselect All button is present on Selected tab for group with users', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.buttons.deselectAll });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(assocTestGroupName);
@@ -969,7 +969,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 7. verify when Edit icon clicked for Associated users (choose that which already had user associated), it opens selected pop up modal then move to selected tab, verify here "Deselect All" button on clicking de-select all the users in the list. (do not click on update) and a note has appeared saying: "Note: De-select All operation takes some time to be reflected after update"
-    test('TC_ServiceGroups_60_SelectedTab_AssocGroup_DeselectAll_UnchecksUsersAndShowsNote - clicking Deselect All unchecks all listed users and displays note', async () => {
+    test('Service Groups - Selected Tab - clicking Deselect All unchecks all listed users and displays note', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.deselectAllNote });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(assocTestGroupName);
@@ -991,7 +991,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 8. verify when Edit icon clicked for Associated users (choose that which already had user associated), it opens selected pop up modal then move to selected tab, verify here "Deselect All" button on clicking de-select all the users in the list. (do not click on update) and beside the note there is undo button, clicking on that all the listed user got selected again
-    test('TC_ServiceGroups_61_SelectedTab_AssocGroup_DeselectAll_UndoReselectsUsers - clicking Undo beside note re-selects all listed users', async () => {
+    test('Service Groups - Selected Tab - clicking Undo beside note re-selects all listed users', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.buttons.undo });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(assocTestGroupName);
@@ -1019,7 +1019,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 9. Create a group associated some users in it. then verify that on selected tab click on deselect all and clicking on update button, all users from this groups gets dissociated when you revisited in selected tab it should show "No user found"
-    test('TC_ServiceGroups_62_SelectedTab_DeselectAllAndUpdate_DissociatesAllUsers - clicking Deselect All and update dissociates all users and shows No user found on revisit', async () => {
+    test('Service Groups - Selected Tab - clicking Deselect All and update dissociates all users and shows No user found on revisit', async () => {
         // Step 1: Create a group and associate 2 users
         await serviceGroupsPage.createGroupIfNotPresent(disassocTestGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(disassocTestGroupName);
@@ -1064,7 +1064,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 10. similarly create another test case by de-selecting one user and click on update in selected tab (precondition: create group, add some users, then move to selected users tab then deselect one and click on update, and verify that user is now not associated with group)
-    test('TC_ServiceGroups_63_SelectedTab_DeselectOneUserAndUpdate_DissociatesSingleUser - deselecting single user and updating removes only that user from Selected tab', async () => {
+    test('Service Groups - Selected Tab - deselecting single user and updating removes only that user from Selected tab', async () => {
         // Step 1: Create group and associate 2 users
         await serviceGroupsPage.createGroupIfNotPresent(deselectOneGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(deselectOneGroupName);
@@ -1113,7 +1113,7 @@ test.describe('User Management - Service Groups Management', () => {
     const opsGroupName = `${sgData.testInputs.uniquePrefix}SelOps_${Date.now()}`;
 
     // 64. Search for an associated user on the "Selected" tab and verify matching results
-    test('TC_ServiceGroups_64_SelectedTab_SearchAssociatedUser_DisplaysMatchingRow - searching associated user in Selected tab displays matching row', async () => {
+    test('Service Groups - Selected Tab - searching associated user in Selected tab displays matching row', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsGroupName);
@@ -1130,7 +1130,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 65. Search for a non-associated / invalid user on the "Selected" tab and verify it displays "No user found"
-    test('TC_ServiceGroups_65_SelectedTab_SearchNonAssociatedUser_DisplaysNoUserFound - searching non-associated user in Selected tab displays No user found', async () => {
+    test('Service Groups - Selected Tab - searching non-associated user in Selected tab displays No user found', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.invalidSearchTerm });
 
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
@@ -1149,7 +1149,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 66. Clearing search via cross icon restores full selected users list
-    test('TC_ServiceGroups_66_SelectedTab_ClearSearchViaCrossIcon_RestoresSelectedUsersList - clicking cross icon beside search clears input and restores selected users list', async () => {
+    test('Service Groups - Selected Tab - clicking cross icon beside search clears input and restores selected users list', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.invalidSearchTerm });
 
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
@@ -1173,7 +1173,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 67. Verify all user checkboxes in Selected tab are checked by default
-    test('TC_ServiceGroups_67_SelectedTab_DefaultCheckboxes_AllUsersAreTicked - all user checkboxes in Selected tab are checked by default', async () => {
+    test('Service Groups - Selected Tab - all user checkboxes in Selected tab are checked by default', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsGroupName);
@@ -1187,7 +1187,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 68. Verify every user row in Selected tab displays the correct service group badge matching current group
-    test('TC_ServiceGroups_68_SelectedTab_UserRows_DisplayMatchingServiceGroupBadge - every user row in Selected tab displays matching service group badge', async () => {
+    test('Service Groups - Selected Tab - every user row in Selected tab displays matching service group badge', async () => {
         test.info().annotations.push({ type: 'testData', description: opsGroupName });
 
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
@@ -1203,7 +1203,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 69. Discard changes validation: Deselect All and Cancel retains associated users
-    test('TC_ServiceGroups_69_SelectedTab_DeselectAllAndCancel_DiscardsChanges - clicking Deselect All then Cancel retains user associations without changes', async () => {
+    test('Service Groups - Selected Tab - clicking Deselect All then Cancel retains user associations without changes', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsGroupName);
@@ -1244,7 +1244,7 @@ test.describe('User Management - Service Groups Management', () => {
     const assocSingleGroupName = `${sgData.testInputs.uniquePrefix}UnselSingle_${Date.now()}`;
 
     // 70. Verify Unselected users count for newly created service group matches total registered users
-    test('TC_ServiceGroups_70_UnselectedTab_EmptyGroup_CountMatchesTotalUsers - verifies Unselected users count matches total registered users for empty group', async ({ page }) => {
+    test('Service Groups - Unselected Tab - verifies Unselected users count matches total registered users for empty group', async ({ page }) => {
         // Step 1: Read total registered users count from Overview page
         const overviewPage = new UserMgmtOverviewPage(page);
         await page.goto(`${process.env.ADMIN_TEST_URL}/librarian/v2/elibrarySetup${overviewUrl}`);
@@ -1269,7 +1269,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 71. Verify all user checkboxes in Unselected tab are unchecked by default
-    test('TC_ServiceGroups_71_UnselectedTab_DefaultCheckboxes_AllUsersAreUnticked - all user checkboxes in Unselected tab are unchecked by default', async () => {
+    test('Service Groups - Unselected Tab - all user checkboxes in Unselected tab are unchecked by default', async () => {
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(emptyUnselGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
@@ -1282,7 +1282,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 72. Verify presence of "Select all" button and absence of "Deselect All" button
-    test('TC_ServiceGroups_72_UnselectedTab_SelectAllButton_PresentAndDeselectAllAbsent - verifies Select all button is visible and Deselect All is absent', async () => {
+    test('Service Groups - Unselected Tab - verifies Select all button is visible and Deselect All is absent', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.buttons.selectAll });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyUnselGroupName);
@@ -1298,7 +1298,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 73. Verify clicking Update without changes shows alert modal
-    test('TC_ServiceGroups_73_UnselectedTab_ClickUpdateWithoutChanges_ShowsAlertModal - clicking update without changes displays alert modal', async () => {
+    test('Service Groups - Unselected Tab - clicking update without changes displays alert modal', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.noChangesAlert.title });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyUnselGroupName);
@@ -1323,7 +1323,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 74. Verify clicking "Select all" checks all user checkboxes and displays note
-    test('TC_ServiceGroups_74_UnselectedTab_SelectAll_ChecksAllUsersAndShowsNote - clicking Select all checks all users and displays note', async () => {
+    test('Service Groups - Unselected Tab - clicking Select all checks all users and displays note', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.selectAllNote });
 
         await serviceGroupsPage.createGroupIfNotPresent(opsUnselGroupName, validExpiryDateStr);
@@ -1342,7 +1342,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 75. Verify clicking "Undo" unchecks all users again
-    test('TC_ServiceGroups_75_UnselectedTab_SelectAll_UndoUnchecksAllUsers - clicking Undo beside note unchecks all users again', async () => {
+    test('Service Groups - Unselected Tab - clicking Undo beside note unchecks all users again', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.buttons.undo });
 
         await serviceGroupsPage.ensureGroupVisibleInTable(opsUnselGroupName);
@@ -1363,7 +1363,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 76. Verify Unselected users count decrements when users are associated
-    test('TC_ServiceGroups_76_UnselectedTab_AssocGroup_CountDecrementsByAssociatedUsers - Unselected count decrements by number of associated users', async () => {
+    test('Service Groups - Unselected Tab - Unselected count decrements by number of associated users', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsUnselGroupName);
@@ -1385,7 +1385,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 77. Verify associated users are excluded from the Unselected tab list
-    test('TC_ServiceGroups_77_UnselectedTab_AssocGroup_AssociatedUsersExcludedFromList - associated users do not appear in Unselected tab', async () => {
+    test('Service Groups - Unselected Tab - associated users do not appear in Unselected tab', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsUnselGroupName);
@@ -1402,7 +1402,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 78. Searching an already-associated user in Unselected tab displays "No user found"
-    test('TC_ServiceGroups_78_UnselectedTab_SearchAssociatedUser_DisplaysNoUserFound - searching associated user in Unselected tab displays No user found', async () => {
+    test('Service Groups - Unselected Tab - searching associated user in Unselected tab displays No user found', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsUnselGroupName);
@@ -1422,7 +1422,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 79. Search registered unselected user in Unselected tab displays matching row
-    test('TC_ServiceGroups_79_UnselectedTab_SearchUnassociatedUser_DisplaysMatchingRow - searching unselected user in Unselected tab displays matching row', async () => {
+    test('Service Groups - Unselected Tab - searching unselected user in Unselected tab displays matching row', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsUnselGroupName);
@@ -1439,7 +1439,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 80. Search non-existent / invalid keyword in Unselected tab displays "No user found"
-    test('TC_ServiceGroups_80_UnselectedTab_SearchInvalidKeyword_DisplaysNoUserFound - searching invalid keyword in Unselected tab displays No user found', async () => {
+    test('Service Groups - Unselected Tab - searching invalid keyword in Unselected tab displays No user found', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.invalidSearchTerm });
 
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
@@ -1458,7 +1458,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 81. Clear search via cross icon restores unselected user list
-    test('TC_ServiceGroups_81_UnselectedTab_ClearSearchViaCrossIcon_RestoresUnselectedList - clicking cross icon beside search clears input and restores unselected list', async () => {
+    test('Service Groups - Unselected Tab - clicking cross icon beside search clears input and restores unselected list', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.invalidSearchTerm });
 
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
@@ -1482,7 +1482,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 82. Associating a single user via Unselected tab moves user to Selected tab and updates group count
-    test('TC_ServiceGroups_82_UnselectedTab_AssociateSingleUser_UpdatesGroupAndMovesToSelected - associating single user via Unselected tab moves user to Selected tab', async () => {
+    test('Service Groups - Unselected Tab - associating single user via Unselected tab moves user to Selected tab', async () => {
         await serviceGroupsPage.createGroupIfNotPresent(assocSingleGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(assocSingleGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(assocSingleGroupName);
@@ -1517,7 +1517,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 83. Discard changes on Cancel: checking user and cancelling leaves user unassociated
-    test('TC_ServiceGroups_83_UnselectedTab_CheckUserAndCancel_DiscardsChanges - checking user and clicking Cancel discards changes', async () => {
+    test('Service Groups - Unselected Tab - checking user and clicking Cancel discards changes', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsUnselGroupName);
@@ -1543,7 +1543,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 84. Verify Load more button increases shown results count
-    test('TC_ServiceGroups_84_UnselectedTab_LoadMoreIncreasesShowingCount - clicking Load more increases showing count by 10', async () => {
+    test('Service Groups - Unselected Tab - clicking Load more increases showing count by 10', async () => {
         await serviceGroupsPage.ensureGroupHasAssociatedUsers(opsUnselGroupName, validExpiryDateStr, selectUsersModal, sgData.selectUsersModal.tabs[0]);
         await serviceGroupsPage.ensureGroupVisibleInTable(opsUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(opsUnselGroupName);
@@ -1580,7 +1580,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 85. Click Edit icon opens modal with pre-populated values
-        test('TC_ServiceGroups_85_EditGroup_OpenModal_DisplaysPrePopulatedValues - clicking edit icon opens Edit group modal with pre-filled details', async () => {
+        test('Service Groups - Edit Group Modal - clicking edit icon opens Edit group modal with pre-filled details', async () => {
             test.info().annotations.push({ type: 'testData', description: editTestGroupName });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1597,7 +1597,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 86. Cross icon closes modal
-        test('TC_ServiceGroups_86_EditGroup_CloseCrossIcon_ClosesModal - clicking cross icon closes Edit group modal', async () => {
+        test('Service Groups - Edit Group Modal - clicking cross icon closes Edit group modal', async () => {
             test.info().annotations.push({ type: 'testData', description: editTestGroupName });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1609,7 +1609,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 87. Cancel button discards changes
-        test('TC_ServiceGroups_87_EditGroup_CancelButton_DiscardsChanges - modifying fields and clicking Cancel discards changes', async () => {
+        test('Service Groups - Edit Group Modal - modifying fields and clicking Cancel discards changes', async () => {
             test.info().annotations.push({ type: 'testData', description: editTestGroupName });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1625,7 +1625,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 88. Empty group name validation
-        test('TC_ServiceGroups_88_EditGroup_EmptyName_ErrorMessage - clearing group name shows required error message', async () => {
+        test('Service Groups - Edit Group Modal - clearing group name shows required error message', async () => {
             test.info().annotations.push({ type: 'testData', description: sgData.messages.nameRequired });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1640,7 +1640,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 89. HTML tags validation
-        test('TC_ServiceGroups_89_EditGroup_HtmlTags_ErrorMessage - entering HTML tags displays error message', async () => {
+        test('Service Groups - Edit Group Modal - entering HTML tags displays error message', async () => {
             test.info().annotations.push({ type: 'testData', description: sgData.messages.htmlUnsupported });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1655,7 +1655,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 90. Leading / trailing spaces validation
-        test('TC_ServiceGroups_90_EditGroup_Spaces_ErrorMessage - entering spaces displays error message', async () => {
+        test('Service Groups - Edit Group Modal - entering spaces displays error message', async () => {
             test.info().annotations.push({ type: 'testData', description: sgData.messages.leadingTrailingSpaces });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1670,7 +1670,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 91. Max length (100 chars) exceeded
-        test('TC_ServiceGroups_91_EditGroup_MaxLength_ErrorMessage - entering over 100 characters displays error message', async () => {
+        test('Service Groups - Edit Group Modal - entering over 100 characters displays error message', async () => {
             test.info().annotations.push({ type: 'testData', description: sgData.messages.max100Chars });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1685,7 +1685,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 92. Duplicate group name validation
-        test('TC_ServiceGroups_92_EditGroup_AlreadyExists_ErrorMessage - changing name to existing group name displays already exists alert', async () => {
+        test('Service Groups - Edit Group Modal - changing name to existing group name displays already exists alert', async () => {
             test.info().annotations.push({ type: 'testData', description: sgData.messages.alreadyExists });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1701,7 +1701,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 93. Calendar past dates disabled
-        test('TC_ServiceGroups_93_EditGroup_Calendar_PastDatesDisabled - verifies past dates are disabled in datepicker', async () => {
+        test('Service Groups - Edit Group Modal - verifies past dates are disabled in datepicker', async () => {
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
             await serviceGroupsPage.clickEditGroup(editTestGroupName);
             await expect(serviceGroupsPage.editModal).toBeVisible();
@@ -1716,7 +1716,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 94. Access options dependency: checking Mobile App auto-selects Off Campus
-        test('TC_ServiceGroups_94_EditGroup_AccessOptions_SelectingMobile_AutoSelectsRA - selecting mobile app automatically selects off campus access', async () => {
+        test('Service Groups - Edit Group Modal - selecting mobile app automatically selects off campus access', async () => {
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
             await serviceGroupsPage.clickEditGroup(editTestGroupName);
             await expect(serviceGroupsPage.editModal).toBeVisible();
@@ -1730,7 +1730,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 95. Update Group Name successfully
-        test('TC_ServiceGroups_95_EditGroup_UpdateName_Success - changing group name updates name in table row', async () => {
+        test('Service Groups - Edit Group Modal - changing group name updates name in table row', async () => {
             test.info().annotations.push({ type: 'testData', description: editedNewGroupName });
 
             await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
@@ -1745,7 +1745,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 96. Update Expiry Date successfully
-        test('TC_ServiceGroups_96_EditGroup_UpdateExpiryDate_Success - changing expiry date updates expiry cell in table row', async () => {
+        test('Service Groups - Edit Group Modal - changing expiry date updates expiry cell in table row', async () => {
             test.info().annotations.push({ type: 'testData', description: futureExpiryDate });
 
             await serviceGroupsPage.createGroupIfNotPresent(editedNewGroupName, validExpiryDateStr);
@@ -1762,7 +1762,7 @@ test.describe('User Management - Service Groups Management', () => {
         });
 
         // 97. Update Access Options successfully
-        test('TC_ServiceGroups_97_EditGroup_ToggleAccessOptions_Success - toggling access options persists upon re-opening Edit modal', async () => {
+        test('Service Groups - Edit Group Modal - toggling access options persists upon re-opening Edit modal', async () => {
             await serviceGroupsPage.createGroupIfNotPresent(editedNewGroupName, validExpiryDateStr);
             await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
             await serviceGroupsPage.clickEditGroup(editedNewGroupName);
@@ -1794,7 +1794,7 @@ test.describe('User Management - Service Groups Management', () => {
     const searchTestGroupName = `${sgData.testInputs.uniquePrefix}Search_${Date.now()}`;
 
     // 98. Search box & button initial state
-    test('TC_ServiceGroups_98_TableSearch_InitialState - verifies placeholder, title, disabled search button, and hidden clear button', async () => {
+    test('Service Groups - Table Search - verifies placeholder, title, disabled search button, and hidden clear button', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.placeholder });
 
         await serviceGroupsPage.clearSearch();
@@ -1806,7 +1806,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 99. Typing text enables search & displays clear icon
-    test('TC_ServiceGroups_99_TableSearch_TypingText_EnablesSearchAndShowsClearButton - entering text enables search button and shows red clear icon', async () => {
+    test('Service Groups - Table Search - entering text enables search button and shows red clear icon', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.partialKeyword });
 
         await serviceGroupsPage.clearSearch();
@@ -1820,7 +1820,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 100. Search by exact group name
-    test('TC_ServiceGroups_100_TableSearch_SearchExactGroupName_DisplaysMatchingRow - exact group search filters table to matching row', async () => {
+    test('Service Groups - Table Search - exact group search filters table to matching row', async () => {
         test.info().annotations.push({ type: 'testData', description: searchTestGroupName });
 
         await serviceGroupsPage.createGroupIfNotPresent(searchTestGroupName, validExpiryDateStr);
@@ -1834,7 +1834,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 101. Search by partial keyword
-    test('TC_ServiceGroups_101_TableSearch_SearchPartialKeyword_DisplaysAllMatchingRows - partial keyword search returns matching groups', async () => {
+    test('Service Groups - Table Search - partial keyword search returns matching groups', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.partialKeyword });
 
         await serviceGroupsPage.searchGroup(sgData.tableSearch.partialKeyword);
@@ -1845,7 +1845,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 102. Case-insensitive search
-    test('TC_ServiceGroups_102_TableSearch_CaseInsensitiveSearch - searching lowercase returns uppercase matching group', async () => {
+    test('Service Groups - Table Search - searching lowercase returns uppercase matching group', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.caseInsensitiveKeyword });
 
         await serviceGroupsPage.searchGroup(sgData.tableSearch.caseInsensitiveKeyword);
@@ -1855,7 +1855,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 103. Non-existent search query
-    test('TC_ServiceGroups_103_TableSearch_NonExistentKeyword_DisplaysNoResultsFound - searching non-existent term displays No results found', async () => {
+    test('Service Groups - Table Search - searching non-existent term displays No results found', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.tableSearch.nonExistentKeyword });
 
         await serviceGroupsPage.searchGroup(sgData.tableSearch.nonExistentKeyword);
@@ -1866,7 +1866,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 104. Click Clear button restores table
-    test('TC_ServiceGroups_104_TableSearch_ClickClearButton_RestoresFullTable - clicking red clear button restores full table listing', async () => {
+    test('Service Groups - Table Search - clicking red clear button restores full table listing', async () => {
         await serviceGroupsPage.searchGroup(sgData.tableSearch.nonExistentKeyword);
         await expect(serviceGroupsPage.tableNoResultsCell).toBeVisible();
 
@@ -1878,7 +1878,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 105. Delete modal — Close cross icon
-    test('TC_ServiceGroups_105_TableActions_DeleteModal_CloseCrossIcon_ClosesModal - clicking cross icon on delete modal discards delete', async () => {
+    test('Service Groups - Delete Modal - clicking cross icon on delete modal discards delete', async () => {
         test.info().annotations.push({ type: 'testData', description: searchTestGroupName });
 
         await serviceGroupsPage.createGroupIfNotPresent(searchTestGroupName, validExpiryDateStr);
@@ -1894,7 +1894,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 106. Delete modal — Cancel button
-    test('TC_ServiceGroups_106_TableActions_DeleteModal_CancelButton_DiscardsDelete - clicking Cancel on delete modal discards delete', async () => {
+    test('Service Groups - Delete Modal - clicking Cancel on delete modal discards delete', async () => {
         test.info().annotations.push({ type: 'testData', description: searchTestGroupName });
 
         await serviceGroupsPage.createGroupIfNotPresent(searchTestGroupName, validExpiryDateStr);
@@ -1922,7 +1922,7 @@ test.describe('User Management - Service Groups Management', () => {
     const csvData = sgData.selectUsersModal.viaCsv;
 
     // 107. Tab presence, active state, and header details
-    test('TC_ServiceGroups_107_ViaCsvTab_TabPresenceAndActiveState - clicking Via CSV tab marks it active with matching group name', async () => {
+    test('Service Groups - Via CSV Tab - clicking Via CSV tab marks it active with matching group name', async () => {
         test.info().annotations.push({ type: 'testData', description: csvTestGroupName });
 
         await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
@@ -1939,7 +1939,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 108. Upload area elements presence
-    test('TC_ServiceGroups_108_ViaCsvTab_UploadAreaElements_Presence - verifies file upload dropzone and format instructions', async () => {
+    test('Service Groups - Via CSV Tab - verifies file upload dropzone and format instructions', async () => {
         await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
@@ -1957,7 +1957,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 109. Download sample CSV
-    test('TC_ServiceGroups_109_ViaCsvTab_DownloadSampleCsv_DownloadsFile - clicking download sample CSV downloads valid template', async () => {
+    test('Service Groups - Via CSV Tab - clicking download sample CSV downloads valid template', async () => {
         await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(csvTestGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(csvTestGroupName);
@@ -1972,7 +1972,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 110. Empty file submission error
-    test('TC_ServiceGroups_110_ViaCsvTab_EmptyFile_ClickUpdate_ShowsError - clicking update without choosing file displays inline error', async () => {
+    test('Service Groups - Via CSV Tab - clicking update without choosing file displays inline error', async () => {
         test.info().annotations.push({ type: 'testData', description: csvData.missingFileError });
 
         await serviceGroupsPage.createGroupIfNotPresent(csvTestGroupName, validExpiryDateStr);
@@ -1990,7 +1990,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 111. File selection displays filename
-    test('TC_ServiceGroups_111_ViaCsvTab_SelectValidCsv_DisplaysFilename - selecting CSV renders filename in dropzone', async () => {
+    test('Service Groups - Via CSV Tab - selecting CSV renders filename in dropzone', async () => {
         const fs = require('fs');
         const path = require('path');
         const tempCsv = path.resolve('./test-results/temp_display_check.csv');
@@ -2012,7 +2012,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 112. Invalid header CSV alert
-    test('TC_ServiceGroups_112_ViaCsvTab_InvalidHeaderCsv_ShowsMissingHeaderAlert - uploading CSV with wrong header displays missing header alert', async () => {
+    test('Service Groups - Via CSV Tab - uploading CSV with wrong header displays missing header alert', async () => {
         test.info().annotations.push({ type: 'testData', description: csvData.missingHeaderAlert });
 
         const fs = require('fs');
@@ -2038,7 +2038,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 113. Valid CSV bulk user association
-    test('TC_ServiceGroups_113_ViaCsvTab_ValidCsvUpload_AssociatesUsersSuccessfully - uploading valid CSV associates user and displays in Selected tab', async () => {
+    test('Service Groups - Via CSV Tab - uploading valid CSV associates user and displays in Selected tab', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.searchEmail });
 
         const fs = require('fs');
@@ -2064,7 +2064,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 114. Cancel button discards upload
-    test('TC_ServiceGroups_114_ViaCsvTab_CancelButton_DiscardsUpload - selecting file and clicking Cancel discards upload', async () => {
+    test('Service Groups - Via CSV Tab - selecting file and clicking Cancel discards upload', async () => {
         const fs = require('fs');
         const path = require('path');
         const discardCsv = path.resolve('./test-results/temp_discard.csv');
@@ -2083,7 +2083,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 115. Unregistered user CSV alert
-    test('TC_ServiceGroups_115_ViaCsvTab_UnregisteredUser_ShowsNotRegisteredAlert - uploading CSV with unregistered user displays users not registered alert', async () => {
+    test('Service Groups - Via CSV Tab - uploading CSV with unregistered user displays users not registered alert', async () => {
         test.info().annotations.push({ type: 'testData', description: csvData.unregisteredUserAlert });
 
         const fs = require('fs');
@@ -2109,7 +2109,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 116. More than 100 users CSV limit alert
-    test('TC_ServiceGroups_116_ViaCsvTab_Over100Users_ShowsLimitAlert - uploading CSV with more than 100 users displays limit alert', async () => {
+    test('Service Groups - Via CSV Tab - uploading CSV with more than 100 users displays limit alert', async () => {
         test.info().annotations.push({ type: 'testData', description: csvData.moreThan100UsersAlert });
 
         const path = require('path');
@@ -2132,7 +2132,7 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // 117. Double dot filename invalid format error
-    test('TC_ServiceGroups_117_ViaCsvTab_DoubleDotFilename_ShowsInvalidFormatError - selecting CSV file with double dot in name displays invalid format error', async () => {
+    test('Service Groups - Via CSV Tab - selecting CSV file with double dot in name displays invalid format error', async () => {
         test.info().annotations.push({ type: 'testData', description: csvData.invalidFileFormatError });
 
         const fs = require('fs');
