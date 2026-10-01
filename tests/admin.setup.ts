@@ -1,4 +1,4 @@
-import { test as setup, expect } from '../src/fixtures';
+import { test as setup, expect } from '@playwright/test';
 import { AdminDashboardLoginPage } from '../src/pages/admin/AdminDashboardLoginPage';
 
 // Force an empty storage state so setup always gets a fresh browser

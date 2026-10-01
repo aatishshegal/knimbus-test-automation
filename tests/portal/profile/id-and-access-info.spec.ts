@@ -2,7 +2,7 @@ import { test, expect } from '../../../src/fixtures';
 import { TopNavigationBar } from '../../../src/pages/portal/TopNavigationBar';
 import { IdAndAccessInfoPage } from '../../../src/pages/portal/IdAndAccessInfoPage';
 import { PortalLoginPage } from '../../../src/pages/portal/PortalLoginPage';
-import { WelcomePage } from '../../../src/pages/portal/WelcomePage';
+import { TermsAndConditionsModal } from '../../../src/pages/portal/TermsAndConditionsModal';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -51,6 +51,37 @@ test.describe('Profile Details - ID & Access Info Suite', () => {
             await page.getByRole('tab', { name: /Id & Access Info/i }).click();
             await expect(idAccessPage.pageHeading).toBeVisible();
         });
+
+        test('ID and Access - Section heading, help texts, and file input controls are visible', async () => {
+            const uiLabels = postLoginData['id-and-access-info.spec.ts']?.uiLabels || {};
+            await expect(idAccessPage.pageHeading).toHaveText(uiLabels.heading || 'Id Document');
+            await expect(idAccessPage.helpText1).toContainText(uiLabels.helpText1 || 'Upload an ID');
+            await expect(idAccessPage.helpText2).toContainText(uiLabels.helpText2 || 'Note:');
+            await expect(idAccessPage.frontsideHeading).toBeVisible();
+            await expect(idAccessPage.backsideHeading).toBeVisible();
+            await expect(idAccessPage.frontsideUploadInput).toHaveAttribute('accept', expect.stringContaining('.jpg'));
+            await expect(idAccessPage.backsideUploadInput).toHaveAttribute('accept', expect.stringContaining('.jpg'));
+            await expect(idAccessPage.saveBtn).toBeVisible();
+        });
+
+        test('ID and Access - Prompts error when saving without choosing any ID files', async () => {
+            const uiLabels = postLoginData['id-and-access-info.spec.ts']?.uiLabels || {};
+            await idAccessPage.clearFrontsideDocument();
+            await idAccessPage.clearBacksideDocument();
+            await idAccessPage.saveBtn.click();
+            await expect(idAccessPage.pleaseChooseFileError).toContainText(uiLabels.pleaseChooseFile || 'Please choose a file');
+        });
+
+        test('ID and Access - Clears selected files from frontside and backside inputs', async () => {
+            const dataDir = path.resolve(__dirname, '../../../tests/test-data');
+            const validDocPath = path.resolve(dataDir, 'dummy-id.jpg');
+            await idAccessPage.frontsideUploadInput.setInputFiles(validDocPath);
+            await idAccessPage.backsideUploadInput.setInputFiles(validDocPath);
+            await idAccessPage.clearFrontsideDocument();
+            await idAccessPage.clearBacksideDocument();
+            expect(await idAccessPage.frontsideUploadInput.inputValue()).toBe('');
+            expect(await idAccessPage.backsideUploadInput.inputValue()).toBe('');
+        });
         for (const s of idDocumentScenarios) {
             const testTitle = s.ScenarioType === 'Positive'
                 ? `ID and Access - Uploads valid document: ${s.Scenario}`
@@ -95,63 +126,50 @@ test.describe('Profile Details - Off-Campus Access Workflow', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
     let adminApi: AdminApiService;
-    let testUserEmail: string;
     const testUserPassword = process.env.DEFAULT_PASSWORD as string;
 
     test.beforeAll(async () => {
         adminApi = new AdminApiService();
         await adminApi.login();
-        
-        const uniqueId = Date.now().toString().slice(-6);
-        testUserEmail = `oca_user_${uniqueId}@yopmail.com`;
-        
-        await adminApi.addSingleUser(`OCA User ${uniqueId}`, testUserEmail);
-        await adminApi.changeUserPassword(testUserEmail, testUserPassword);
+        await adminApi.updateSecuritySettings({
+            mandatoryFields: { fields: [], isMandatory: false }
+        });
     });
 
     test.afterAll(async () => {
         if (adminApi) await adminApi.close();
     });
 
-    test('Off-Campus Access - Request lifecycle verifies pending state, decline by admin, and re-submission', async ({ page, termsAndConditionsModal }) => {
-        const loginPage = new PortalLoginPage(page);
-        const navBar = new TopNavigationBar(page);
+    test('Off-Campus Access - Request lifecycle verifies pending state, decline by admin, and re-submission', async ({ page, termsAndConditionsModal, topNavigationBar, portalLoginPage }) => {
+        const uniqueId = Date.now().toString().slice(-6);
+        const testUserEmail = `oca_user_${uniqueId}@yopmail.com`;
+        await adminApi.addSingleUser(`OCA User ${uniqueId}`, testUserEmail);
+        await adminApi.changeUserPassword(testUserEmail, testUserPassword);
+
         const idAccessPage = new IdAndAccessInfoPage(page);
 
-        // Step 1: Login as New User and Verify Default Pending State
-        await test.step('Login and verify default "Pending" state for new user', async () => {
-            const welcomePage = new WelcomePage(page);
-            await loginPage.login(testUserEmail, testUserPassword);
-            await welcomePage.proceedToHome();
-            await page.waitForTimeout(1000);
-            await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
+        // Phase 1: Login as New User and Verify Default Pending State
+        await portalLoginPage.login(testUserEmail, testUserPassword);
+        await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
+        if (page.url().includes('mandatory') || await page.getByText(/Fill the mandatory detail/i).isVisible().catch(() => false)) {
+            await page.goto(process.env.PORTAL_URL as string);
+        }
+        await expect(topNavigationBar.profileDropdown).toBeVisible({ timeout: 15000 });
 
-            await page.waitForLoadState('domcontentloaded');
-            await page.locator('.overlay, .overlay_inner').waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
-            await navBar.openProfileMenu();
-            await navBar.profileMenuProfileLink.click();
-            await page.getByRole('tab', { name: /Id & Access Info/i }).click();
+        await topNavigationBar.navigateToProfile();
+        await page.getByRole('tab', { name: /Id & Access Info/i }).click();
+        await idAccessPage.verifyAccessState('pending');
 
-            await idAccessPage.verifyAccessState('pending');
-        });
+        // Phase 2: Admin Declines Request via API & User Verifies Not Activated State
+        await adminApi.declineOcaRequest(testUserEmail);
+        await page.reload();
+        await page.getByRole('tab', { name: /Id & Access Info/i }).click();
+        await idAccessPage.verifyAccessState('notActivated');
 
-        // Step 2: Admin Declines Request via API & User Verifies "Not Activated" State
-        await test.step('Admin declines request and user verifies "Not Activated" state', async () => {
-            await adminApi.declineOcaRequest(testUserEmail);
-            
-            await page.reload();
-            await page.getByRole('tab', { name: 'Id & Access Info' }).click();
-
-            await idAccessPage.verifyAccessState('notActivated');
-        });
-
-        // Step 3: User Raises a New Request & Verifies State Returns to Pending
-        await test.step('User raises a new request and verifies pending state', async () => {
-            await idAccessPage.raiseRequestBtn.scrollIntoViewIfNeeded();
-            await expect(idAccessPage.raiseRequestBtn).toBeEnabled({ timeout: 10000 });
-            await idAccessPage.raiseOcaRequest();
-            
-            await idAccessPage.verifyAccessState('pending');
-        });
+        // Phase 3: User Raises a New Request & Verifies State Returns to Pending
+        await idAccessPage.raiseRequestBtn.scrollIntoViewIfNeeded();
+        await expect(idAccessPage.raiseRequestBtn).toBeEnabled({ timeout: 10000 });
+        await idAccessPage.raiseOcaRequest();
+        await idAccessPage.verifyAccessState('pending');
     });
 });

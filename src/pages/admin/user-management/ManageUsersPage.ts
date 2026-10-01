@@ -8,9 +8,15 @@ export class ManageUsersPage extends AdminBasePage {
     readonly clearSearchBtn: Locator;
 
     // Filters
+    readonly filterToggleBtn: Locator;
+    readonly contentGroupSelect: Locator;
+    readonly serviceGroupSelect: Locator;
+    readonly userTypeSelect: Locator;
+    readonly designationSelect: Locator;
     readonly expiryDateRangeInput: Locator;
     readonly ocaPendingCheckbox: Locator;
     readonly noServiceGroupCheckbox: Locator;
+    readonly incompleteRegistrationsCheckbox: Locator;
     readonly applyFiltersBtn: Locator;
     readonly clearFiltersBtn: Locator;
 
@@ -309,11 +315,17 @@ export class ManageUsersPage extends AdminBasePage {
         this.clearSearchBtn = page.getByRole('button', { name: 'Clear', exact: true });
 
         // Filters
-        this.expiryDateRangeInput = page.locator('input[name="expiryDateRange"]');
+        this.filterToggleBtn = page.locator('button.filter-toggle-button');
+        this.contentGroupSelect = page.locator('select#contentGroup');
+        this.serviceGroupSelect = page.locator('select#serviceGroup');
+        this.userTypeSelect = page.locator('select#userType');
+        this.designationSelect = page.locator('select#designation');
+        this.expiryDateRangeInput = page.locator('input#floating-expiryDateRange');
         this.ocaPendingCheckbox = page.locator('input[name="OCA Pending Request"]');
         this.noServiceGroupCheckbox = page.locator('input[name="No Service Group"]');
-        this.applyFiltersBtn = page.getByRole('button', { name: 'Apply' });
-        this.clearFiltersBtn = page.getByRole('button', { name: 'Clear' });
+        this.incompleteRegistrationsCheckbox = page.locator('input[name="Incomplete Registrations"]');
+        this.applyFiltersBtn = page.locator('button.btn-fltr-cta').filter({ hasText: 'Apply' });
+        this.clearFiltersBtn = page.locator('button.btn-fltr-cta').filter({ hasText: 'Clear' });
 
         // Bulk Actions
         this.exportAllUsersBtn = page.getByRole('button', { name: 'Export All Users' });
@@ -725,6 +737,69 @@ export class ManageUsersPage extends AdminBasePage {
     async clearSearchSafely() {
         if (await this.clearSearchBtn.isVisible()) { 
             await this.clearSearchBtn.click(); 
+        }
+    }
+
+    // Filter Actions
+    async openFilters() {
+        if (!(await this.serviceGroupSelect.isVisible())) {
+            await this.filterToggleBtn.click();
+            await this.serviceGroupSelect.waitFor({ state: 'visible', timeout: 5000 });
+        }
+    }
+
+    async closeFilters() {
+        if (await this.serviceGroupSelect.isVisible()) {
+            await this.filterToggleBtn.click();
+            await this.serviceGroupSelect.waitFor({ state: 'hidden', timeout: 5000 });
+        }
+    }
+
+    async isApplyFilterDisabled(): Promise<boolean> {
+        const isBtnDisabled = await this.applyFiltersBtn.isDisabled();
+        const parentClass = await this.applyFiltersBtn.locator('..').getAttribute('class') || '';
+        return isBtnDisabled || parentClass.includes('cursor-not-allowed');
+    }
+
+    async isClearFilterDisabled(): Promise<boolean> {
+        const isBtnDisabled = await this.clearFiltersBtn.isDisabled();
+        const parentClass = await this.clearFiltersBtn.locator('..').getAttribute('class') || '';
+        return isBtnDisabled || parentClass.includes('cursor-not-allowed');
+    }
+
+    async filterByServiceGroup(groupName: string) {
+        await this.openFilters();
+        await this.serviceGroupSelect.selectOption({ label: groupName });
+        await this.applyFiltersBtn.click();
+        await this.tableRows.first().waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    async filterByUserType(userType: string) {
+        await this.openFilters();
+        await this.userTypeSelect.selectOption({ label: userType });
+        await this.applyFiltersBtn.click();
+        await this.tableRows.first().waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    async filterByIncompleteRegistrations() {
+        await this.openFilters();
+        await this.incompleteRegistrationsCheckbox.check({ force: true });
+        await this.applyFiltersBtn.click();
+        await this.tableRows.first().waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    async clickClearFilters() {
+        await this.clearFiltersBtn.click();
+        await this.tableRows.first().waitFor({ state: 'visible', timeout: 15000 });
+    }
+
+    async verifyAllVisibleRowsHaveServiceGroup(expectedGroup: string) {
+        const count = await this.tableRows.count();
+        const { expect } = require('@playwright/test');
+        expect(count).toBeGreaterThan(0);
+        for (let i = 0; i < count; i++) {
+            const row = this.tableRows.nth(i);
+            await expect(row.locator('td').nth(2)).toContainText(expectedGroup);
         }
     }
 }

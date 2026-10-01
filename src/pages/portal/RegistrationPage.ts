@@ -101,6 +101,11 @@ export class RegistrationPage extends BasePage {
     }
 
     try {
+      const isVisible = await targetField.isVisible({ timeout: 500 }).catch(() => false);
+      if (!isVisible) {
+        return;
+      }
+
       const tagName = await targetField.evaluate((el: HTMLElement) => el.tagName.toLowerCase()).catch(() => 'input');
       if (tagName !== 'select' && data.field !== 'idDocumentFront' && data.field !== 'idDocumentBack') {
         await targetField.clear({ timeout: 1000 });

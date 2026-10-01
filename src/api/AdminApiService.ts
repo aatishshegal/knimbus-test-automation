@@ -5,6 +5,8 @@ dotenv.config();
 export class AdminApiService {
   private apiContext: APIRequestContext | null = null;
   private readonly baseUrl: string;
+  private lastUsername?: string;
+  private lastPassword?: string;
 
   constructor() {
     this.baseUrl = process.env.DASHBOARD_URL || 'https://qa.knimbus.com';
@@ -17,6 +19,8 @@ export class AdminApiService {
    * This MUST be called before any other methods.
    */
   async login(username = process.env.ADMIN_USER as string, password = process.env.ADMIN_PASSWORD as string) {
+    this.lastUsername = username;
+    this.lastPassword = password;
     console.log(`[AdminApiService] Authenticating ${username} via API...`);
     this.apiContext = await request.newContext({
       baseURL: this.baseUrl,
@@ -39,7 +43,12 @@ export class AdminApiService {
       data: { action: "Login", actionValue: "Login Success" }
     });
     
-    console.log(`[AdminApiService] API Authentication successful.`);
+    if (username === process.env.ADMIN_TEST_EMAIL) {
+      await this.apiContext.storageState({ path: '.auth/admin.json' });
+      console.log(`[AdminApiService] API Authentication successful and session cached to .auth/admin.json.`);
+    } else {
+      console.log(`[AdminApiService] API Authentication successful for portal tenant.`);
+    }
   }
 
   /**
@@ -69,22 +78,39 @@ export class AdminApiService {
   }
 
   /**
-   * Fetches the current library configuration (DTO) from the server.
+   * Fetches the current library configuration (DTO) from the server with auto-retry and re-authentication.
    */
-  private async getElibraryDTO() {
+  private async getElibraryDTO(retries = 3): Promise<any> {
     const context = this.getContext();
-    const res = await context.get('/ws/getElibraryDTO');
-    if (!res.ok()) throw new Error(`Failed to fetch Elibrary DTO: ${res.status()}`);
-    return await res.json();
+    try {
+      const res = await context.get('/ws/getElibraryDTO', { maxRedirects: 0 });
+      if (res.status() === 302 || res.url().includes('signin')) {
+        throw new Error(`Session invalidated/redirected to login (HTTP ${res.status()})`);
+      }
+      if (!res.ok()) {
+        throw new Error(`Failed to fetch Elibrary DTO: HTTP ${res.status()}`);
+      }
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch (parseErr) {
+        throw new Error(`Invalid JSON in Elibrary DTO: ${text.substring(0, 100)}`);
+      }
+    } catch (err: any) {
+      if (retries > 0 && this.lastUsername && this.lastPassword) {
+        console.warn(`[AdminApiService] getElibraryDTO encounter (${err.message}). Re-authenticating and retrying (${retries} retries left)...`);
+        await new Promise(r => setTimeout(r, 1000));
+        await this.login(this.lastUsername, this.lastPassword);
+        return this.getElibraryDTO(retries - 1);
+      }
+      throw err;
+    }
   }
 
   /**
-   * Saves the modified library configuration (DTO) back to the server.
+   * Saves the modified library configuration (DTO) back to the server with auto-retry and re-authentication.
    */
-  private async saveElibraryDTO(dto: any) {
-    const context = this.getContext();
-    // Send the exact same DTO to the distinct API endpoints for each setting
-    // The backend extracts the relevant field based on the endpoint called.
+  private async saveElibraryDTO(dto: any, retries = 3): Promise<void> {
     const endpoints = [
       '/ws/updateRegistrationDomain',
       '/ws/updateSelfRegnStatus',
@@ -94,19 +120,30 @@ export class AdminApiService {
       '/ws/updateLibraryAuthDenials'
     ];
 
-    for (const endpoint of endpoints) {
-      console.log(`[API Admin] Sending update to ${endpoint}...`);
-      const res = await context.post(endpoint, {
-        data: dto
-      });
-      
-      if (!res.ok()) {
-        const text = await res.text();
-        throw new Error(`Failed to update admin settings at ${endpoint}: ${res.status()} ${text}`);
+    try {
+      const context = this.getContext();
+      for (const endpoint of endpoints) {
+        console.log(`[API Admin] Sending update to ${endpoint}...`);
+        const res = await context.post(endpoint, {
+          data: dto,
+          maxRedirects: 0
+        });
+        
+        if (res.status() === 302 || res.url().includes('signin') || !res.ok()) {
+          const text = await res.text().catch(() => '');
+          throw new Error(`Failed to update admin settings at ${endpoint}: HTTP ${res.status()} ${text.substring(0, 100)}`);
+        }
       }
+      console.log('[API Admin] Successfully updated all security settings via distinct endpoints.');
+    } catch (err: any) {
+      if (retries > 0 && this.lastUsername && this.lastPassword) {
+        console.warn(`[AdminApiService] saveElibraryDTO encounter (${err.message}). Re-authenticating and retrying (${retries} retries left)...`);
+        await new Promise(r => setTimeout(r, 1000));
+        await this.login(this.lastUsername, this.lastPassword);
+        return this.saveElibraryDTO(dto, retries - 1);
+      }
+      throw err;
     }
-    
-    console.log('[API Admin] Successfully updated all security settings via distinct endpoints.');
   }
 
   /**
@@ -281,6 +318,38 @@ export class AdminApiService {
     console.log(`[AdminApiService] addNewUser response for ${email}: ${text}`);
     if (!res.ok()) throw new Error(`Failed to add user via API: ${res.status()}`);
     console.log(`[AdminApiService] User ${email} created successfully.`);
+  }
+
+  /**
+   * Sends a notification to a specific user via the Admin Notification API.
+   */
+  async sendNotification(options: {
+    title: string;
+    description: string;
+    email: string;
+    platform?: 'Web' | 'Mobile' | 'Both';
+  }) {
+    console.log(`[AdminApiService] Sending notification to ${options.email}: "${options.title}"...`);
+    const context = this.getContext();
+    const platform = options.platform || 'Web';
+    const notificationType = platform === 'Web' ? 'Email' : platform === 'Mobile' ? 'Push' : 'Both';
+    const userId = options.email.replace('@', '_');
+
+    const payload = {
+      title: options.title,
+      description: options.description,
+      users: [userId],
+      platform: platform,
+      notificationType: notificationType,
+      isLink: false,
+      notificationOperationType: "Single"
+    };
+
+    const res = await context.post('/ws/addNotification', { data: payload });
+    if (!res.ok()) throw new Error(`Failed to send notification via API: HTTP ${res.status()}`);
+    const text = await res.text();
+    console.log(`[AdminApiService] addNotification response for ${options.email}: ${text}`);
+    return text;
   }
 
   /**

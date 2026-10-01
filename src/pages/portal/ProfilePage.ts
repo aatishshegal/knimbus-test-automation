@@ -4,6 +4,13 @@ import { BasePage } from '../BasePage';
 export class ProfilePage extends BasePage {
   readonly profileHeader: Locator;
   readonly editBtn: Locator;
+  readonly profileTitleName: Locator;
+  readonly profileTitleEmail: Locator;
+  readonly basicDetailsHeading: Locator;
+  readonly fullNameLabel: Locator;
+  readonly genderLabel: Locator;
+  readonly dobLabel: Locator;
+  readonly summaryLabel: Locator;
   
   // Sidebar Tabs
   readonly navProfile: Locator;
@@ -42,6 +49,13 @@ export class ProfilePage extends BasePage {
     super(page);
     this.profileHeader = page.locator('.main-content, .container, body').first();
     this.editBtn = page.locator('.edit-btn');
+    this.profileTitleName = page.locator('.profile-title-name');
+    this.profileTitleEmail = page.locator('.profile-title-email');
+    this.basicDetailsHeading = page.locator('.profile-form-content-heading').filter({ hasText: /basic details/i });
+    this.fullNameLabel = page.locator('label[for="userName"], div:has(#userName) label').first();
+    this.genderLabel = page.locator('label[for="gender"], div:has(#gender) label').first();
+    this.dobLabel = page.locator('.custom-date-picker-label');
+    this.summaryLabel = page.locator('label[for="about"]');
     
     // Sidebar Tabs
     this.navProfile = page.getByRole('tab', { name: 'Profile Personal information' });

@@ -47,6 +47,7 @@ test.describe('Profile Details - Contact Suite', () => {
 
     test.beforeEach(async ({ page, topNavigationBar }) => {
         await page.goto(process.env.PORTAL_URL as string);
+        await expect(topNavigationBar.profileDropdown).toBeVisible({ timeout: 15000 });
         await topNavigationBar.openProfileMenu();
         await topNavigationBar.profileMenuProfileLink.click();
         await page.getByRole('tab', { name: /Contact/i }).click();
@@ -67,6 +68,26 @@ test.describe('Profile Details - Contact Suite', () => {
         const revertedMobile = await locator.inputValue();
         expect(revertedMobile).toBe(originalMobile);
         expect(revertedMobile).not.toBe(tempPhone);
+    });
+
+    test('Contact Details - Form fields are disabled prior to clicking Edit', async ({ page }) => {
+        const contactPage = new ContactPage(page);
+        await contactPage.verifyFieldsDisabled();
+    });
+
+    test('Contact Details - Form fields and action buttons are visible in edit mode', async ({ page }) => {
+        const contactPage = new ContactPage(page);
+        await contactPage.clickEdit();
+        await contactPage.verifyFormVisibility();
+    });
+
+    test('Contact Details - Accepts and saves valid Nationality selection', async ({ page }) => {
+        const contactPage = new ContactPage(page);
+        const nationalityValue = contactScenarios.validNationality || 'India';
+        test.info().annotations.push({ type: 'testData', description: nationalityValue });
+        await contactPage.setFieldValue('nationality', nationalityValue);
+        await contactPage.clickSave();
+        await expect(page.getByRole('heading', { name: /updated successfully/i }).first()).toBeVisible({ timeout: 5000 });
     });
 
     test.describe('Contact Details - Valid Input Submissions', () => {
@@ -112,12 +133,13 @@ test.describe('Profile Details - Contact Suite', () => {
     });
 
     test.describe('Contact Details - Field Input Validations', () => {
-        const nonBlankNegativeScenarios = contactScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank') && !s.bypassLength);
+        const nonBlankNegativeScenarios = contactScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank'));
         for (const s of nonBlankNegativeScenarios) {
             test(`Contact Details - Rejects invalid input: ${s.field} - ${s.scenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: String(s.value) });
                 const contactPage = new ContactPage(page);
-                await contactPage.setFieldValue(s.field, s.value);
+                await contactPage.setFieldValue(s.field, s.value, !!s.bypassLength);
+                await contactPage.clickSave();
                 await contactPage.validateFieldError(s.expectedError);
             });
         }
