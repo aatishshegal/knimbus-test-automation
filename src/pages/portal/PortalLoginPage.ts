@@ -50,5 +50,6 @@ export class PortalLoginPage extends BasePage {
       await this.fillText(this.passwordInput, password, 'Password Field');
     }
     await this.clickElement(this.submitButton, 'Continue Button');
+    await this.submitButton.waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
   }
 }

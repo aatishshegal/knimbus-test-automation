@@ -2,7 +2,6 @@ import { test, expect } from '../../../src/fixtures';
 import { PasswordPage } from '../../../src/pages/portal/PasswordPage';
 import { TopNavigationBar } from '../../../src/pages/portal/TopNavigationBar';
 import { PortalLoginPage } from '../../../src/pages/portal/PortalLoginPage';
-import { WelcomePage } from '../../../src/pages/portal/WelcomePage';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -78,6 +77,17 @@ test.describe('Profile Details - Password Management', () => {
             await expect(passwordPage.newPasswordInput).toHaveAttribute('maxlength', '31');
             await expect(passwordPage.confirmPasswordInput).toHaveAttribute('maxlength', '31');
         });
+
+        test('Profile Password - Submitting empty form displays validation errors for all required fields', async ({ page }) => {
+            const passwordPage = new PasswordPage(page);
+            const emptyErrors = postLoginData['password.spec.ts']?.emptyFormErrors || {};
+            await passwordPage.clearPasswordForm();
+            await passwordPage.clickUpdatePassword();
+            
+            await expect(page.getByText(emptyErrors.oldPasswordRequired || 'Current password is required', { exact: false }).first()).toBeVisible({ timeout: 5000 });
+            await expect(page.getByText(emptyErrors.newPasswordRequired || 'New password is required', { exact: false }).first()).toBeVisible({ timeout: 5000 });
+            await expect(page.getByText(emptyErrors.confirmPasswordRequired || 'Confirm password is required', { exact: false }).first()).toBeVisible({ timeout: 5000 });
+        });
     });
 
     test.describe('Profile Password - Input Validation Scenarios', () => {
@@ -141,11 +151,9 @@ test.describe('Profile Details - Password Management', () => {
             const topNav = new TopNavigationBar(page);
             const passwordPage = new PasswordPage(page);
             
-            const welcomePage = new WelcomePage(page);
             await loginPage.login(testUserEmail, defaultPassword);
-            await welcomePage.proceedToHome();
-            await page.waitForTimeout(1000);
             await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
+            await expect(topNav.profileDropdown).toBeVisible({ timeout: 15000 });
             
             await topNav.openProfileMenu();
             await topNav.profileMenuProfileLink.click({ force: true });
@@ -169,12 +177,9 @@ test.describe('Profile Details - Password Management', () => {
             const loginPage = new PortalLoginPage(page);
             const topNav = new TopNavigationBar(page);
             const passwordPage = new PasswordPage(page);
-            const welcomePage = new WelcomePage(page);
             const newPassword = passwordScenarios.validInputs.newPassword2;
             
             await loginPage.login(testUserEmail, defaultPassword);
-            await welcomePage.proceedToHome();
-            await page.waitForTimeout(1000);
             await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
             
             await topNav.openProfileMenu();

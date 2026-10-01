@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { BasePage } from '../BasePage';
 
 export class EnrollmentDetailsPage extends BasePage {
@@ -20,21 +20,21 @@ export class EnrollmentDetailsPage extends BasePage {
   readonly admissionYearInput: Locator;
   readonly membershipStatusDropdown: Locator;
   readonly membershipTypeDropdown: Locator;
+  readonly staffIdHelpText: Locator;
   readonly autoSuggestionOptions: Locator;
 
   constructor(page: Page) {
     super(page);
     
-    // Core Elements scoped to Enrollment Details panel to avoid strict mode violations
     const panel = page.locator('.tab-pane.active').first();
+    this.pageHeader = panel.locator('.profile-form-content-heading, h5, [role="heading"]').filter({ hasText: /enrollment details/i }).first();
+    this.editBtn = panel.locator('.profile-form-content-heading-wrapper .edit-btn, .edit-btn').first();
+    this.saveBtn = panel.locator('button.btn-primary:has-text("Save"), button:has-text("Save"), .btn-save').first();
+    this.cancelBtn = panel.locator('button.btn-outline-secondary:has-text("Cancel"), button:has-text("Cancel")').first();
     
-    this.pageHeader = panel.getByRole('heading', { name: 'Enrollment Details' });
-    this.editBtn = panel.locator('.edit-btn');
-    this.saveBtn = panel.getByRole('button', { name: 'Save' });
-    this.cancelBtn = panel.getByRole('button', { name: 'Cancel' });
-    
-    // Locators mapped using exact DOM name attributes from the HTML snippet provided
+    // Locators mapped using resilient selectors within panel
     this.idNumberInput = panel.locator('input[name="staffId"]');
+    this.staffIdHelpText = panel.locator('#staffId-help, .staff-id-help, small, span, div').filter({ hasText: /Example: Membership/i }).first();
     this.collegeInput = panel.locator('input[name="affiliation"]');
     this.departmentInput = panel.locator('input[name="department"]');
     this.qualificationInput = panel.locator('input[name="degree"]');
@@ -69,10 +69,14 @@ export class EnrollmentDetailsPage extends BasePage {
     }
   }
 
-  async setFieldValue(field: string, value: string) {
+  async setFieldValue(field: string, value: string, bypassLength: boolean = false) {
     await this.ensureInEditMode();
     const locator = this.getLocator(field);
+    if (bypassLength) {
+      await locator.evaluate((el: HTMLElement) => el.removeAttribute('maxlength'));
+    }
     await locator.fill(value);
+    await locator.blur();
   }
 
   async clearFieldAndBlur(field: string) {
@@ -100,5 +104,15 @@ export class EnrollmentDetailsPage extends BasePage {
       'membershipType': this.membershipTypeDropdown
     };
     return fieldMap[fieldName] as Locator;
+  }
+
+  async verifyFieldDisabled(fieldName: string) {
+    const locator = this.getLocator(fieldName);
+    await expect(locator).toBeDisabled();
+  }
+
+  async verifyFieldVisible(fieldName: string) {
+    const locator = this.getLocator(fieldName);
+    await expect(locator).toBeVisible();
   }
 }

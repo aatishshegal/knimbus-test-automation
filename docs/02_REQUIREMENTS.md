@@ -22,4 +22,7 @@
 ## Decisions Made
 - Use DOM-based locators over `data-testid` due to framework limitations.
 - Build fresh (Greenfield), no legacy migration needed.
-- Prioritize API-based test data generation to ensure tests remain independent and reliable.
+- Prioritize API-based test data generation (`AdminApiService`) to ensure tests remain independent and reliable.
+- Monorepo Project Isolation: Use separate, dedicated test tenants for Admin UI tests to prevent race conditions against Portal UI tests.
+- Strict Single Responsibility POMs (no God classes) and linear spec files without UI loops or branching.
+- Centralize all test data and expected assertions in JSON assets (`tests/test-data/`).

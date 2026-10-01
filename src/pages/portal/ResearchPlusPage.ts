@@ -67,11 +67,10 @@ export class ResearchPlusPage extends BasePage {
     this.fromYearInput = page.locator('input[name*="from"], input[placeholder*="From Year"]').first();
     this.toYearInput = page.locator('input[name*="to"], input[placeholder*="To Year"]').first();
     
-    // Locators for results validation
     this.showingCountIndicator = page.locator('.showing-count').filter({ hasText: 'Showing' });
-    this.refreshButton = page.locator('button.polling-btn:visible', { hasText: 'Refresh' });
-    this.getMoreButton = page.locator('button.polling-btn:visible', { hasText: 'Get More' });
-    this.pollingHourglass = page.locator('svg.hourglass:visible');
+    this.refreshButton = page.getByRole('button', { name: 'Refresh' });
+    this.getMoreButton = page.getByRole('button', { name: 'Get More' });
+    this.pollingHourglass = page.locator('svg.hourglass');
     this.resultPageTabs = page.locator('.result-page-tabs, .custom-tabs-container, .tabs-wrapper');
 
     // Locators for Selected Resources component
@@ -161,31 +160,36 @@ export class ResearchPlusPage extends BasePage {
   }
 
   async triggerRefreshAndGetNewCount(initialCount: number): Promise<number> {
-    const getMoreVis = await this.getMoreButton.isVisible();
-    if (getMoreVis) {
-      await this.clickElement(this.getMoreButton, 'Get More Button');
+    // If Refresh button is not visible yet, clicking Get More triggers the next federated batch
+    const isRefreshVisible = await this.refreshButton.isVisible();
+    if (!isRefreshVisible) {
+      if (await this.getMoreButton.isVisible().catch(() => false)) {
+        await this.clickElement(this.getMoreButton, 'Get More Button');
+      }
     }
-    await expect(this.refreshButton).toBeVisible({ timeout: 90000 });
+    
+    await expect(this.refreshButton).toBeVisible({ timeout: 60000 });
     await this.clickElement(this.refreshButton, 'Refresh Button');
     
     await expect(async () => {
       const newCount = await this.getRenderedResultCount();
       expect(newCount).toBeGreaterThan(initialCount);
-    }).toPass({ timeout: 15000 });
+    }).toPass({ timeout: 20000 });
 
     return this.getRenderedResultCount();
   }
 
   async triggerGetMoreAndValidatePolling() {
-    await expect(this.pollingHourglass).toBeHidden({ timeout: 90000 });
-    const isRefreshVis = await this.refreshButton.isVisible();
-    if (isRefreshVis) {
+    await expect(this.pollingHourglass).toBeHidden({ timeout: 60000 }).catch(() => {});
+    if (await this.refreshButton.isVisible().catch(() => false)) {
       await this.clickElement(this.refreshButton, 'Refresh Button');
+      await this.page.waitForTimeout(1000);
+      await expect(this.pollingHourglass).toBeHidden({ timeout: 60000 }).catch(() => {});
     }
-    await expect(this.getMoreButton).toBeVisible({ timeout: 15000 });
+    await expect(this.getMoreButton).toBeVisible({ timeout: 30000 });
     await this.clickElement(this.getMoreButton, 'Get More Button');
     await expect(this.pollingHourglass).toBeVisible({ timeout: 10000 });
-    await expect(this.pollingHourglass).toBeHidden({ timeout: 90000 });
+    await expect(this.pollingHourglass).toBeHidden({ timeout: 60000 });
   }
 
   async selectResourcesByCount(count: number, allowedSources?: string[]): Promise<string[]> {

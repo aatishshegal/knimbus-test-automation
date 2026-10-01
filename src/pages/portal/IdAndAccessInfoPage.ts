@@ -5,6 +5,12 @@ export class IdAndAccessInfoPage {
 
     // Headings and Containers
     readonly pageHeading: Locator;
+    readonly tabHeader: Locator;
+    readonly helpText1: Locator;
+    readonly helpText2: Locator;
+    readonly frontsideHeading: Locator;
+    readonly backsideHeading: Locator;
+    readonly pleaseChooseFileError: Locator;
     
     // Id Document Section
     readonly frontsideContainer: Locator;
@@ -20,6 +26,12 @@ export class IdAndAccessInfoPage {
         this.page = page;
 
         this.pageHeading = page.getByRole('heading', { name: 'Id Document', exact: true });
+        this.tabHeader = page.locator('h1, h2, h3, .heading, [role="tab"]').filter({ hasText: /id & access info/i }).first();
+        this.helpText1 = page.locator('.id-doc-helptext-1, p, span, div').filter({ hasText: /Upload an ID/i }).first();
+        this.helpText2 = page.locator('.id-doc-helptext-2, p, span, div').filter({ hasText: /Note:/i }).first();
+        this.frontsideHeading = page.locator('.id-doc-heading, h4, h5, div').filter({ hasText: /^frontside$/i }).first();
+        this.backsideHeading = page.locator('.id-doc-heading, h4, h5, div').filter({ hasText: /^backside$/i }).first();
+        this.pleaseChooseFileError = page.getByText(/Please choose a file/i).first();
 
         // Using highly resilient parent-filtering for the frontside/backside boxes
         this.frontsideContainer = page.locator('div').filter({ hasText: /^Frontside$/ }).locator('..');
@@ -33,6 +45,14 @@ export class IdAndAccessInfoPage {
         
         // Common toast message for the application
         this.toastMessage = page.locator('.p-toast-message, .toast-message, snack-bar-container, .ngx-toastr').first();
+    }
+
+    async clearFrontsideDocument() {
+        await this.frontsideUploadInput.setInputFiles([]);
+    }
+
+    async clearBacksideDocument() {
+        await this.backsideUploadInput.setInputFiles([]);
     }
 
 

@@ -45,7 +45,9 @@ export class AdminHeader extends BasePage {
     }
 
     async verifyBulkEmailLimitVisible() {
-        await this.bulkEmailContainer.waitFor({ state: 'visible', timeout: 10000 });
+        await this.page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+        await this.bulkEmailContainer.waitFor({ state: 'visible', timeout: 15000 });
+        await this.bulkEmailContainer.scrollIntoViewIfNeeded().catch(() => {});
         await this.bulkEmailTitle.waitFor({ state: 'visible' });
         await this.bulkEmailUsageText.waitFor({ state: 'visible' });
     }

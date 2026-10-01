@@ -42,16 +42,31 @@ test.describe('Registration Form - Boundary Validations', () => {
         await registrationPage.validateScenariosForFields(['Password'], validationData.scenarios);
     });
 
-    test('Registration - Mobile and Contact number validations', async ({ registrationPage }) => {
-        await registrationPage.validateScenariosForFields(['mobile', 'officePhone', 'residentialPhone'], validationData.scenarios);
+    test.describe('Registration - Contact Fields Validation', () => {
+        const contactFields = ['mobile', 'officePhone', 'residentialPhone'];
+        for (const field of contactFields) {
+            test(`Registration - Contact field input validations: ${field}`, async ({ registrationPage }) => {
+                await registrationPage.validateScenariosForFields([field], validationData.scenarios);
+            });
+        }
     });
 
-    test('Registration - Academic and Enrollment details validations', async ({ registrationPage }) => {
-        await registrationPage.validateScenariosForFields(['college', 'department', 'qualification', 'admissionYear', 'idNumber', 'areaOfStudy'], validationData.scenarios);
+    test.describe('Registration - Academic & Enrollment Fields Validation', () => {
+        const academicFields = ['college', 'department', 'qualification', 'admissionYear', 'idNumber', 'areaOfStudy'];
+        for (const field of academicFields) {
+            test(`Registration - Academic field input validations: ${field}`, async ({ registrationPage }) => {
+                await registrationPage.validateScenariosForFields([field], validationData.scenarios);
+            });
+        }
     });
 
-    test('Registration - Address, Nationality, and Membership details validations', async ({ registrationPage }) => {
-        await registrationPage.validateScenariosForFields(['residentialAddress', 'officeAddress', 'nationality', 'membershipStatus', 'membershipType', 'summary', 'cadre', 'batch', 'rank', 'designation'], validationData.scenarios);
+    test.describe('Registration - Address & Profile Fields Validation', () => {
+        const profileFields = ['residentialAddress', 'officeAddress', 'nationality', 'membershipStatus', 'membershipType', 'summary', 'cadre', 'batch', 'rank', 'designation'];
+        for (const field of profileFields) {
+            test(`Registration - Profile field input validations: ${field}`, async ({ registrationPage }) => {
+                await registrationPage.validateScenariosForFields([field], validationData.scenarios);
+            });
+        }
     });
 
     test('Registration - ID Document upload format and size validations', async ({ registrationPage }) => {

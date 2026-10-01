@@ -8,7 +8,7 @@ import portalData from '../../test-data/portal-data.json';
 // Load post-login profile data
 const postLoginDataPath = path.resolve(__dirname, '../../../tests/test-data/portal/profile-data.json');
 const postLoginData = JSON.parse(fs.readFileSync(postLoginDataPath, 'utf-8'));
-const basicDetailsScenarios = postLoginData.basicDetailsScenarios || { positiveData: {}, negativeScenarios: [] };
+const basicDetailsScenarios = postLoginData['profile-basic-details.spec.ts'] || postLoginData.basicDetailsScenarios || { positiveData: {}, negativeScenarios: [] };
 
 const backendFieldMap: Record<string, string> = {
     'fullName': 'Name',
@@ -53,6 +53,42 @@ test.describe('Profile Details - Basic Details Suite', () => {
 
         test.afterEach(async ({ profilePage }) => {
             await profilePage.cancelIfVisible();
+        });
+
+        test.describe('Profile Basic Details - UI Controls & Field States', () => {
+            test('Profile Basic Details - Avatar image, upload trigger, name, and email banner visibility', async ({ profilePage }) => {
+                await expect(profilePage.profileImage).toBeVisible();
+                await expect(profilePage.profileImgEditIcon).toBeVisible();
+                await expect(profilePage.fullNameInput).toBeVisible();
+            });
+
+            test('Profile Basic Details - Section header and Edit button visibility', async ({ profilePage }) => {
+                await expect(profilePage.basicDetailsHeading).toBeVisible();
+                await expect(profilePage.editBtn).toBeVisible();
+            });
+
+            test('Profile Basic Details - Form fields are disabled prior to clicking Edit', async ({ profilePage }) => {
+                await expect(profilePage.fullNameInput).toBeDisabled();
+                await expect(profilePage.genderDropdown).toBeDisabled();
+                await expect(profilePage.dobInput).toBeDisabled();
+                await expect(profilePage.summaryTextarea).toBeDisabled();
+                await expect(profilePage.emailSubscriptionCheckbox).toBeDisabled();
+            });
+
+            test('Profile Basic Details - Field attributes and select options match specifications', async ({ profilePage }) => {
+                const uiLabels = postLoginData['profile-basic-details.spec.ts']?.uiLabels || {};
+                await expect(profilePage.fullNameInput).toHaveAttribute('maxlength', uiLabels.fullNameMaxLength || '101');
+                await expect(profilePage.summaryTextarea).toHaveAttribute('maxlength', uiLabels.summaryMaxLength || '2001');
+                await expect(profilePage.dobInput).toHaveAttribute('placeholder', uiLabels.dobPlaceholder || '-- / -- / ----');
+                const options = await profilePage.genderDropdown.locator('option').allInnerTexts();
+                expect(options.map(o => o.trim())).toEqual(expect.arrayContaining(uiLabels.genderOptions || ['Select', 'Male', 'Female', 'Other']));
+            });
+
+            test('Profile Basic Details - Clicking Edit button displays Save and Cancel buttons', async ({ profilePage }) => {
+                await profilePage.clickEdit();
+                await expect(profilePage.saveBtn).toBeVisible();
+                await expect(profilePage.cancelBtn).toBeVisible();
+            });
         });
 
         test('Profile Basic Details - Cancel button discards unsaved name edits and restores original value', async ({ page }) => {
@@ -130,14 +166,74 @@ test.describe('Profile Details - Basic Details Suite', () => {
                 const optionCount = await profilePage.calendarYearDropdown.locator(`option[value="${futureYear}"]`).count();
                 expect(optionCount).toBe(0);
             });
+
+            test('Profile Basic Details - Datepicker component enforces read-only input behavior preventing direct keyboard typing', async ({ profilePage, page }) => {
+                await profilePage.clickEdit();
+                await profilePage.dobInput.focus();
+                await profilePage.dobInput.type('invalid-date-string', { delay: 20 }).catch(() => {});
+                await page.locator('body').click({ position: { x: 0, y: 0 } }).catch(() => {});
+                const inputValue = await profilePage.dobInput.inputValue();
+                expect(inputValue).not.toBe('invalid-date-string');
+            });
+
+            test('Profile Basic Details - Selecting a new Date of Birth and clicking Cancel discards changes', async ({ profilePage }) => {
+                await profilePage.clickEdit();
+                const initialDob = await profilePage.dobInput.inputValue();
+                await profilePage.dobInput.click();
+                await profilePage.calendarYearDropdown.selectOption({ label: '1995' });
+                await profilePage.calendarMonthDropdown.selectOption({ label: 'May' });
+                await profilePage.page.locator('.react-datepicker__day:not(.react-datepicker__day--outside-month)').filter({ hasText: /^10$/ }).click();
+                await profilePage.cancelBtn.click();
+                expect(await profilePage.dobInput).toHaveValue(initialDob);
+            });
         });
 
         test.describe('Profile Basic Details - Gender', () => {
-            test('Profile Basic Details - Saves successfully when a valid gender option is selected', async ({ profilePage }) => {
+            const genderOptions = postLoginData['profile-basic-details.spec.ts']?.genderValues || ['Male', 'Female', 'Other'];
+            for (const option of genderOptions) {
+                test(`Profile Basic Details - Saves successfully when gender option is selected: ${option}`, async ({ profilePage }) => {
+                    await profilePage.clickEdit();
+                    await profilePage.genderDropdown.selectOption(option);
+                    await profilePage.clickSave();
+                    await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible();
+                });
+            }
+
+            test('Profile Basic Details - Selecting a new gender and clicking Cancel discards changes', async ({ profilePage }) => {
                 await profilePage.clickEdit();
-                await profilePage.genderDropdown.selectOption('Female');
+                const initialGender = await profilePage.genderDropdown.inputValue();
+                const targetGender = initialGender === 'Female' ? 'Male' : 'Female';
+                await profilePage.genderDropdown.selectOption(targetGender);
+                await profilePage.cancelBtn.click();
+                expect(await profilePage.genderDropdown.inputValue()).toBe(initialGender);
+            });
+        });
+
+        test.describe('Profile Basic Details - Summary Features', () => {
+            test('Profile Basic Details - Saves multi-line summary with line breaks and special characters', async ({ profilePage }) => {
+                const multiLine = postLoginData['profile-basic-details.spec.ts']?.summaryMultiLine;
+                await profilePage.clickEdit();
+                await profilePage.summaryTextarea.fill(multiLine);
                 await profilePage.clickSave();
-                await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible();
+                await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible({ timeout: 15000 });
+                await expect(profilePage.summaryTextarea).toHaveValue(multiLine);
+            });
+
+            test('Profile Basic Details - Modifying summary and clicking Cancel discards changes', async ({ profilePage }) => {
+                await profilePage.clickEdit();
+                const initialSummary = await profilePage.summaryTextarea.inputValue();
+                const tempSummary = postLoginData['profile-basic-details.spec.ts']?.temporaryCancelSummary || 'Temp text to cancel';
+                await profilePage.summaryTextarea.fill(tempSummary);
+                await profilePage.cancelBtn.click();
+                expect(await profilePage.summaryTextarea).toHaveValue(initialSummary);
+            });
+
+            test('Profile Basic Details - Accepts valid text within 2000 character limit', async ({ profilePage }) => {
+                const validText = postLoginData['profile-basic-details.spec.ts']?.summary2000Valid || 'Valid content';
+                await profilePage.clickEdit();
+                await profilePage.summaryTextarea.fill(validText);
+                await profilePage.clickSave();
+                await expect(profilePage.page.getByRole('heading', { name: 'Updated successfully' })).toBeVisible({ timeout: 15000 });
             });
         });
 

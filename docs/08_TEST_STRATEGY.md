@@ -1,25 +1,64 @@
 # Test Strategy
 
 ## 1. Test Pyramid & Scope
-This framework focuses on the **UI / End-to-End (E2E)** layer of the Knimbus platform, covering both the Librarian Dashboard (Admin) and the Library Portal (End User). 
+This framework focuses on the **UI / End-to-End (E2E)** and **Integration Precondition** layers of the Knimbus platform, covering both the **Librarian Dashboard (Admin)** and the **Library Portal (End User)**.
 
-## 2. Risk-Based Testing Strategy
-Because the Library Portal login is highly dynamic and dependent on Admin settings, authentication routing is considered a **High-Risk Area**. A failure here prevents all users from accessing the platform.
+## 2. Test Suites & Coverage Scope
 
-### Core Login Scenarios (Positive)
-1. Standard Login → Home Page
-2. Login → OTP → Home
-3. Login → Mandatory Details → Home
-4. Login → Welcome Page → Home
-5. Chained: Login → OTP → Mandatory Details → Welcome → Home
+### A. Library Portal (`tests/portal/`)
+1. **Authentication & Password Recovery (`authentication/`)**:
+   - Standard login (positive & negative flows, invalid credentials, domain enforcement).
+   - OTP authentication flows, resend logic, and verification errors.
+   - Forgot password with recovery email workflows.
+   - Mandatory details routing, validation, and submission.
+   - New-user chained flows (Login → OTP → Mandatory Details → Welcome Page → Home).
+2. **User Registration (`registration/`)**:
+   - Self-registration with valid domain enforcement.
+   - Unverified user registration.
+   - Granular field validation (mandatory fields, character limits, invalid formats).
+3. **Home & Landing Page (`home/`)**:
+   - Widget visibility, dynamic banners, and carousels.
+   - Subjects browsing, Content types showcase, and Publishers section.
+4. **Navigation & Top Bar (`navigation/`)**:
+   - Main menu drawer navigation and links.
+   - Global search bar trigger and persistence.
+   - Profile dropdown (My Profile, My Library, Logout).
+   - Language translation dropdown and notification popovers.
+5. **Search & Discovery (`search/`)**:
+   - Basic search, inner search query persistence, and pagination.
+   - Sorting by relevance, date, and title.
+   - Faceted filtering (content types, publishers, subjects, access types).
+   - Detail page inspection and saved search queries.
+6. **Research Plus (`research-plus/`)**:
+   - Federated search query inputs (All Words, Exact Phrase, Boolean queries).
+   - Resource selection modal, federated provider refresh, and aggregated search results.
+   - Form field validation and reset behavior.
+7. **User Profile (`profile/`)**:
+   - Profile basic details, contact info, enrollment details, work and education.
+   - ID document upload and access information.
+   - In-app password change validation.
 
-### Negative Scenarios
-1. **Access Denied**: Valid credentials but restricted by Domain Enforcement.
-2. **Invalid User / Password**: Standard authentication failures.
-3. **OTP Failures**: Invalid OTP, Expired OTP, Resend Abuse.
-4. **Mandatory Details Failures**: Empty submissions, invalid data types.
-5. **Security/Routing**: Bypassing OTP via URL manipulation, SQL Injection attempts, Concurrent Logins.
+### B. Librarian Dashboard (`tests/admin/`)
+1. **Authentication & Navigation (`auth/`, `navigation/`)**:
+   - Secure admin credentials verification and session persistence.
+   - Admin header controls (notifications, profile, tenant switcher).
+   - Admin sidebar expandable navigation.
+2. **User Management (`user-management/`)**:
+   - Metrics overview cards and user counts.
+   - Manage users table (search, role filters, sorting, bulk actions).
+   - Add Single User modal validation and creation.
+   - User profile overview (editing details, password reset, ID document approval/rejection).
+   - Service groups assignment, filtering, and user allocation.
 
 ## 3. Automation Execution Approach
-- **State Preparation (Admin Setup)**: Tests requiring specific tenant configurations (like OTP enabled) must utilize the Admin API (`AdminApiService`) to set the state *before* the user attempts to log in. This is handled via Playwright Fixtures to completely bypass UI flakiness during setup.
-- **Dynamic Routing**: Portal login relies on `Promise.race()` to intelligently wait for the correct post-login landing page, ensuring tests do not flake due to hardcoded page transitions.
+- **Precondition Automation (`AdminApiService`)**:
+  - All test prerequisites (e.g., toggling OTP, configuring required profile fields, enabling registration) are set up via API *before* test execution.
+  - Admin state is strictly restored in `afterAll` or `finally` blocks to avoid cross-test contamination.
+- **Deterministic Routing**:
+  - Spec files test discrete, predictable routes without dynamic guessing or `.or()` locators.
+- **Granular Data-Driven Architecture**:
+  - Dynamic test cases are generated via `test.describe()` using datasets from `portal-data.json` or `admin-data.json`.
+  - Every rule/field check runs as an independent `test()` block for transparent HTML/CSV reporting.
+  - Inputs are recorded via `test.info().annotations.push({ type: 'testData', description: ... })`.
+- **Pre-Authenticated Projects**:
+  - Tests utilize cached browser states from `tests/portal.setup.ts` and `tests/admin.setup.ts` to avoid redundant UI logins.

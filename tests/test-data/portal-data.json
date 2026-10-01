@@ -403,5 +403,19 @@
     "invalidOtpFormat": "1",
     "invalidOtpFull": "111111",
     "maxResends": 3
+  },
+  "notificationData": {
+    "_description": "Where: tests/portal/navigation/notification-icon.spec.ts | Class: TopNavigationBar, NotificationModal | Tests: Notification badge, modal tabs, read/unread states, pagination, and empty state",
+    "modalTitle": "Notifications",
+    "emptyStateMessage": "No notification found!",
+    "tabs": {
+      "unread": "unread",
+      "read": "read"
+    },
+    "sampleNotification": {
+      "title": "Automated EndUser Notification",
+      "description": "This is an automated test notification message sent from automation framework."
+    },
+    "showMoreButtonText": "Show more"
   }
 }
