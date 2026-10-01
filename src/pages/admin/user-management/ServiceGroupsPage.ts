@@ -84,9 +84,9 @@ export class ServiceGroupsPage extends AdminBasePage {
         this.groupNameSortIcon = this.groupNameHeader.locator('a.sorting-icons svg');
 
         // Modal Elements
-        this.modal = page.locator('.modal.show, .modal').filter({ hasText: 'Create group' });
+        this.modal = page.locator('.modal.show').filter({ hasText: 'Create group' });
         this.modalBackdrop = page.locator('.modal-backdrop');
-        this.closeCrossBtn = this.modal.locator('button.custom-modal-close');
+        this.closeCrossBtn = this.modal.locator('button.custom-modal-close, button.btn-close, .modal-header button.close, button[aria-label="Close"]');
         this.groupNameInput = this.modal.locator('input#group-name');
         this.expiryDateInput = this.modal.locator('input[name="expiryDate"]');
         this.datePicker = page.locator('.react-datepicker');
@@ -121,8 +121,8 @@ export class ServiceGroupsPage extends AdminBasePage {
         this.expiredCancelBtn = this.expiredAlert.locator('.swal2-cancel');
 
         // Edit Group Modal Elements
-        this.editModal = page.locator('.modal.show, .modal').filter({ hasText: 'Edit group' });
-        this.editCloseCrossBtn = this.editModal.locator('button.custom-modal-close');
+        this.editModal = page.locator('.modal.show').filter({ hasText: 'Edit group' });
+        this.editCloseCrossBtn = this.editModal.locator('button.custom-modal-close, button.btn-close, .modal-header button.close, button[aria-label="Close"]');
         this.editGroupNameInput = this.editModal.locator('input#edit-group-name');
         this.editExpiryDateInput = this.editModal.locator('input[name="expiryDate"]');
         this.editRaCheckbox = this.editModal.locator('input#raService');
@@ -141,12 +141,16 @@ export class ServiceGroupsPage extends AdminBasePage {
 
     async closeModalViaCross(): Promise<void> {
         await this.closeCrossBtn.click();
-        await this.modal.waitFor({ state: 'hidden', timeout: 5000 });
+        await this.modal.waitFor({ state: 'hidden', timeout: 10000 });
+        await this.modalBackdrop.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+        await this.page.locator('.modal').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
     }
 
     async closeModalViaCancel(): Promise<void> {
         await this.cancelBtn.click();
         await this.modal.waitFor({ state: 'hidden', timeout: 5000 });
+        await this.modalBackdrop.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+        await this.page.locator('.modal').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
     }
 
     async fillGroupName(name: string): Promise<void> {
@@ -292,7 +296,7 @@ export class ServiceGroupsPage extends AdminBasePage {
     async ensureGroupVisibleInTable(groupName: string): Promise<void> {
         await this.waitForTableLoaded();
         const row = this.getGroupRow(groupName).first();
-        if (!(await row.isVisible())) {
+        if (!(await row.isVisible().catch(() => false))) {
             await this.searchGroup(groupName);
         }
         await this.getGroupRow(groupName).first().waitFor({ state: 'visible', timeout: 10000 });
@@ -300,15 +304,18 @@ export class ServiceGroupsPage extends AdminBasePage {
 
     async createGroupIfNotPresent(groupName: string, expiryDateStr: string): Promise<void> {
         await this.waitForTableLoaded();
-        const isPresent = await this.isGroupPresentInTable(groupName);
+        await this.searchGroup(groupName);
+        const row = this.getGroupRow(groupName).first();
+        const isPresent = await row.isVisible().catch(() => false);
         if (!isPresent) {
             await this.clearSearch();
             await this.clickCreateGroup();
             await this.fillGroupName(groupName);
             await this.setExpiryDate(expiryDateStr);
             await this.saveGroupAndReload();
+            await this.searchGroup(groupName);
         }
-        await this.ensureGroupVisibleInTable(groupName);
+        await this.getGroupRow(groupName).first().waitFor({ state: 'visible', timeout: 10000 });
     }
 
     // --- Search Helpers ---
@@ -324,16 +331,19 @@ export class ServiceGroupsPage extends AdminBasePage {
     }
 
     async clearSearch(): Promise<void> {
-        const currentVal = await this.searchInput.inputValue();
-        if (currentVal.trim().length > 0) {
+        if (await this.searchClearBtn.isVisible().catch(() => false)) {
             const responsePromise = this.page.waitForResponse(
                 resp => resp.url().includes('getAllGroupsByOrgIdWithPagging') && resp.status() === 200,
-                { timeout: 15000 }
+                { timeout: 10000 }
             ).catch(() => null);
-            await this.searchInput.fill('');
-            await this.page.keyboard.press('Enter');
+            await this.searchClearBtn.click();
             await responsePromise;
             await this.waitForTableLoaded();
+        } else {
+            const currentVal = await this.searchInput.inputValue();
+            if (currentVal.trim().length > 0) {
+                await this.searchInput.fill('');
+            }
         }
     }
 
@@ -370,12 +380,16 @@ export class ServiceGroupsPage extends AdminBasePage {
 
     async closeEditModalViaCross(): Promise<void> {
         await this.editCloseCrossBtn.click();
-        await this.editModal.waitFor({ state: 'hidden', timeout: 5000 });
+        await this.editModal.waitFor({ state: 'hidden', timeout: 10000 });
+        await this.modalBackdrop.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+        await this.page.locator('.modal').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
     }
 
     async closeEditModalViaCancel(): Promise<void> {
         await this.editCancelBtn.click();
-        await this.editModal.waitFor({ state: 'hidden', timeout: 5000 });
+        await this.editModal.waitFor({ state: 'hidden', timeout: 10000 });
+        await this.modalBackdrop.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+        await this.page.locator('.modal').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
     }
 
     async fillEditGroupName(name: string): Promise<void> {
@@ -436,17 +450,12 @@ export class ServiceGroupsPage extends AdminBasePage {
     }
 
     async saveEditedGroupAndReload(): Promise<void> {
-        const responsePromise = this.page.waitForResponse(
-            resp => resp.url().includes('getAllGroupsByOrgIdWithPagging') && resp.status() === 200,
-            { timeout: 15000 }
-        ).catch(() => null);
         await this.editSaveBtn.click();
         await this.editModal.waitFor({ state: 'hidden', timeout: 10000 });
         const swalOk = this.page.locator('.swal2-confirm');
         if (await swalOk.isVisible({ timeout: 2000 }).catch(() => false)) {
             await swalOk.click();
         }
-        await responsePromise;
         await this.waitForTableLoaded();
     }
 
@@ -456,8 +465,10 @@ export class ServiceGroupsPage extends AdminBasePage {
     }
 
     async clickDeleteGroup(groupName: string): Promise<void> {
+        await this.modalBackdrop.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {});
+        await this.page.locator('.modal').waitFor({ state: 'detached', timeout: 3000 }).catch(() => {});
         const deleteBtn = this.getDeleteBtn(groupName);
-        await deleteBtn.click();
+        await deleteBtn.click({ force: true });
         await this.deleteModal.waitFor({ state: 'visible', timeout: 5000 });
     }
 
@@ -470,6 +481,16 @@ export class ServiceGroupsPage extends AdminBasePage {
         await this.deleteModal.waitFor({ state: 'hidden', timeout: 8000 });
         await responsePromise;
         await this.waitForTableLoaded();
+    }
+
+    async deleteGroupIfExists(groupName: string): Promise<void> {
+        await this.searchGroup(groupName);
+        const row = this.getGroupRow(groupName).first();
+        if (await row.isVisible().catch(() => false)) {
+            await this.clickDeleteGroup(groupName);
+            await this.confirmDelete();
+        }
+        await this.clearSearch();
     }
 
     async cancelDelete(): Promise<void> {

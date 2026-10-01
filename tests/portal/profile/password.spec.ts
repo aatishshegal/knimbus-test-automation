@@ -77,6 +77,17 @@ test.describe('Profile Details - Password Management', () => {
             await expect(passwordPage.newPasswordInput).toHaveAttribute('maxlength', '31');
             await expect(passwordPage.confirmPasswordInput).toHaveAttribute('maxlength', '31');
         });
+
+        test('Profile Password - Submitting empty form displays validation errors for all required fields', async ({ page }) => {
+            const passwordPage = new PasswordPage(page);
+            const emptyErrors = postLoginData['password.spec.ts']?.emptyFormErrors || {};
+            await passwordPage.clearPasswordForm();
+            await passwordPage.clickUpdatePassword();
+            
+            await expect(page.getByText(emptyErrors.oldPasswordRequired || 'Current password is required', { exact: false }).first()).toBeVisible({ timeout: 5000 });
+            await expect(page.getByText(emptyErrors.newPasswordRequired || 'New password is required', { exact: false }).first()).toBeVisible({ timeout: 5000 });
+            await expect(page.getByText(emptyErrors.confirmPasswordRequired || 'Confirm password is required', { exact: false }).first()).toBeVisible({ timeout: 5000 });
+        });
     });
 
     test.describe('Profile Password - Input Validation Scenarios', () => {

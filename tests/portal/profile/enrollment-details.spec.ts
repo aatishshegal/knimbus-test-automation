@@ -53,9 +53,19 @@ test.describe('Profile Details - Enrollment Suite', () => {
 
     test.beforeEach(async ({ page, topNavigationBar }) => {
         await page.goto(process.env.PORTAL_URL as string);
+        await expect(topNavigationBar.profileDropdown).toBeVisible({ timeout: 15000 });
         await topNavigationBar.openProfileMenu();
         await topNavigationBar.profileMenuProfileLink.click();
         await page.getByRole('tab', { name: /Enrollment Details/i }).click();
+        const enrollmentPage = new EnrollmentDetailsPage(page);
+        await expect(enrollmentPage.pageHeader).toBeVisible({ timeout: 15000 });
+    });
+
+    test('Enrollment Details - Tab header and ID number help text are visible', async ({ page }) => {
+        const enrollmentPage = new EnrollmentDetailsPage(page);
+        await expect(enrollmentPage.pageHeader).toBeVisible();
+        await expect(enrollmentPage.idNumberInput).toBeVisible();
+        await expect(enrollmentPage.staffIdHelpText).toContainText('Example: Membership');
     });
 
     test('Enrollment Details - Cancel button discards unsaved enrollment edits and restores original ID', async ({ page }) => {
@@ -70,6 +80,15 @@ test.describe('Profile Details - Enrollment Suite', () => {
         
         const revertedValue = await locator.inputValue();
         expect(revertedValue).not.toBe(tempId);
+    });
+
+    test.describe('Enrollment Details - Field Controls Visibility', () => {
+        for (const field of enrollmentFields) {
+            test(`Enrollment Details - Form field input is visible: ${field}`, async ({ page }) => {
+                const enrollmentPage = new EnrollmentDetailsPage(page);
+                await enrollmentPage.verifyFieldVisible(field);
+            });
+        }
     });
 
     test.describe('Enrollment Details - Valid Field Input', () => {
@@ -114,12 +133,12 @@ test.describe('Profile Details - Enrollment Suite', () => {
     });
 
     test.describe('Enrollment Details - Field Input Validations', () => {
-        const boundaryScenarios = enrollmentScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank') && !s.bypassLength);
+        const boundaryScenarios = enrollmentScenarios.negativeScenarios.filter((s: any) => !s.scenario.includes('Blank'));
         for (const s of boundaryScenarios) {
             test(`Enrollment Details - Rejects invalid input: ${s.field} - ${s.scenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: String(s.value) });
                 const enrollmentPage = new EnrollmentDetailsPage(page);
-                await enrollmentPage.setFieldValue(s.field, String(s.value));
+                await enrollmentPage.setFieldValue(s.field, String(s.value), !!s.bypassLength);
                 await enrollmentPage.clickSave();
                 
                 await expect(page.getByText(s.expectedError).first()).toBeVisible({ timeout: 5000 });

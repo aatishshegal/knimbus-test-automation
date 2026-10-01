@@ -72,22 +72,6 @@ export default defineConfig({
       dependencies: ['portal-setup'],
     },
 
-    // 2. Notification suite: Mutates inbox notifications & validates fresh user state
-    // Run sequentially with 1 worker to ensure inbox state isolation
-    { 
-      name: 'Portal - Notification',
-      testMatch: /portal\/navigation\/notification-icon\.spec\.ts/,
-      fullyParallel: false,
-      workers: 1,
-      use: { 
-        ...devices['Desktop Chrome'], 
-        viewport: defaultViewport, 
-        deviceScaleFactor: undefined,
-        storageState: storageState 
-      },
-      dependencies: ['portal-setup'],
-    },
-
     // 2. Federated Search suite: Research+ (54 tests)
     // Run sequentially with 1 worker to avoid proxy bottlenecking on external publisher APIs (IEEE, ProQuest)
     { 
@@ -105,11 +89,43 @@ export default defineConfig({
       dependencies: ['portal-setup'],
     },
 
-    // 3. Mutating suites: Authentication, Registration, and Profile
-    // Run sequentially with 1 worker to protect tenant admin security state and prevent backend race conditions
+    // 2. Notification suite: Mutates inbox notifications & validates fresh user state
+    // Run sequentially with 1 worker to ensure inbox state isolation
     { 
-      name: 'Portal - Mutating',
-      testMatch: /portal\/(authentication|registration|profile)\/.*\.spec\.ts/,
+      name: 'Portal - Notification',
+      testMatch: /portal\/navigation\/notification-icon\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined,
+        storageState: storageState 
+      },
+      dependencies: ['portal-setup'],
+    },
+
+    // 3. Post-login mutating suites: Profile details, contact, enrollment, password
+    // Run sequentially after Notification to prevent race conditions during editability toggling
+    { 
+      name: 'Portal - Profile',
+      testMatch: /portal\/profile\/.*\.spec\.ts/,
+      fullyParallel: false,
+      workers: 1,
+      use: { 
+        ...devices['Desktop Chrome'], 
+        viewport: defaultViewport, 
+        deviceScaleFactor: undefined,
+        storageState: storageState 
+      },
+      dependencies: ['Portal - Notification'],
+    },
+
+    // 4. Pre-login mutating suites: Authentication & Registration
+    // Run sequentially after Profile to protect tenant admin security state
+    { 
+      name: 'Portal - Pre-Login',
+      testMatch: /portal\/(authentication|registration)\/.*\.spec\.ts/,
       fullyParallel: false,
       workers: 1,
       use: { 
@@ -117,10 +133,11 @@ export default defineConfig({
         viewport: defaultViewport, 
         deviceScaleFactor: undefined 
       },
-      dependencies: ['portal-setup'],
+      dependencies: ['Portal - Profile'],
     },
 
     // --- ADMIN DASHBOARD UI TESTS ---
+    // Run after Pre-Login to ensure tenant user management is isolated
     {
       name: 'Admin Dashboard',
       testMatch: /admin\/.*\.spec\.ts/,
@@ -132,7 +149,7 @@ export default defineConfig({
         deviceScaleFactor: undefined,
         storageState: '.auth/admin.json'
       },
-      dependencies: ['admin-setup'],
+      dependencies: ['admin-setup', 'Portal - Pre-Login'],
     }
   ],
 });

@@ -1567,219 +1567,225 @@ test.describe('User Management - Service Groups Management', () => {
     });
 
     // ==========================================
+    // ==========================================
     // EDIT SERVICE GROUP VALIDATIONS (Cases 85 - 97)
     // ==========================================
-    const editTestGroupName = `${sgData.testInputs.uniquePrefix}Edit_${Date.now()}`;
-    const editedNewGroupName = `${sgData.testInputs.uniquePrefix}Edited_${Date.now()}`;
-    const futureExpiryDate = '2028-11-20';
+    test.describe('Service Groups - Edit Group Validations', () => {
+        const editTestGroupName = `${sgData.testInputs.uniquePrefix}Edit_Val`;
+        const editedNewGroupName = `${sgData.testInputs.uniquePrefix}Edited_Val`;
+        const futureExpiryDate = '2028-11-20';
 
-    // 85. Click Edit icon opens modal with pre-populated values
-    test('TC_ServiceGroups_85_EditGroup_OpenModal_DisplaysPrePopulatedValues - clicking edit icon opens Edit group modal with pre-filled details', async () => {
-        test.info().annotations.push({ type: 'testData', description: editTestGroupName });
+        test.beforeEach(async () => {
+            await serviceGroupsPage.createGroupIfNotPresent(editTestGroupName, validExpiryDateStr);
+        });
 
-        await serviceGroupsPage.createGroupIfNotPresent(editTestGroupName, validExpiryDateStr);
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 85. Click Edit icon opens modal with pre-populated values
+        test('TC_ServiceGroups_85_EditGroup_OpenModal_DisplaysPrePopulatedValues - clicking edit icon opens Edit group modal with pre-filled details', async () => {
+            test.info().annotations.push({ type: 'testData', description: editTestGroupName });
 
-        const currentName = await serviceGroupsPage.getEditGroupName();
-        expect(currentName).toBe(editTestGroupName);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        const currentExpiry = await serviceGroupsPage.getEditExpiryDate();
-        expect(currentExpiry).toBe(validExpiryDateStr);
+            const currentName = await serviceGroupsPage.getEditGroupName();
+            expect(currentName).toBe(editTestGroupName);
 
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            const currentExpiry = await serviceGroupsPage.getEditExpiryDate();
+            expect(currentExpiry).toBe(validExpiryDateStr);
 
-    // 86. Cross icon closes modal
-    test('TC_ServiceGroups_86_EditGroup_CloseCrossIcon_ClosesModal - clicking cross icon closes Edit group modal', async () => {
-        test.info().annotations.push({ type: 'testData', description: editTestGroupName });
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 86. Cross icon closes modal
+        test('TC_ServiceGroups_86_EditGroup_CloseCrossIcon_ClosesModal - clicking cross icon closes Edit group modal', async () => {
+            test.info().annotations.push({ type: 'testData', description: editTestGroupName });
 
-        await serviceGroupsPage.closeEditModalViaCross();
-        await expect(serviceGroupsPage.editModal).not.toBeVisible();
-    });
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-    // 87. Cancel button discards changes
-    test('TC_ServiceGroups_87_EditGroup_CancelButton_DiscardsChanges - modifying fields and clicking Cancel discards changes', async () => {
-        test.info().annotations.push({ type: 'testData', description: editTestGroupName });
+            await serviceGroupsPage.closeEditModalViaCross();
+            await expect(serviceGroupsPage.editModal).not.toBeVisible();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 87. Cancel button discards changes
+        test('TC_ServiceGroups_87_EditGroup_CancelButton_DiscardsChanges - modifying fields and clicking Cancel discards changes', async () => {
+            test.info().annotations.push({ type: 'testData', description: editTestGroupName });
 
-        await serviceGroupsPage.fillEditGroupName(`${editTestGroupName}_Mod`);
-        await serviceGroupsPage.closeEditModalViaCancel();
-        await expect(serviceGroupsPage.editModal).not.toBeVisible();
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        // Verify group name in table remains unchanged
-        await expect(serviceGroupsPage.getGroupRow(editTestGroupName)).toBeVisible();
-    });
+            await serviceGroupsPage.fillEditGroupName(`${editTestGroupName}_Mod`);
+            await serviceGroupsPage.closeEditModalViaCancel();
+            await expect(serviceGroupsPage.editModal).not.toBeVisible();
 
-    // 88. Empty group name validation
-    test('TC_ServiceGroups_88_EditGroup_EmptyName_ErrorMessage - clearing group name shows required error message', async () => {
-        test.info().annotations.push({ type: 'testData', description: sgData.messages.nameRequired });
+            // Verify group name in table remains unchanged
+            await expect(serviceGroupsPage.getGroupRow(editTestGroupName)).toBeVisible();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 88. Empty group name validation
+        test('TC_ServiceGroups_88_EditGroup_EmptyName_ErrorMessage - clearing group name shows required error message', async () => {
+            test.info().annotations.push({ type: 'testData', description: sgData.messages.nameRequired });
 
-        await serviceGroupsPage.clearEditGroupName();
-        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
-        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.nameRequired);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            await serviceGroupsPage.clearEditGroupName();
+            await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+            await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.nameRequired);
 
-    // 89. HTML tags validation
-    test('TC_ServiceGroups_89_EditGroup_HtmlTags_ErrorMessage - entering HTML tags displays error message', async () => {
-        test.info().annotations.push({ type: 'testData', description: sgData.messages.htmlUnsupported });
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 89. HTML tags validation
+        test('TC_ServiceGroups_89_EditGroup_HtmlTags_ErrorMessage - entering HTML tags displays error message', async () => {
+            test.info().annotations.push({ type: 'testData', description: sgData.messages.htmlUnsupported });
 
-        await serviceGroupsPage.fillEditGroupName(sgData.testInputs.htmlPayload);
-        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
-        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.htmlUnsupported);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            await serviceGroupsPage.fillEditGroupName(sgData.testInputs.htmlPayload);
+            await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+            await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.htmlUnsupported);
 
-    // 90. Leading / trailing spaces validation
-    test('TC_ServiceGroups_90_EditGroup_Spaces_ErrorMessage - entering spaces displays error message', async () => {
-        test.info().annotations.push({ type: 'testData', description: sgData.messages.leadingTrailingSpaces });
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 90. Leading / trailing spaces validation
+        test('TC_ServiceGroups_90_EditGroup_Spaces_ErrorMessage - entering spaces displays error message', async () => {
+            test.info().annotations.push({ type: 'testData', description: sgData.messages.leadingTrailingSpaces });
 
-        await serviceGroupsPage.fillEditGroupName(sgData.testInputs.spacedName);
-        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
-        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.leadingTrailingSpaces);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            await serviceGroupsPage.fillEditGroupName(sgData.testInputs.spacedName);
+            await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+            await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.leadingTrailingSpaces);
 
-    // 91. Max length (100 chars) exceeded
-    test('TC_ServiceGroups_91_EditGroup_MaxLength_ErrorMessage - entering over 100 characters displays error message', async () => {
-        test.info().annotations.push({ type: 'testData', description: sgData.messages.max100Chars });
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 91. Max length (100 chars) exceeded
+        test('TC_ServiceGroups_91_EditGroup_MaxLength_ErrorMessage - entering over 100 characters displays error message', async () => {
+            test.info().annotations.push({ type: 'testData', description: sgData.messages.max100Chars });
 
-        await serviceGroupsPage.fillEditGroupName(sgData.testInputs.oversizedName);
-        await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
-        await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.max100Chars);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            await serviceGroupsPage.fillEditGroupName(sgData.testInputs.oversizedName);
+            await expect(serviceGroupsPage.editGroupNameError).toBeVisible();
+            await expect(serviceGroupsPage.editGroupNameError).toContainText(sgData.messages.max100Chars);
 
-    // 92. Duplicate group name validation
-    test('TC_ServiceGroups_92_EditGroup_AlreadyExists_ErrorMessage - changing name to existing group name displays already exists alert', async () => {
-        test.info().annotations.push({ type: 'testData', description: sgData.messages.alreadyExists });
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 92. Duplicate group name validation
+        test('TC_ServiceGroups_92_EditGroup_AlreadyExists_ErrorMessage - changing name to existing group name displays already exists alert', async () => {
+            test.info().annotations.push({ type: 'testData', description: sgData.messages.alreadyExists });
 
-        await serviceGroupsPage.fillEditGroupName(sgData.existingGroup);
-        await serviceGroupsPage.clickEditSave();
-        await expect(serviceGroupsPage.editDuplicateGroupAlert).toBeVisible();
-        await expect(serviceGroupsPage.editDuplicateGroupAlert).toContainText(sgData.messages.alreadyExists);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            await serviceGroupsPage.fillEditGroupName(sgData.existingGroup);
+            await serviceGroupsPage.clickEditSave();
+            await expect(serviceGroupsPage.editDuplicateGroupAlert).toBeVisible();
+            await expect(serviceGroupsPage.editDuplicateGroupAlert).toContainText(sgData.messages.alreadyExists);
 
-    // 93. Calendar past dates disabled
-    test('TC_ServiceGroups_93_EditGroup_Calendar_PastDatesDisabled - verifies past dates are disabled in datepicker', async () => {
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.openEditCalendar();
-        await expect(serviceGroupsPage.disabledDateDays.first()).toBeVisible();
-        const pastDate = serviceGroupsPage.disabledDateDays.first();
-        await expect(pastDate).toHaveAttribute('aria-disabled', 'true');
+        // 93. Calendar past dates disabled
+        test('TC_ServiceGroups_93_EditGroup_Calendar_PastDatesDisabled - verifies past dates are disabled in datepicker', async () => {
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeCalendarViaEscape();
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            await serviceGroupsPage.openEditCalendar();
+            await expect(serviceGroupsPage.disabledDateDays.first()).toBeVisible();
+            const pastDate = serviceGroupsPage.disabledDateDays.first();
+            await expect(pastDate).toHaveAttribute('aria-disabled', 'true');
 
-    // 94. Access options dependency: checking Mobile App auto-selects Off Campus
-    test('TC_ServiceGroups_94_EditGroup_AccessOptions_SelectingMobile_AutoSelectsRA - selecting mobile app automatically selects off campus access', async () => {
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+            await serviceGroupsPage.closeCalendarViaEscape();
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.toggleEditRa(false);
-        await serviceGroupsPage.toggleEditMobile(true);
-        const isRaChecked = await serviceGroupsPage.isEditRaChecked();
-        expect(isRaChecked).toBeTruthy();
+        // 94. Access options dependency: checking Mobile App auto-selects Off Campus
+        test('TC_ServiceGroups_94_EditGroup_AccessOptions_SelectingMobile_AutoSelectsRA - selecting mobile app automatically selects off campus access', async () => {
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeEditModalViaCancel();
-    });
+            await serviceGroupsPage.toggleEditRa(false);
+            await serviceGroupsPage.toggleEditMobile(true);
+            const isRaChecked = await serviceGroupsPage.isEditRaChecked();
+            expect(isRaChecked).toBeTruthy();
 
-    // 95. Update Group Name successfully
-    test('TC_ServiceGroups_95_EditGroup_UpdateName_Success - changing group name updates name in table row', async () => {
-        test.info().annotations.push({ type: 'testData', description: editedNewGroupName });
+            await serviceGroupsPage.closeEditModalViaCancel();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
-        await serviceGroupsPage.clickEditGroup(editTestGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 95. Update Group Name successfully
+        test('TC_ServiceGroups_95_EditGroup_UpdateName_Success - changing group name updates name in table row', async () => {
+            test.info().annotations.push({ type: 'testData', description: editedNewGroupName });
 
-        await serviceGroupsPage.fillEditGroupName(editedNewGroupName);
-        await serviceGroupsPage.saveEditedGroupAndReload();
+            await serviceGroupsPage.ensureGroupVisibleInTable(editTestGroupName);
+            await serviceGroupsPage.clickEditGroup(editTestGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
-        await expect(serviceGroupsPage.getGroupRow(editedNewGroupName)).toBeVisible();
-    });
+            await serviceGroupsPage.fillEditGroupName(editedNewGroupName);
+            await serviceGroupsPage.saveEditedGroupAndReload();
 
-    // 96. Update Expiry Date successfully
-    test('TC_ServiceGroups_96_EditGroup_UpdateExpiryDate_Success - changing expiry date updates expiry cell in table row', async () => {
-        test.info().annotations.push({ type: 'testData', description: futureExpiryDate });
+            await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+            await expect(serviceGroupsPage.getGroupRow(editedNewGroupName)).toBeVisible();
+        });
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
-        await serviceGroupsPage.clickEditGroup(editedNewGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+        // 96. Update Expiry Date successfully
+        test('TC_ServiceGroups_96_EditGroup_UpdateExpiryDate_Success - changing expiry date updates expiry cell in table row', async () => {
+            test.info().annotations.push({ type: 'testData', description: futureExpiryDate });
 
-        await serviceGroupsPage.setEditExpiryDate(futureExpiryDate);
-        await serviceGroupsPage.saveEditedGroupAndReload();
+            await serviceGroupsPage.createGroupIfNotPresent(editedNewGroupName, validExpiryDateStr);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+            await serviceGroupsPage.clickEditGroup(editedNewGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
-        const updatedExpiry = await serviceGroupsPage.getExpiryDate(editedNewGroupName);
-        expect(updatedExpiry).toBe(futureExpiryDate);
-    });
+            await serviceGroupsPage.setEditExpiryDate(futureExpiryDate);
+            await serviceGroupsPage.saveEditedGroupAndReload();
 
-    // 97. Update Access Options successfully
-    test('TC_ServiceGroups_97_EditGroup_ToggleAccessOptions_Success - toggling access options persists upon re-opening Edit modal', async () => {
-        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
-        await serviceGroupsPage.clickEditGroup(editedNewGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+            await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+            const updatedExpiry = await serviceGroupsPage.getExpiryDate(editedNewGroupName);
+            expect(updatedExpiry).toBe(futureExpiryDate);
+        });
 
-        await serviceGroupsPage.toggleEditRa(true);
-        await serviceGroupsPage.toggleEditMobile(true);
-        await serviceGroupsPage.saveEditedGroupAndReload();
+        // 97. Update Access Options successfully
+        test('TC_ServiceGroups_97_EditGroup_ToggleAccessOptions_Success - toggling access options persists upon re-opening Edit modal', async () => {
+            await serviceGroupsPage.createGroupIfNotPresent(editedNewGroupName, validExpiryDateStr);
+            await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+            await serviceGroupsPage.clickEditGroup(editedNewGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        // Re-open and verify checkboxes persisted
-        await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
-        await serviceGroupsPage.clickEditGroup(editedNewGroupName);
-        await expect(serviceGroupsPage.editModal).toBeVisible();
+            await serviceGroupsPage.toggleEditRa(true);
+            await serviceGroupsPage.toggleEditMobile(true);
+            await serviceGroupsPage.saveEditedGroupAndReload();
 
-        expect(await serviceGroupsPage.isEditRaChecked()).toBeTruthy();
-        expect(await serviceGroupsPage.isEditMobileChecked()).toBeTruthy();
+            // Re-open and verify checkboxes persisted
+            await serviceGroupsPage.ensureGroupVisibleInTable(editedNewGroupName);
+            await serviceGroupsPage.clickEditGroup(editedNewGroupName);
+            await expect(serviceGroupsPage.editModal).toBeVisible();
 
-        await serviceGroupsPage.closeEditModalViaCancel();
+            expect(await serviceGroupsPage.isEditRaChecked()).toBeTruthy();
+            expect(await serviceGroupsPage.isEditMobileChecked()).toBeTruthy();
 
-        // Teardown editedNewGroupName
-        await serviceGroupsPage.clickDeleteGroup(editedNewGroupName);
-        await serviceGroupsPage.confirmDelete();
-        await expect(serviceGroupsPage.getGroupRow(editedNewGroupName)).not.toBeVisible();
-        await serviceGroupsPage.clearSearch();
+            await serviceGroupsPage.closeEditModalViaCancel();
+
+            // Teardown
+            await serviceGroupsPage.deleteGroupIfExists(editedNewGroupName);
+            await serviceGroupsPage.deleteGroupIfExists(editTestGroupName);
+        });
     });
 
     // ==========================================

@@ -11,6 +11,9 @@ export class PasswordPage {
     readonly newPasswordEyeIcon: Locator;
     readonly confirmPasswordEyeIcon: Locator;
     readonly successToast: Locator;
+    readonly oldPasswordError: Locator;
+    readonly newPasswordError: Locator;
+    readonly confirmPasswordError: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -31,6 +34,10 @@ export class PasswordPage {
         this.newPasswordEyeIcon = page.locator('i.fa-eye, i.fa-eye-slash, .eye-icon, img[src*="eye"]').nth(1);
         this.confirmPasswordEyeIcon = page.locator('i.fa-eye, i.fa-eye-slash, .eye-icon, img[src*="eye"]').nth(2);
         this.successToast = page.getByRole('heading', { name: /Updated successfully/i });
+
+        this.oldPasswordError = page.locator('#oldPassword ~ .invalid-feedback, div:has(#oldPassword) .error-message, div:has(#oldPassword) .profile-form-errortxt').first();
+        this.newPasswordError = page.locator('#newPassword ~ .invalid-feedback, div:has(#newPassword) .error-message, div:has(#newPassword) .profile-form-errortxt').first();
+        this.confirmPasswordError = page.locator('#confirmPassword ~ .invalid-feedback, div:has(#confirmPassword) .error-message, div:has(#confirmPassword) .profile-form-errortxt').first();
     }
 
     /**

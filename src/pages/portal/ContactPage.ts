@@ -40,6 +40,26 @@ export class ContactPage extends BasePage {
     await this.editBtn.click();
   }
 
+  async verifyFieldsDisabled() {
+    await expect(this.mobileInput).toBeDisabled();
+    await expect(this.officePhoneInput).toBeDisabled();
+    await expect(this.residentialPhoneInput).toBeDisabled();
+    await expect(this.nationalityDropdown).toBeDisabled();
+    await expect(this.officeAddressInput).toBeDisabled();
+    await expect(this.residentialAddressInput).toBeDisabled();
+  }
+
+  async verifyFormVisibility() {
+    await expect(this.mobileInput).toBeVisible();
+    await expect(this.officePhoneInput).toBeVisible();
+    await expect(this.residentialPhoneInput).toBeVisible();
+    await expect(this.nationalityDropdown).toBeVisible();
+    await expect(this.officeAddressInput).toBeVisible();
+    await expect(this.residentialAddressInput).toBeVisible();
+    await expect(this.saveBtn).toBeVisible();
+    await expect(this.cancelBtn).toBeVisible();
+  }
+
   async clickSave() {
     await this.saveBtn.click();
   }
@@ -54,13 +74,17 @@ export class ContactPage extends BasePage {
     }
   }
 
-  async setFieldValue(field: string, value: string) {
+  async setFieldValue(field: string, value: string, bypassLength: boolean = false) {
     await this.ensureInEditMode();
     const locator = this.getLocator(field);
     if (field === 'nationality') {
       await locator.selectOption(value);
     } else {
+      if (bypassLength) {
+        await locator.evaluate((el: HTMLElement) => el.removeAttribute('maxlength'));
+      }
       await locator.fill(value);
+      await locator.blur();
     }
   }
 

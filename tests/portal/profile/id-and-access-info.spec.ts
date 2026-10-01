@@ -51,6 +51,37 @@ test.describe('Profile Details - ID & Access Info Suite', () => {
             await page.getByRole('tab', { name: /Id & Access Info/i }).click();
             await expect(idAccessPage.pageHeading).toBeVisible();
         });
+
+        test('ID and Access - Section heading, help texts, and file input controls are visible', async () => {
+            const uiLabels = postLoginData['id-and-access-info.spec.ts']?.uiLabels || {};
+            await expect(idAccessPage.pageHeading).toHaveText(uiLabels.heading || 'Id Document');
+            await expect(idAccessPage.helpText1).toContainText(uiLabels.helpText1 || 'Upload an ID');
+            await expect(idAccessPage.helpText2).toContainText(uiLabels.helpText2 || 'Note:');
+            await expect(idAccessPage.frontsideHeading).toBeVisible();
+            await expect(idAccessPage.backsideHeading).toBeVisible();
+            await expect(idAccessPage.frontsideUploadInput).toHaveAttribute('accept', expect.stringContaining('.jpg'));
+            await expect(idAccessPage.backsideUploadInput).toHaveAttribute('accept', expect.stringContaining('.jpg'));
+            await expect(idAccessPage.saveBtn).toBeVisible();
+        });
+
+        test('ID and Access - Prompts error when saving without choosing any ID files', async () => {
+            const uiLabels = postLoginData['id-and-access-info.spec.ts']?.uiLabels || {};
+            await idAccessPage.clearFrontsideDocument();
+            await idAccessPage.clearBacksideDocument();
+            await idAccessPage.saveBtn.click();
+            await expect(idAccessPage.pleaseChooseFileError).toContainText(uiLabels.pleaseChooseFile || 'Please choose a file');
+        });
+
+        test('ID and Access - Clears selected files from frontside and backside inputs', async () => {
+            const dataDir = path.resolve(__dirname, '../../../tests/test-data');
+            const validDocPath = path.resolve(dataDir, 'dummy-id.jpg');
+            await idAccessPage.frontsideUploadInput.setInputFiles(validDocPath);
+            await idAccessPage.backsideUploadInput.setInputFiles(validDocPath);
+            await idAccessPage.clearFrontsideDocument();
+            await idAccessPage.clearBacksideDocument();
+            expect(await idAccessPage.frontsideUploadInput.inputValue()).toBe('');
+            expect(await idAccessPage.backsideUploadInput.inputValue()).toBe('');
+        });
         for (const s of idDocumentScenarios) {
             const testTitle = s.ScenarioType === 'Positive'
                 ? `ID and Access - Uploads valid document: ${s.Scenario}`
@@ -100,6 +131,9 @@ test.describe('Profile Details - Off-Campus Access Workflow', () => {
     test.beforeAll(async () => {
         adminApi = new AdminApiService();
         await adminApi.login();
+        await adminApi.updateSecuritySettings({
+            mandatoryFields: { fields: [], isMandatory: false }
+        });
     });
 
     test.afterAll(async () => {
@@ -117,6 +151,9 @@ test.describe('Profile Details - Off-Campus Access Workflow', () => {
         // Phase 1: Login as New User and Verify Default Pending State
         await portalLoginPage.login(testUserEmail, testUserPassword);
         await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
+        if (page.url().includes('mandatory') || await page.getByText(/Fill the mandatory detail/i).isVisible().catch(() => false)) {
+            await page.goto(process.env.PORTAL_URL as string);
+        }
         await expect(topNavigationBar.profileDropdown).toBeVisible({ timeout: 15000 });
 
         await topNavigationBar.navigateToProfile();

@@ -241,6 +241,9 @@ test.describe('Notification - Empty State (Fresh User)', () => {
   test.beforeAll(async () => {
     adminApi = new AdminApiService();
     await adminApi.login();
+    await adminApi.updateSecuritySettings({
+      mandatoryFields: { fields: [], isMandatory: false }
+    });
     const uniqueId = Date.now().toString().slice(-6);
     freshEmail = `empty_notif_${uniqueId}@yopmail.com`;
     await adminApi.addSingleUser(`Fresh Notif User ${uniqueId}`, freshEmail);
@@ -258,6 +261,10 @@ test.describe('Notification - Empty State (Fresh User)', () => {
     await loginPage.login(freshEmail, freshPassword);
     await termsAndConditionsModal.handleTermsAndConditionsIfVisible();
     await page.locator('.overlay, .overlay_inner').waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+    if (page.url().includes('mandatory') || await page.getByText(/Fill the mandatory detail/i).isVisible().catch(() => false)) {
+      await page.goto(process.env.PORTAL_URL as string);
+      await page.locator('.overlay, .overlay_inner').waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+    }
     await expect(topNavigationBar.notificationIcon).toBeVisible({ timeout: 15000 });
   });
 

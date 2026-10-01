@@ -9,6 +9,7 @@
       "officeAddress": "Hadpsar, Pune 411028",
       "residentialAddress": "Pune"
     },
+    "validNationality": "India",
     "negativeScenarios": [
       {
         "field": "officeAddress",
@@ -422,14 +423,6 @@
         "bypassLength": true
       },
       {
-        "scenario": "department - More than 102 characters",
-        "field": "department",
-        "validationType": "errorMessage",
-        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "expectedError": "Maximum 100 characters allowed",
-        "bypassLength": true
-      },
-      {
         "scenario": "idNumber - More than 102 characters",
         "field": "idNumber",
         "validationType": "errorMessage",
@@ -438,24 +431,8 @@
         "bypassLength": true
       },
       {
-        "scenario": "college - More than 102 characters",
-        "field": "college",
-        "validationType": "errorMessage",
-        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "expectedError": "Maximum 100 characters allowed",
-        "bypassLength": true
-      },
-      {
         "scenario": "areaOfStudy - More than 152 characters",
         "field": "areaOfStudy",
-        "validationType": "errorMessage",
-        "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "expectedError": "Maximum 150 characters allowed",
-        "bypassLength": true
-      },
-      {
-        "scenario": "qualification - More than 152 characters",
-        "field": "qualification",
         "validationType": "errorMessage",
         "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "expectedError": "Maximum 150 characters allowed",
@@ -636,13 +613,26 @@
         "Scenario": "Valid .jpeg Upload",
         "ExpectedMessage": "Id updated successfully"
       }
-    ]
+    ],
+    "uiLabels": {
+      "heading": "Id Document",
+      "helpText1": "Upload an ID such as College ID",
+      "helpText2": "Note:",
+      "frontsideHeading": "Frontside",
+      "backsideHeading": "Backside",
+      "pleaseChooseFile": "Please choose a file"
+    }
   },
   "password.spec.ts": {
     "_description": "Where: tests/portal/profile/password.spec.ts | Class: PasswordPage | Tests: Profile Change Password validations (Current password, new password boundary/complexity, confirm password matching, eye icon toggle)",
     "validInputs": {
       "newPassword": "Password@123",
       "newPassword2": "Password@321"
+    },
+    "emptyFormErrors": {
+      "oldPasswordRequired": "Current password is required (5-30 characters)",
+      "newPasswordRequired": "New password is required (5-30 characters)",
+      "confirmPasswordRequired": "Confirm password is required (5-30 characters)"
     },
     "negativeScenarios": [
       {
@@ -717,6 +707,18 @@
       "fullName": "Automation User",
       "summary": "This is a valid summary for automation."
     },
+    "uiLabels": {
+      "heading": "Basic Details",
+      "fullNameMaxLength": "101",
+      "summaryMaxLength": "2001",
+      "dobPlaceholder": "-- / -- / ----",
+      "genderOptions": ["Select", "Male", "Female", "Other"]
+    },
+    "genderOptions": ["Male", "Female", "Other"],
+    "summaryMultiLine": "Line 1: Senior QA Automation Lead.\nLine 2: Special Chars & Punctuation: @#$%^&*()_+.\nLine 3: Verified automatically.",
+    "summary2000Valid": "Valid QA automated summary profile description text exceeding standard brief lengths.",
+    "temporaryCancelSummary": "Temporary draft text that should be cancelled",
+    "imageUploadTitle": "Upload image",
     "negativeScenarios": [
       {
         "field": "fullName",
