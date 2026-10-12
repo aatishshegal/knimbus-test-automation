@@ -54,22 +54,28 @@ Knimbus Test Automation/
 - **Node.js** (v18 or higher)
 - **npm** (Node Package Manager)
 
-## 📦 Installation
+> [!TIP]
+> **Setting up on a new or copied machine?**  
+> Check out the complete step-by-step guide: [docs/SETUP_AND_EXECUTION_GUIDE.md](docs/SETUP_AND_EXECUTION_GUIDE.md) for environment setup, multi-tenant explanation, and troubleshooting.
 
-1. Clone the repository:
+## 📦 Installation & Quickstart
+
+1. Clone or copy the repository:
    ```bash
-   git clone <repository_url>
    cd "Knimbus Test Automation"
    ```
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Install Playwright browsers:
+3. Install Playwright browsers and system dependencies:
    ```bash
-   npx playwright install
+   npx playwright install --with-deps
    ```
-4. Create a `.env` file in the root directory and configure your credentials (use `.env.example` as a template).
+4. Create your `.env` file from the template and configure credentials:
+   ```bash
+   cp .env.example .env
+   ```
 
 ## 🧪 Executing Tests
 
