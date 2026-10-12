@@ -103,7 +103,7 @@ export class SelectUsersModal extends AdminBasePage {
         await this.allUsersCountContainer.waitFor({ state: 'visible', timeout: 5000 });
         await expect(this.allUsersCountContainer).toContainText(/\d+/, { timeout: 10000 });
         const text = await this.allUsersCountContainer.innerText();
-        const match = text.match(/\d+/);
+        const match = text.match(/[\d,]+/);
         return match ? match[0] : '';
     }
 
@@ -220,16 +220,16 @@ export class SelectUsersModal extends AdminBasePage {
     async getSelectedUsersCount(): Promise<number> {
         await this.allUsersCountContainer.waitFor({ state: 'visible', timeout: 5000 });
         const text = await this.allUsersCountContainer.innerText();
-        const match = text.match(/\d+/);
-        return match ? parseInt(match[0], 10) : 0;
+        const match = text.match(/[\d,]+/);
+        return match ? parseInt(match[0].replace(/,/g, ''), 10) : 0;
     }
 
     async getUnselectedUsersCount(): Promise<number> {
         await this.allUsersCountContainer.waitFor({ state: 'visible', timeout: 5000 });
         await expect(this.allUsersCountContainer).toContainText(/\d+/, { timeout: 10000 });
         const text = await this.allUsersCountContainer.innerText();
-        const match = text.match(/\d+/);
-        return match ? parseInt(match[0], 10) : 0;
+        const match = text.match(/[\d,]+/);
+        return match ? parseInt(match[0].replace(/,/g, ''), 10) : 0;
     }
 
     async clickSelectAll(): Promise<void> {

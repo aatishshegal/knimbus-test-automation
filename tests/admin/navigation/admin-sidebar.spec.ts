@@ -10,7 +10,7 @@ test.describe('Admin Sidebar Navigation', () => {
         await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
     });
 
-    test('TC_AdminSidebar_NavigateToSecuritySettings - successfully toggles accordion and navigates', async ({ page }) => {
+    test('Admin Sidebar - Navigation - Expands accordion and navigates to Security Settings page', async ({ page }) => {
         const dashboard = new AdminDashboardLoginPage(page);
         // Navigate to Security Settings
         await dashboard.sidebar.navigateToSecuritySettings();

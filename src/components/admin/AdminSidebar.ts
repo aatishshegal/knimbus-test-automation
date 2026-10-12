@@ -60,6 +60,14 @@ export class AdminSidebar {
         await this.navigateToSubMenu('User Management', 'Manage Users');
     }
 
+    async navigateToContentGroups() {
+        await this.navigateToSubMenu('User Management', 'Content Groups');
+    }
+
+    async navigateToServiceGroups() {
+        await this.navigateToSubMenu('User Management', 'Service Groups');
+    }
+
     // ==========================================
     // SETUP > Content
     // ==========================================

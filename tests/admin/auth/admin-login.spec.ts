@@ -6,7 +6,7 @@ test.describe('Admin Dashboard Login', () => {
     // We want to test login itself, so we must start logged out
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test('TC_AdminLogin_Success - logs in successfully', async ({ page }) => {
+    test('Admin Authentication - Login - Authenticates successfully with valid credentials and stores session', async ({ page }) => {
         const loginPage = new AdminDashboardLoginPage(page);
 
         await loginPage.navigate();

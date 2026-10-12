@@ -46,7 +46,7 @@ test.describe('Profile Work & Education Suite', () => {
         });
 
         workExpValidationScenarios.forEach((scenarioData) => {
-            test(`TC_WorkExp_${scenarioData.scenario.replace(/[^a-zA-Z0-9]/g, '_')}`, async ({ page }) => {
+            test(`Work & Education - Work Experience - ${scenarioData.scenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: JSON.stringify(scenarioData) });
                 const workAndEducationPage = new WorkAndEducationPage(page);
                 await workAndEducationPage.runValidationScenario('work', scenarioData, workExpPositiveData);
@@ -87,7 +87,7 @@ test.describe('Profile Work & Education Suite', () => {
             }
         });
 
-        test('TC_WorkExp_CreateEntryAndVerifyCard', async () => {
+        test('Work & Education - Work Experience - Adds new work history entry and displays card on profile', async () => {
             await workAndEducationPage.createEntry('work', {
                 jobTitle: targetJobTitle,
                 companyName: targetCompany,
@@ -97,19 +97,19 @@ test.describe('Profile Work & Education Suite', () => {
             await workAndEducationPage.verifyCardVisible('work', targetJobTitle);
         });
 
-        test('TC_WorkExp_VerifyAddMoreOpensBlankForm', async () => {
+        test('Work & Education - Work Experience - Add More button opens empty entry form', async () => {
             await workAndEducationPage.verifyAddMoreOpensBlankForm('work');
         });
 
-        test('TC_WorkExp_VerifySaveCancelDeleteButtonsInEditMode', async () => {
+        test('Work & Education - Work Experience - Action buttons are visible and enabled in edit mode', async () => {
             await workAndEducationPage.verifyEditFormButtonsVisible('work', targetJobTitle);
         });
 
-        test('TC_WorkExp_CancelEditPreservesCard', async () => {
+        test('Work & Education - Work Experience - Cancel button discards changes and preserves existing card', async () => {
             await workAndEducationPage.cancelEdit('work', targetJobTitle);
         });
 
-        test('TC_WorkExp_EditEntryAndVerifyUpdate', async () => {
+        test('Work & Education - Work Experience - Modifies existing entry and updates profile card', async () => {
             await workAndEducationPage.updateEntry('work', targetJobTitle, {
                 jobTitle: updatedJobTitle,
                 companyName: updatedCompany
@@ -117,7 +117,7 @@ test.describe('Profile Work & Education Suite', () => {
             await workAndEducationPage.verifyCardVisible('work', updatedJobTitle);
         });
 
-        test('TC_WorkExp_DeleteRemovesCard', async () => {
+        test('Work & Education - Work Experience - Delete action removes entry card from profile', async () => {
             await workAndEducationPage.deleteCard('work', updatedJobTitle);
         });
     });
@@ -136,7 +136,8 @@ test.describe('Profile Work & Education Suite', () => {
         });
 
         eduValidationScenarios.forEach((scenarioData) => {
-            test(`TC_Education_${scenarioData.scenario.replace(/[^a-zA-Z0-9]/g, '_')}`, async ({ page }) => {
+            const cleanScenario = scenarioData.scenario.replace(/_/g, ' ').replace(/^Validation\s*-\s*/i, '');
+            test(`Work & Education - Education - ${cleanScenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: JSON.stringify(scenarioData) });
                 const workAndEducationPage = new WorkAndEducationPage(page);
                 await workAndEducationPage.runValidationScenario('edu', scenarioData, eduPositiveData);
@@ -177,7 +178,7 @@ test.describe('Profile Work & Education Suite', () => {
             }
         });
 
-        test('TC_Education_CreateEntryAndVerifyCard', async () => {
+        test('Work & Education - Education - Adds new education entry and displays card on profile', async () => {
             await workAndEducationPage.createEntry('edu', {
                 institutionName: targetInstitution,
                 eduDegree: targetDegree,
@@ -187,19 +188,19 @@ test.describe('Profile Work & Education Suite', () => {
             await workAndEducationPage.verifyCardVisible('edu', targetInstitution);
         });
 
-        test('TC_Education_VerifyAddMoreOpensBlankForm', async () => {
+        test('Work & Education - Education - Add More button opens empty entry form', async () => {
             await workAndEducationPage.verifyAddMoreOpensBlankForm('edu');
         });
 
-        test('TC_Education_VerifySaveCancelDeleteButtonsInEditMode', async () => {
+        test('Work & Education - Education - Action buttons are visible and enabled in edit mode', async () => {
             await workAndEducationPage.verifyEditFormButtonsVisible('edu', targetInstitution);
         });
 
-        test('TC_Education_CancelEditPreservesCard', async () => {
+        test('Work & Education - Education - Cancel button discards changes and preserves existing card', async () => {
             await workAndEducationPage.cancelEdit('edu', targetInstitution);
         });
 
-        test('TC_Education_EditEntryAndVerifyUpdate', async () => {
+        test('Work & Education - Education - Modifies existing entry and updates profile card', async () => {
             await workAndEducationPage.updateEntry('edu', targetInstitution, {
                 institutionName: updatedInstitution,
                 eduDegree: updatedDegree
@@ -207,7 +208,7 @@ test.describe('Profile Work & Education Suite', () => {
             await workAndEducationPage.verifyCardVisible('edu', updatedInstitution);
         });
 
-        test('TC_Education_DeleteRemovesCard', async () => {
+        test('Work & Education - Education - Delete action removes entry card from profile', async () => {
             await workAndEducationPage.deleteCard('edu', updatedInstitution);
         });
     });
@@ -226,7 +227,8 @@ test.describe('Profile Work & Education Suite', () => {
         });
 
         fosValidationScenarios.forEach((scenarioData) => {
-            test(`TC_FieldOfStudies_${scenarioData.scenario.replace(/[^a-zA-Z0-9]/g, '_')}`, async ({ page }) => {
+            const cleanScenario = scenarioData.scenario.replace(/_/g, ' ').replace(/^Validation\s*-\s*/i, '');
+            test(`Work & Education - Field of Study - ${cleanScenario}`, async ({ page }) => {
                 test.info().annotations.push({ type: 'testData', description: JSON.stringify(scenarioData) });
                 const workAndEducationPage = new WorkAndEducationPage(page);
                 await workAndEducationPage.runValidationScenario('fos', scenarioData, fosPositiveData);
@@ -265,33 +267,33 @@ test.describe('Profile Work & Education Suite', () => {
             }
         });
 
-        test('TC_FieldOfStudies_CreateEntryAndVerifyCard', async () => {
+        test('Work & Education - Field of Study - Adds new field of study entry and displays card on profile', async () => {
             await workAndEducationPage.createEntry('fos', {
                 studySub: targetSubject
             });
             await workAndEducationPage.verifyCardVisible('fos', targetSubject);
         });
 
-        test('TC_FieldOfStudies_VerifyAddMoreOpensBlankForm', async () => {
+        test('Work & Education - Field of Study - Add More button opens empty entry form', async () => {
             await workAndEducationPage.verifyAddMoreOpensBlankForm('fos');
         });
 
-        test('TC_FieldOfStudies_VerifySaveCancelDeleteButtonsInEditMode', async () => {
+        test('Work & Education - Field of Study - Action buttons are visible and enabled in edit mode', async () => {
             await workAndEducationPage.verifyEditFormButtonsVisible('fos', targetSubject);
         });
 
-        test('TC_FieldOfStudies_CancelEditPreservesCard', async () => {
+        test('Work & Education - Field of Study - Cancel button discards changes and preserves existing card', async () => {
             await workAndEducationPage.cancelEdit('fos', targetSubject);
         });
 
-        test('TC_FieldOfStudies_EditEntryAndVerifyUpdate', async () => {
+        test('Work & Education - Field of Study - Modifies existing entry and updates profile card', async () => {
             await workAndEducationPage.updateEntry('fos', targetSubject, {
                 studySub: updatedSubject
             });
             await workAndEducationPage.verifyCardVisible('fos', updatedSubject);
         });
 
-        test('TC_FieldOfStudies_DeleteRemovesCard', async () => {
+        test('Work & Education - Field of Study - Delete action removes entry card from profile', async () => {
             await workAndEducationPage.deleteCard('fos', updatedSubject);
         });
     });

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { AdminDashboardLoginPage } from '../../../src/pages/admin/AdminDashboardLoginPage';
 import { ManageUsersPage } from '../../../src/pages/admin/user-management/ManageUsersPage';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import adminData from '../../test-data/admin-data.json';
@@ -16,10 +17,14 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
     });
 
     test.beforeEach(async ({ page }) => {
-        await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/userManagement/manageUsers');
+        const dashboard = new AdminDashboardLoginPage(page);
+        await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
+        await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
+        await dashboard.sidebar.navigateToManageUsers();
+        await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
     });
 
-    test('TC_ManageUsers_UserOverview_Password_Tab_Present - verifies password option is present in User Profile Overview', async ({ page }) => {
+    test('User Profile Password - Tab Navigation - Verifies Password tab is present and selectable', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await manageUsersPage.searchForUser(testEmail);
         await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -29,7 +34,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
         await manageUsersPage.clickProfileCancel();
     });
 
-    test('TC_ManageUsers_UserOverview_Password_TextBoxes_Present - verifies presence of New Password and Confirm Password text boxes', async ({ page }) => {
+    test('User Profile Password - Form Fields - Displays New Password and Confirm Password inputs with eye icons', async ({ page }) => {
         const manageUsersPage = new ManageUsersPage(page);
         await manageUsersPage.searchForUser(testEmail);
         await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -44,7 +49,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
 
     test.describe('New Password Field Validations', () => {
 
-        test('TC_ManageUsers_UserOverview_Password_NewPassword_Clear_RequiredMessage - clearing text box displays required message', async ({ page }) => {
+        test('User Profile Password - New Password Field - Clearing input displays required error message', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -57,7 +62,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_NewPassword_MinLength_Message - entering 3 characters displays minimum characters required message', async ({ page }) => {
+        test('User Profile Password - New Password Field - Entering fewer than 5 characters displays min length error', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -70,7 +75,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_NewPassword_MaxLength_Message - entering more than 30 characters displays maximum characters allowed message', async ({ page }) => {
+        test('User Profile Password - New Password Field - Entering more than 30 characters displays max length error', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -83,7 +88,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_NewPassword_EyeIcon_TogglesPlainText - clicking eye icon toggles password visibility between masked and plain text', async ({ page }) => {
+        test('User Profile Password - New Password Field - Eye icon toggles between masked and plain text', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -108,7 +113,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
 
     test.describe('Confirm Password Field Validations', () => {
 
-        test('TC_ManageUsers_UserOverview_Password_ConfirmPassword_Clear_RequiredMessage - clearing text box displays required message', async ({ page }) => {
+        test('User Profile Password - Confirm Password Field - Clearing input displays required error message', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -121,7 +126,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_ConfirmPassword_MinLength_Message - entering 3 characters displays minimum characters required message', async ({ page }) => {
+        test('User Profile Password - Confirm Password Field - Entering fewer than 5 characters displays min length error', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -134,7 +139,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_ConfirmPassword_MaxLength_Message - entering more than 30 characters displays maximum characters allowed message', async ({ page }) => {
+        test('User Profile Password - Confirm Password Field - Entering more than 30 characters displays max length error', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -147,7 +152,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_ConfirmPassword_EyeIcon_TogglesPlainText - clicking eye icon toggles password visibility between masked and plain text', async ({ page }) => {
+        test('User Profile Password - Confirm Password Field - Eye icon toggles between masked and plain text', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -172,7 +177,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
 
     test.describe('Password Matching & Form Actions', () => {
 
-        test('TC_ManageUsers_UserOverview_Password_Mismatch_Message - entering different passwords displays mismatch error', async ({ page }) => {
+        test('User Profile Password - Password Matching - entering different passwords displays mismatch error', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -186,7 +191,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_SamePassword_Update_DisplaysToast - entering matching passwords and clicking update displays confirmation toast', async ({ page }) => {
+        test('User Profile Password - Form Actions - entering matching passwords and clicking update displays confirmation toast', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -201,7 +206,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await expect(toast).toBeVisible({ timeout: 5000 });
         });
 
-        test('TC_ManageUsers_UserOverview_Password_SamePassword_Close_ClosesModal - entering password and clicking close closes the modal without submitting', async ({ page }) => {
+        test('User Profile Password - Form Actions - entering password and clicking close closes the modal without submitting', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -214,7 +219,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await expect(manageUsersPage.userProfileModal).toBeHidden();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_EmptySubmit_TriggersBothRequiredMessages - clicking update on blank form triggers required messages on both fields', async ({ page }) => {
+        test('User Profile Password - Form Submission - clicking update on blank form triggers required messages on both fields', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -228,7 +233,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_Boundary_ExactMinLength_Accepted - entering exactly 5 characters is accepted without errors', async ({ page }) => {
+        test('User Profile Password - Boundary Validation - entering exactly 5 characters is accepted without errors', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -244,7 +249,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_Boundary_ExactMaxLength_Accepted - entering exactly 30 characters is accepted without errors', async ({ page }) => {
+        test('User Profile Password - Boundary Validation - entering exactly 30 characters is accepted without errors', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -260,7 +265,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_Mismatch_DynamicallyClearsOnCorrection - mismatch error clears dynamically when confirm password is corrected', async ({ page }) => {
+        test('User Profile Password - Password Matching - mismatch error clears dynamically when confirm password is corrected', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -278,7 +283,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_ModalReopen_ResetsFormState - closing and reopening modal clears password fields and lingering errors', async ({ page }) => {
+        test('User Profile Password - Modal State - closing and reopening modal clears password fields and lingering errors', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);
@@ -308,7 +313,7 @@ test.describe('Manage Users - User Profile Overview - Change Password Tab', () =
             await manageUsersPage.clickChangePasswordClose();
         });
 
-        test('TC_ManageUsers_UserOverview_Password_Close_Via_CrossIcon - clicking top cross icon dismisses the modal from Change Password tab', async ({ page }) => {
+        test('User Profile Password - Modal State - clicking top cross icon dismisses the modal from Change Password tab', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(testEmail);
             await manageUsersPage.clickUserDetailsOverview(testEmail);

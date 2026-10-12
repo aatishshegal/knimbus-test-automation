@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { AdminDashboardLoginPage } from '../../../src/pages/admin/AdminDashboardLoginPage';
 import { ManageUsersPage } from '../../../src/pages/admin/user-management/ManageUsersPage';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import * as adminData from '../../test-data/admin-data.json';
@@ -39,7 +40,11 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
     test.describe.serial('ID Document Static Elements & Validation (Uncommitted State)', () => {
         test.beforeEach(async ({ page }) => {
             manageUsersPage = new ManageUsersPage(page);
-            await page.goto(`${process.env.ADMIN_TEST_URL}/librarian/v2/elibrarySetup${manageUsersUrl}`);
+            const dashboard = new AdminDashboardLoginPage(page);
+            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
+            await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
+            await dashboard.sidebar.navigateToManageUsers();
+            await expect(page).toHaveURL(new RegExp(manageUsersUrl));
             await manageUsersPage.searchForUser(validationUserEmail);
             await manageUsersPage.clickUserDetailsOverview(validationUserEmail);
             await manageUsersPage.clickIdDocumentTab();
@@ -49,12 +54,12 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_IDDoc_00_IntroText_Present - displays helpful intro description', async () => {
+        test('User Profile ID Document - Guidance Text - Displays helpful introductory upload description', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.introText });
             await expect(manageUsersPage.idDocIntroText).toContainText(testData.introText);
         });
 
-        test('TC_IDDoc_01_Options_Present - validates Frontside and Backside upload sections are visible', async () => {
+        test('User Profile ID Document - Upload Sections - Validates Frontside and Backside upload sections are visible', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.frontsideHeading}, ${testData.backsideHeading}` });
             await expect(manageUsersPage.idDocFrontHeading).toContainText(testData.frontsideHeading);
             await expect(manageUsersPage.idDocBackHeading).toContainText(testData.backsideHeading);
@@ -62,47 +67,47 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocBackContainer).toBeVisible();
         });
 
-        test('TC_IDDoc_02_MandatoryAndOptional_Indicators_Present - verifies mandatory asterisk on frontside and optional label on backside', async () => {
+        test('User Profile ID Document - Field Indicators - Displays mandatory asterisk on frontside and optional label on backside', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.indicators.mandatory}, ${testData.indicators.optional}` });
             await expect(manageUsersPage.idDocFrontHeading.locator('.text-danger')).toHaveText(testData.indicators.mandatory);
             await expect(manageUsersPage.idDocBackHeading.locator('.grey-clr')).toHaveText(testData.indicators.optional);
         });
 
-        test('TC_IDDoc_03_AcceptAttribute_Specified - verifies file input elements declare accepted image formats', async () => {
+        test('User Profile ID Document - File Input - Declares accepted image format file extensions', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.acceptAttribute });
             await expect(manageUsersPage.idDocFrontInput).toHaveAttribute('accept', testData.acceptAttribute);
             await expect(manageUsersPage.idDocBackInput).toHaveAttribute('accept', testData.acceptAttribute);
         });
 
         // Frontside Scenarios
-        test('TC_IDDoc_04_Frontside_DefaultInstructions - validates default instruction texts', async () => {
+        test('User Profile ID Document - Frontside Upload - Displays default upload instruction texts', async () => {
             test.info().annotations.push({ type: 'testData', description: JSON.stringify(testData.instructions) });
             await expect(manageUsersPage.idDocFrontMainInstruction).toHaveText(testData.instructions.main);
             await expect(manageUsersPage.idDocFrontBestFitInfo).toHaveText(testData.instructions.sizeLimit);
             await expect(manageUsersPage.idDocFrontFormatInfo).toHaveText(testData.instructions.formats);
         });
 
-        test('TC_IDDoc_05_Frontside_BrowseFile_Option - validates Browse File button is present and clickable', async () => {
+        test('User Profile ID Document - Frontside Upload - Browse File button is visible and enabled', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.instructions.browseBtn });
             await expect(manageUsersPage.idDocFrontBrowseLabel).toBeVisible();
             await expect(manageUsersPage.idDocFrontBrowseLabel).toHaveText(testData.instructions.browseBtn);
         });
 
-        test('TC_IDDoc_06_Frontside_ExceedFileSizeLimit - displays error message when file exceeds 1MB', async () => {
+        test('User Profile ID Document - Frontside Upload - Displays error message when file exceeds 1MB', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.files.largeFile });
             await manageUsersPage.uploadFrontIdFile(largeFilePath);
             await expect(manageUsersPage.idDocFrontError).toBeVisible();
             await expect(manageUsersPage.idDocFrontError).toHaveText(testData.messages.sizeExceeded);
         });
 
-        test('TC_IDDoc_07_Frontside_UnsupportedFormat - displays error message when file format is not JPG, JPEG, or PNG', async () => {
+        test('User Profile ID Document - Frontside Upload - Displays error message when file format is not JPG, JPEG, or PNG', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.files.invalidPdf });
             await manageUsersPage.uploadFrontIdFile(invalidPdfPath);
             await expect(manageUsersPage.idDocFrontError).toBeVisible();
             await expect(manageUsersPage.idDocFrontError).toHaveText(testData.messages.invalidFormat);
         });
 
-        test('TC_IDDoc_08_Frontside_ErrorTransition_SizeExceededToInvalidFormat - updates error message when switching from oversized to unsupported format', async () => {
+        test('User Profile ID Document - Frontside Upload - Updates error message when switching from oversized to unsupported format', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.largeFile} -> ${testData.files.invalidPdf}` });
             await manageUsersPage.uploadFrontIdFile(largeFilePath);
             await expect(manageUsersPage.idDocFrontError).toHaveText(testData.messages.sizeExceeded);
@@ -111,7 +116,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocFrontError).toHaveText(testData.messages.invalidFormat);
         });
 
-        test('TC_IDDoc_09_Frontside_ErrorClearance_OnValidFileSelected - dynamically clears error when valid file is selected after invalid format', async () => {
+        test('User Profile ID Document - Frontside Upload - Clears validation error when selecting a valid file', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.invalidPdf} -> ${testData.files.validPng}` });
             await manageUsersPage.uploadFrontIdFile(invalidPdfPath);
             await expect(manageUsersPage.idDocFrontError).toBeVisible();
@@ -121,7 +126,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validPng);
         });
 
-        test('TC_IDDoc_10_Frontside_ReplaceValidWithInvalidFormat - displays error when replacing valid file with invalid format without uploading', async () => {
+        test('User Profile ID Document - Frontside Upload - Displays error when replacing valid file with invalid format', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.validPng} -> ${testData.files.invalidPdf}` });
             await manageUsersPage.uploadFrontIdFile(validPngPath);
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validPng);
@@ -131,7 +136,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocFrontError).toHaveText(testData.messages.invalidFormat);
         });
 
-        test('TC_IDDoc_11_Frontside_ReplaceValidWithSizeExceeded - displays error when replacing valid file with oversized file without uploading', async () => {
+        test('User Profile ID Document - Frontside Upload - Displays error when replacing valid file with file exceeding 1MB', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.validPng} -> ${testData.files.largeFile}` });
             await manageUsersPage.uploadFrontIdFile(validPngPath);
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validPng);
@@ -142,34 +147,34 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
         });
 
         // Backside Scenarios
-        test('TC_IDDoc_12_Backside_DefaultInstructions - validates default instruction texts', async () => {
+        test('User Profile ID Document - Backside Upload - Displays default upload instruction texts', async () => {
             test.info().annotations.push({ type: 'testData', description: JSON.stringify(testData.instructions) });
             await expect(manageUsersPage.idDocBackMainInstruction).toHaveText(testData.instructions.main);
             await expect(manageUsersPage.idDocBackBestFitInfo).toHaveText(testData.instructions.sizeLimit);
             await expect(manageUsersPage.idDocBackFormatInfo).toHaveText(testData.instructions.formats);
         });
 
-        test('TC_IDDoc_13_Backside_BrowseFile_Option - validates Browse File button is present and clickable', async () => {
+        test('User Profile ID Document - Backside Upload - Browse File button is visible and enabled', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.instructions.browseBtn });
             await expect(manageUsersPage.idDocBackBrowseLabel).toBeVisible();
             await expect(manageUsersPage.idDocBackBrowseLabel).toHaveText(testData.instructions.browseBtn);
         });
 
-        test('TC_IDDoc_14_Backside_ExceedFileSizeLimit - displays error message when file exceeds 1MB', async () => {
+        test('User Profile ID Document - Backside Upload - Displays error message when file exceeds 1MB', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.files.largeFile });
             await manageUsersPage.uploadBackIdFile(largeFilePath);
             await expect(manageUsersPage.idDocBackError).toBeVisible();
             await expect(manageUsersPage.idDocBackError).toHaveText(testData.messages.sizeExceeded);
         });
 
-        test('TC_IDDoc_15_Backside_UnsupportedFormat - displays error message when file format is not JPG, JPEG, or PNG', async () => {
+        test('User Profile ID Document - Backside Upload - Displays error message when file format is not JPG, JPEG, or PNG', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.files.invalidPdf });
             await manageUsersPage.uploadBackIdFile(invalidPdfPath);
             await expect(manageUsersPage.idDocBackError).toBeVisible();
             await expect(manageUsersPage.idDocBackError).toHaveText(testData.messages.invalidFormat);
         });
 
-        test('TC_IDDoc_16_Backside_ErrorClearance_OnValidFileSelected - dynamically clears error when valid file is selected after invalid format', async () => {
+        test('User Profile ID Document - Backside Upload - Clears validation error when selecting a valid file', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.invalidPdf} -> ${testData.files.validPng}` });
             await manageUsersPage.uploadBackIdFile(invalidPdfPath);
             await expect(manageUsersPage.idDocBackError).toBeVisible();
@@ -179,7 +184,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocBackFileName).toHaveText(testData.files.validPng);
         });
 
-        test('TC_IDDoc_17_Backside_ReplaceFileBeforeUpload - replaces first file with second file in preview', async () => {
+        test('User Profile ID Document - Backside Upload - Replaces preview file when selecting a different file before upload', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.validPng} -> ${testData.files.validJpg}` });
             await manageUsersPage.uploadBackIdFile(validPngPath);
             await expect(manageUsersPage.idDocBackFileName).toHaveText(testData.files.validPng);
@@ -188,7 +193,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocBackFileName).toHaveText(testData.files.validJpg);
         });
 
-        test('TC_IDDoc_18_Backside_ReplaceValidWithInvalidFormat - displays error when replacing valid file with invalid format without uploading', async () => {
+        test('User Profile ID Document - Backside Upload - Displays error when replacing valid file with invalid format', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.validPng} -> ${testData.files.invalidPdf}` });
             await manageUsersPage.uploadBackIdFile(validPngPath);
             await expect(manageUsersPage.idDocBackFileName).toHaveText(testData.files.validPng);
@@ -198,7 +203,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocBackError).toHaveText(testData.messages.invalidFormat);
         });
 
-        test('TC_IDDoc_19_Backside_ReplaceValidWithSizeExceeded - displays error when replacing valid file with oversized file without uploading', async () => {
+        test('User Profile ID Document - Backside Upload - Displays error when replacing valid file with file exceeding 1MB', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.validPng} -> ${testData.files.largeFile}` });
             await manageUsersPage.uploadBackIdFile(validPngPath);
             await expect(manageUsersPage.idDocBackFileName).toHaveText(testData.files.validPng);
@@ -208,7 +213,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocBackError).toHaveText(testData.messages.sizeExceeded);
         });
 
-        test('TC_IDDoc_20_BacksideWithoutFrontside_Error - displays error when uploading backside without frontside', async () => {
+        test('User Profile ID Document - Submission Validation - Displays error when uploading backside without frontside', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.messages.fileRequired });
             await manageUsersPage.uploadBackIdFile(validPngPath);
             await manageUsersPage.clickIdDocUpdate();
@@ -216,14 +221,14 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocFrontError).toHaveText(testData.messages.fileRequired);
         });
 
-        test('TC_IDDoc_21_EmptySubmit_Error - displays error when submitting without selecting any file', async () => {
+        test('User Profile ID Document - Submission Validation - Displays error when submitting without choosing any file', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.messages.fileRequired });
             await manageUsersPage.clickIdDocUpdate();
             await expect(manageUsersPage.idDocFrontError).toBeVisible();
             await expect(manageUsersPage.idDocFrontError).toHaveText(testData.messages.fileRequired);
         });
 
-        test('TC_IDDoc_22_CloseButton_DiscardsSelection - discards chosen file when clicking close button', async () => {
+        test('User Profile ID Document - Modal Actions - Discards chosen file when clicking Close button', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.files.validPng });
             await manageUsersPage.uploadFrontIdFile(validPngPath);
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validPng);
@@ -237,7 +242,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.idDocFrontMainInstruction).toHaveText(testData.instructions.main);
         });
 
-        test('TC_IDDoc_23_CrossIcon_DiscardsSelection - discards chosen file when closing modal via top cross icon', async () => {
+        test('User Profile ID Document - Modal Actions - Discards chosen file when closing modal via top cross icon', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.files.validPng });
             await manageUsersPage.uploadFrontIdFile(validPngPath);
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validPng);
@@ -255,7 +260,11 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
     test.describe.serial('ID Document Upload & Commit Scenarios', () => {
         test.beforeEach(async ({ page }) => {
             manageUsersPage = new ManageUsersPage(page);
-            await page.goto(`${process.env.ADMIN_TEST_URL}/librarian/v2/elibrarySetup${manageUsersUrl}`);
+            const dashboard = new AdminDashboardLoginPage(page);
+            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
+            await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
+            await dashboard.sidebar.navigateToManageUsers();
+            await expect(page).toHaveURL(new RegExp(manageUsersUrl));
             await manageUsersPage.searchForUser(commitUserEmail);
             await manageUsersPage.clickUserDetailsOverview(commitUserEmail);
             await manageUsersPage.clickIdDocumentTab();
@@ -265,7 +274,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_IDDoc_24_UploadFrontsideOnly_Success - successfully updates ID document with frontside only', async () => {
+        test('User Profile ID Document - Save Document - Updates ID document successfully with frontside image only', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.files.validJpg });
             await manageUsersPage.uploadFrontIdFile(validJpgPath);
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validJpg);
@@ -275,13 +284,13 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.swalToast).toContainText(testData.messages.updateSuccessToast);
         });
 
-        test('TC_IDDoc_25_PersistedDocument_DisplayedOnReopen - verifies persisted image preview and saved filename on modal reopen', async () => {
+        test('User Profile ID Document - Persisted State - Displays saved document preview and file status upon reopening modal', async () => {
             test.info().annotations.push({ type: 'testData', description: testData.persistedFrontFileName });
             await expect(manageUsersPage.idDocFrontPreviewImage).toBeVisible();
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.persistedFrontFileName);
         });
 
-        test('TC_IDDoc_26_UpdateAlreadySavedDocument_Success - allows uploading and replacing an already saved ID document', async () => {
+        test('User Profile ID Document - Save Document - Uploads and replaces previously saved ID document successfully', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.persistedFrontFileName} -> ${testData.files.validJpg}` });
             await manageUsersPage.uploadFrontIdFile(validJpgPath);
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validJpg);
@@ -291,7 +300,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.swalToast).toContainText(testData.messages.updateSuccessToast);
         });
 
-        test('TC_IDDoc_27_Frontside_ReplaceFileBeforeUpload - replaces first file with second file and successfully uploads', async () => {
+        test('User Profile ID Document - Frontside Upload - Replaces selected file before upload and saves successfully', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.validPng} -> ${testData.files.validJpg}` });
             await manageUsersPage.uploadFrontIdFile(validPngPath);
             await expect(manageUsersPage.idDocFrontFileName).toHaveText(testData.files.validPng);
@@ -304,7 +313,7 @@ test.describe.serial('Manage Users - Profile Overview ID Document Tab', () => {
             await expect(manageUsersPage.swalToast).toContainText(testData.messages.updateSuccessToast);
         });
 
-        test('TC_IDDoc_28_UploadBothFrontAndBack_Success - successfully updates ID document with both frontside and backside', async () => {
+        test('User Profile ID Document - Save Document - Updates ID document successfully with both frontside and backside files', async () => {
             test.info().annotations.push({ type: 'testData', description: `${testData.files.validPng} & ${testData.files.validJpg}` });
             await manageUsersPage.uploadFrontIdFile(validPngPath);
             await manageUsersPage.uploadBackIdFile(validJpgPath);
