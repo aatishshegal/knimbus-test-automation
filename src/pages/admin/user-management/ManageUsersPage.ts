@@ -367,7 +367,7 @@ export class ManageUsersPage extends AdminBasePage {
         this.exportUsageLogCloseCrossBtn = this.exportUsageLogModal.locator('button.custom-modal-close');
         this.userProfileModal = page.locator('.modal.show, .swal2-popup, .offcanvas.show, [role=\"dialog\"]').filter({ hasText: 'User Profile' });
         this.userProfileSaveBtn = this.userProfileModal.getByRole('button', { name: 'Update', exact: true });
-        this.userProfileCancelBtn = this.userProfileModal.getByRole('button', { name: 'Cancel', exact: true });
+        this.userProfileCancelBtn = this.userProfileModal.getByRole('button', { name: /cancel|close/i });
 
         // Content Group Initializations
         this.contentGroupInput = this.userProfileModal.locator('#content-group');

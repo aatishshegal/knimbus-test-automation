@@ -1250,7 +1250,7 @@ test.describe('User Management - Service Groups Management', () => {
         await page.goto(`${process.env.ADMIN_TEST_URL}/librarian/v2/elibrarySetup${overviewUrl}`);
         await page.waitForLoadState('networkidle');
         const expectedTotalUsersStr = await overviewPage.getRegisteredUsersCount();
-        const expectedTotalUsers = parseInt(expectedTotalUsersStr, 10);
+        const expectedTotalUsers = parseInt(expectedTotalUsersStr.replace(/,/g, ''), 10);
         test.info().annotations.push({ type: 'testData', description: `Overview Total Users: ${expectedTotalUsers}` });
 
         // Step 2: Navigate back to Service Groups, open modal for empty group, switch to Unselected tab
@@ -1270,6 +1270,7 @@ test.describe('User Management - Service Groups Management', () => {
 
     // 71. Verify all user checkboxes in Unselected tab are unchecked by default
     test('Service Groups - Unselected Tab - all user checkboxes in Unselected tab are unchecked by default', async () => {
+        await serviceGroupsPage.createGroupIfNotPresent(emptyUnselGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(emptyUnselGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
@@ -1285,6 +1286,7 @@ test.describe('User Management - Service Groups Management', () => {
     test('Service Groups - Unselected Tab - verifies Select all button is visible and Deselect All is absent', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.buttons.selectAll });
 
+        await serviceGroupsPage.createGroupIfNotPresent(emptyUnselGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(emptyUnselGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
@@ -1301,6 +1303,7 @@ test.describe('User Management - Service Groups Management', () => {
     test('Service Groups - Unselected Tab - clicking update without changes displays alert modal', async () => {
         test.info().annotations.push({ type: 'testData', description: sgData.selectUsersModal.noChangesAlert.title });
 
+        await serviceGroupsPage.createGroupIfNotPresent(emptyUnselGroupName, validExpiryDateStr);
         await serviceGroupsPage.ensureGroupVisibleInTable(emptyUnselGroupName);
         await serviceGroupsPage.clickAddOrEditUsers(emptyUnselGroupName);
         await expect(selectUsersModal.modal).toBeVisible();
@@ -1371,7 +1374,7 @@ test.describe('User Management - Service Groups Management', () => {
 
         await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[0]);
         const allUsersCountStr = await selectUsersModal.getAllUsersCount();
-        const allUsersCount = parseInt(allUsersCountStr, 10);
+        const allUsersCount = parseInt(allUsersCountStr.replace(/,/g, ''), 10);
 
         await selectUsersModal.clickTab(sgData.selectUsersModal.tabs[1]);
         const selectedCount = await selectUsersModal.getSelectedUsersCount();
@@ -1707,6 +1710,7 @@ test.describe('User Management - Service Groups Management', () => {
             await expect(serviceGroupsPage.editModal).toBeVisible();
 
             await serviceGroupsPage.openEditCalendar();
+            await serviceGroupsPage.navigateToMonthWithDisabledDates();
             await expect(serviceGroupsPage.disabledDateDays.first()).toBeVisible();
             const pastDate = serviceGroupsPage.disabledDateDays.first();
             await expect(pastDate).toHaveAttribute('aria-disabled', 'true');

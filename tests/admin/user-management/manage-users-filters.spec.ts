@@ -72,8 +72,14 @@ test.describe('User Management - Manage Users Filters', () => {
         await expect(toastLocator).toBeVisible({ timeout: 15000 });
         await expect(toastLocator).not.toBeVisible();
 
-        // Navigate to Manage Users and apply filter
+        // Navigate to Manage Users and assign service group
         await dashboard.sidebar.navigateToManageUsers();
+        await manageUsersPage.clearSearchSafely();
+        await manageUsersPage.searchForUser(serviceGroupEmail);
+        await manageUsersPage.assignServiceGroup(serviceGroupEmail, targetGroup);
+        await manageUsersPage.clearSearchSafely();
+
+        // Apply filter
         await manageUsersPage.filterByServiceGroup(targetGroup);
 
         // Verify filtered table rows have the target service group

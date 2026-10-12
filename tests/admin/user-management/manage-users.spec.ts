@@ -414,6 +414,7 @@ test.describe('User Management - Manage Users', () => {
         const manageUsersPage = new ManageUsersPage(page);
         await manageUsersPage.clearSearchSafely();
         await manageUsersPage.searchForUser(testEmail9);
+        await manageUsersPage.assignServiceGroup(testEmail9, userToCreate.serviceGroup as string);
         await manageUsersPage.verifyAssignedServiceGroup(testEmail9, userToCreate.serviceGroup as string);
         await manageUsersPage.clickSendNotification(testEmail9);
 

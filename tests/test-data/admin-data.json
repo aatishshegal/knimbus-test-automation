@@ -41,6 +41,75 @@
       "expiryDate": "2026-10-10",
       "dob": "2000-01-01"
     },
+    "addSingleUserData": {
+      "_description": "Where: tests/admin/user-management/add-single-user.spec.ts | Class: AddSingleUserPage | Tests: Add Single User complete test suite",
+      "pageTitle": "Add Single User",
+      "breadcrumb": "Utilities > User Management",
+      "subtitle": "Seamlessly create and register individual user accounts, perfect for personalized onboarding and managing new users one by one.",
+      "sectionHeadings": {
+        "requiredDetails": "Required details",
+        "basicDetails": "Basic details",
+        "enrollmentDetails": "Enrollment details",
+        "groupDetails": "Group details"
+      },
+      "sideBanner": {
+        "heading": "Need to add users in bulk?",
+        "description": "Our \"Add Multiple Users\" feature empowers you to save time and efforts by efficiently onboarding multiple users at once.",
+        "ctaText": "Go to Add Multiple Users"
+      },
+      "placeholders": {
+        "dob": "Select",
+        "contentGroup": "Select"
+      },
+      "validationMessages": {
+        "fullNameRequired": "Full Name is required (3-100 characters)",
+        "fullNameMinLength": "Atleast 3 characters required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Invalid email address",
+        "alternateEmailSame": "Alternate Email cannot be the same as Email",
+        "mobileMinLength": "Atleast 7 characters required",
+        "plainTextOnly": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols.",
+        "max100Chars": "Maximum 100 characters allowed",
+        "max150Chars": "Maximum 150 characters allowed",
+        "onlyNumbersAllowed": "Only numbers are allowed"
+      },
+      "helperTexts": {
+        "idNumber": "Example: Membership / Student / Staff ID"
+      },
+      "testInputs": {
+        "shortName": "Jo",
+        "minValidName": "Bob",
+        "standardName": "Johnathan Doe",
+        "maxName100": "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "over100Chars": "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "over150Chars": "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "htmlTagInput": "<html>",
+        "xssPayload": "<script>alert('xss')</script>",
+        "whitespaceName": "  Jane Doe  ",
+        "invalidEmails": ["plainaddress", "missingatsign.com", "@missingusername.com"],
+        "invalidAlternateEmail": "invalid-alt-email",
+        "shortMobile": "12345",
+        "validMobile": "9876543210",
+        "internationalMobile": "+919876543210",
+        "staffId": "EMP-2026-901",
+        "affiliation": "Institute of Engineering and Science",
+        "department": "Computer Science & Engineering",
+        "degree": "B.Tech Computer Science",
+        "designation": "Assistant Professor",
+        "speciality": "Data Science & AI",
+        "rank": "Grade 1",
+        "batch": "2024-2028",
+        "cadre": "Faculty Cadre A",
+        "admissionYear": "2024",
+        "invalidYear": "abcd",
+        "membershipStatus": "Active",
+        "membershipType": "Permanent"
+      },
+      "dropdownOptions": {
+        "userTypes": ["Student", "Faculty", "Alumni", "Dean", "Professor"],
+        "genders": ["Male", "Female", "Other"]
+      }
+    },
     "filters": {
       "_description": "Where: tests/admin/user-management/manage-users-filters.spec.ts | Class: ManageUsersPage | Tests: Filter visibility, initial state, service group filter, user type filter, incomplete registrations filter",
       "expandTitle": "Expand Filters",
@@ -260,6 +329,78 @@
         "title": "Edit group",
         "saveBtn": "Save",
         "cancelBtn": "Cancel"
+      }
+    },
+    "contentGroupsManagement": {
+      "_description": "Where: tests/admin/user-management/content-groups.spec.ts | Class: ContentGroupsPage | Tests: Full Content Groups CRUD, search, sorting, pagination, section association, user association, and cross-verification with User Management",
+      "url": "/userManagement/contentGroups",
+      "pageTitle": "Codec Network",
+      "breadcrumb": "Utilities > User Management > Content Groups",
+      "subtitle": "Content groups let you easily manage and restrict user's access to the content by organizing it into groups with the help of customizable sections. You can manage the sections and their data here.",
+      "createGroupBtnText": "Create group",
+      "searchPlaceholder": "Find group",
+      "tableHeaders": ["Group Name", "Associated Users", "Associated Sections", "Actions"],
+      "paginationSearchFilter": "CG Medicine",
+      "modal": {
+        "createTitle": "Create group",
+        "editTitle": "Edit group",
+        "groupNamePlaceholder": "Enter group name",
+        "descriptionPlaceholder": " ",
+        "descriptionLabel": "Group description (Max. 200 characters)",
+        "saveBtn": "Save",
+        "cancelBtn": "Cancel",
+        "nameRequiredError": "Group name is required"
+      },
+      "messages": {
+        "nameRequired": "Group name is required",
+        "htmlUnsupported": "Only plain text is allowed. Please remove any unsupported characters like code, script or encoding symbols.",
+        "leadingTrailingSpaces": "Leading or trailing spaces not allowed",
+        "alreadyExists": "Group name already exists. Please enter a different group name."
+      },
+      "testInputs": {
+        "htmlPayload": "<script>alert('xss')</script>",
+        "spacedName": "   CG Spaced Group   "
+      },
+      "duplicateAlert": {
+        "title": "Alert",
+        "message": "Group name already exists. Please enter a different group name.",
+        "confirmBtn": "OK"
+      },
+      "deleteAlert": {
+        "title": "Alert",
+        "message": "Are you sure you want to delete the group?",
+        "confirmBtn": "Yes, Delete",
+        "cancelBtn": "Cancel"
+      },
+      "selectSectionsModal": {
+        "title": "Select sections",
+        "groupNameLabel": "Group Name:",
+        "selectedLabel": "Selected:",
+        "updateBtn": "Update",
+        "cancelBtn": "Cancel"
+      },
+      "selectUsersModal": {
+        "title": "Select users",
+        "groupNameLabel": "Group Name:",
+        "selectedLabel": "Selected:",
+        "loadMoreBtn": "LOAD MORE",
+        "updateBtn": "Update",
+        "cancelBtn": "Cancel"
+      },
+      "loadMoreBtn": "LOAD MORE",
+      "sortTitles": {
+        "none": "Sorting: None",
+        "asc": "Sorting: Ascending",
+        "desc": "Sorting: Descending"
+      },
+      "existingGroups": {
+        "science": "CG Science",
+        "medicine": "CG Medicine",
+        "engineering": "CG Engineering"
+      },
+      "crossModuleUser": {
+        "name": "ServiceGroup UserB",
+        "email": "sg_user_b_1790874766425@yopmail.com"
       }
     }
   }
