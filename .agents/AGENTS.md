@@ -51,9 +51,19 @@ To maintain Playwright as the single source of truth for test reporting, Agents 
    - Always use `allFieldsEditable: true` in your Admin API payload when preparing a form for validation, unless explicitly testing a disabled field state.
    - Always guarantee teardown and reset of the Tenant Admin State inside `finally` or `test.afterAll` blocks to ensure subsequent tests are not poisoned by dirty backend state.
 
-4. **Readable Test Naming Convention:**
-   - Test names should be highly readable. Avoid using superfluous words like "Positive" or "Negative" in the test names. 
-   - Retain natural spaces for readability. E.g., Use `TC_Enrollment_college_Affiliation restricts input to 100 characters max` instead of removing spaces.
+4. **Standard Test Naming Convention (Natural Hierarchy):**
+   - All test names MUST strictly follow the industry-standard Natural Hierarchy format:
+     `[Page / Module] - [Component / Feature] - [Action and Expected Outcome]`
+   - **Examples:**
+     - `Global Navigation - Notification Bell - Bell icon is visible in top navigation bar`
+     - `Service Groups - Create Group Modal - Displays required error when group name is empty`
+     - `User Profile Details - Full Name - Restricts input to 100 characters max`
+     - `Search Filter Panel - Access Type - Filters results to Open Access items`
+   - **STRICT ANTI-PATTERNS (BANNED):**
+     - Do NOT prefix test titles with `TC_`, test case ID numbers (`01`, `02`, `85`), or snake_case slugs (`TC_ManageUsers_UserOverview_...`).
+     - Do NOT use triple underscores (`___`) or regex-mangled slugs.
+     - Avoid superfluous words like "Positive" or "Negative" in test names.
+     - Retain natural spaces and clean, descriptive English.
 
 5. **Test Data Reporting via Annotations:**
    - If a test validates specific input data from a JSON file, push that data to the test context using Playwright annotations so custom reporters (like `CsvReporter.ts`) can extract and log it in a "Test Data" column.
@@ -114,11 +124,13 @@ When configuring admin preconditions for test cases, you MUST NOT use the UI to 
 - **Dynamic / Conditional UI Elements:** When a test interacts with an element that may or may not exist depending on the prior state (e.g., a "Clear Search" button that only appears if text is present), ALWAYS wrap the click in a visibility check (`if (await btn.isVisible()) { await btn.click(); }`) to prevent test flakiness and execution timeouts.
 - **Select Option Data Integrity:** Avoid selecting options in generic comboboxes/dropdowns purely by index (e.g., `selectOption({ index: 1 })`) unless the data is statically controlled. Unpredictable user-generated data (e.g., XSS payloads) might be present. When possible, create dedicated, clean test data prerequisites and select by precise text or value.
 - **Modal Reverse-Engineering:** Never assume two buttons open the same overarching modal just because they relate to the same feature. Always inspect the specific DOM payload that renders (e.g., the "Assign Group" row action opens a distinct `Assign Service Group` modal, while "User Profile" opens a different one). Use the exact modal titles to filter your locators.
+- **Soft Modal Resets vs Hard Page Reloads in `beforeEach`:** In test suites with repetitive modal interactions (such as Service Groups or Profile Overview), avoid unconditional full browser navigations (`await page.goto(...)`) and waiting for `networkidle` before every single test. Instead, implement a soft reset that dismisses any lingering open popups (`Escape` or `dismissAnyOpenModals()`). Only navigate if the browser URL has changed. This saves massive execution time across large suites.
 
 ## 🛑 MANDATORY PRE-EXECUTION CHECKLIST (AI AGENTS ONLY)
-**CRITICAL RULE:** Before an AI Agent writes or modifies ANY `.spec.ts` file, it **MUST** explicitly output a thought process verifying the following 4 rules. If it fails to do this, the user is authorized to reject the code:
+**CRITICAL RULE:** Before an AI Agent writes or modifies ANY `.spec.ts` file, it **MUST** explicitly output a thought process verifying the following 5 rules. If it fails to do this, the user is authorized to reject the code:
 1. **No Hardcoding**: "I have verified that all strings, expected titles, and locators are extracted from `admin-data.json` or `portal-data.json`."
 2. **No Logic in Specs**: "I have verified there are no `if/else` statements in this `.spec.ts` file. All conditional logic is handled inside the Page Object Model."
 3. **No Internal Loops**: "I have verified there are no `for` loops inside the `test()` blocks. Iterations only exist inside `test.describe()` to dynamically generate independent test blocks."
 4. **No Dynamic Routing**: "I have verified that no locators in the POM use `.or()` for fallback guessing."
+5. **Natural Hierarchy Naming**: "I have verified that all test titles strictly follow the standard format: `[Page / Module] - [Component / Feature] - [Action and Expected Outcome]`, with NO legacy `TC_` prefixes, test IDs, or snake_case slugs."
 

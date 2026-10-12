@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { AdminDashboardLoginPage } from '../../../src/pages/admin/AdminDashboardLoginPage';
 import { ManageUsersPage } from '../../../src/pages/admin/user-management/ManageUsersPage';
 import { AdminApiService } from '../../../src/api/AdminApiService';
 import profileData from '../../test-data/portal/profile-data.json';
@@ -24,10 +25,14 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
         });
 
         test.beforeEach(async ({ page }) => {
-            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/userManagement/manageUsers');
+            const dashboard = new AdminDashboardLoginPage(page);
+            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
+            await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
+            await dashboard.sidebar.navigateToManageUsers();
+            await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
         });
 
-        test('TC_ManageUsers_UserOverview_Email_Verification - verifies email in profile modal matches the clicked user', async ({ page }) => {
+        test('User Profile Details - Email Header - verifies email in profile modal matches the clicked user', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(basicUserEmail);
             await manageUsersPage.clickUserDetailsOverview(basicUserEmail);
@@ -39,7 +44,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await expect(manageUsersPage.userProfileModal).toBeHidden();
         });
 
-        test('TC_ManageUsers_UserOverview_Headers_Presence - verifies modal and section headers are present', async ({ page }) => {
+        test('User Profile Details - Section Headers - verifies modal and section headers are present', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(basicUserEmail);
             await manageUsersPage.clickUserDetailsOverview(basicUserEmail);
@@ -52,7 +57,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_Email_IsReadonly - verifies email field cannot be edited', async ({ page }) => {
+        test('User Profile Details - Email Field - verifies email field cannot be edited', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(basicUserEmail);
             await manageUsersPage.clickUserDetailsOverview(basicUserEmail);
@@ -63,7 +68,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_BasicDetails_UpdateSuccess - verifies saving valid data works', async ({ page }) => {
+        test('User Profile Details - Basic Details - verifies saving valid data works', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(basicUserEmail);
             await manageUsersPage.clickUserDetailsOverview(basicUserEmail);
@@ -96,7 +101,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             const scenarios = profileData['profile-basic-details.spec.ts'].negativeScenarios.filter((s: any) => s.field === 'fullName');
 
             for (const scenario of scenarios) {
-                test(`TC_ManageUsers_UserOverview_FullName_${scenario.scenario.replace(/[^a-zA-Z0-9]/g, '')} - shows error`, async ({ page }) => {
+                test(`User Profile Details - ${scenario.scenario} displays error`, async ({ page }) => {
                     test.info().annotations.push({ type: 'testData', description: scenario.value });
                     const manageUsersPage = new ManageUsersPage(page);
                     await manageUsersPage.searchForUser(basicUserEmail);
@@ -124,7 +129,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             );
 
             for (const scenario of scenarios) {
-                test(`TC_ManageUsers_UserOverview_Mobile_${scenario.scenario.replace(/[^a-zA-Z0-9]/g, '')} - shows error`, async ({ page }) => {
+                test(`User Profile Details - ${scenario.scenario} displays error`, async ({ page }) => {
                     test.info().annotations.push({ type: 'testData', description: scenario.value });
                     const manageUsersPage = new ManageUsersPage(page);
                     await manageUsersPage.searchForUser(basicUserEmail);
@@ -152,7 +157,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             );
 
             for (const scenario of scenarios) {
-                test(`TC_ManageUsers_UserOverview_AlternateEmail_${scenario.scenario.replace(/[^a-zA-Z0-9]/g, '')}`, async ({ page }) => {
+                test(`User Profile Details - ${scenario.scenario} displays error`, async ({ page }) => {
                     test.info().annotations.push({ type: 'testData', description: scenario.value });
                     const manageUsersPage = new ManageUsersPage(page);
                     await manageUsersPage.searchForUser(basicUserEmail);
@@ -193,7 +198,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             );
 
             for (const scenario of scenarios) {
-                test(`TC_ManageUsers_UserOverview_Enrollment_${scenario.field}_${scenario.scenario.replace(/[^a-zA-Z0-9]/g, '')}`, async ({ page }) => {
+                test(`User Profile Details - Enrollment Details - ${scenario.scenario} displays error`, async ({ page }) => {
                     test.info().annotations.push({ type: 'testData', description: scenario.value });
                     const manageUsersPage = new ManageUsersPage(page);
                     await manageUsersPage.searchForUser(basicUserEmail);
@@ -235,10 +240,14 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
         });
 
         test.beforeEach(async ({ page }) => {
-            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/userManagement/manageUsers');
+            const dashboard = new AdminDashboardLoginPage(page);
+            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
+            await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
+            await dashboard.sidebar.navigateToManageUsers();
+            await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Dropdown_Expands - Clicking on Content Group opens list of content groups', async ({ page }) => {
+        test('User Profile Details - Content Groups - Clicking on Content Group opens list of content groups', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(cgEmailA);
             await manageUsersPage.clickUserDetailsOverview(cgEmailA);
@@ -249,7 +258,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Items_Have_Checkboxes - Group name list items render with selectable checkboxes', async ({ page }) => {
+        test('User Profile Details - Content Groups - Group name list items render with selectable checkboxes', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(cgEmailA);
             await manageUsersPage.clickUserDetailsOverview(cgEmailA);
@@ -264,7 +273,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Clear_All_Disabled_When_None_Selected - Clear all button is disabled when no group is selected', async ({ page }) => {
+        test('User Profile Details - Content Groups - Clear all button is disabled when no group is selected', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(cgEmailA);
             await manageUsersPage.clickUserDetailsOverview(cgEmailA);
@@ -275,7 +284,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Select_Multiple_And_Save - Selecting multiple groups and saving assigns only the selected groups', async ({ page }) => {
+        test('User Profile Details - Content Groups - Selecting multiple groups and saving assigns only the selected groups', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             const groupsToSelect = [cgData.testGroups[0], cgData.testGroups[1]];
 
@@ -294,7 +303,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Select_All_And_Save - Select All selects all groups and persists post save', async ({ page }) => {
+        test('User Profile Details - Content Groups - Select All selects all groups and persists post save', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -311,7 +320,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Deselect_Option_And_Save - Deselecting a group and saving updates allocation', async ({ page }) => {
+        test('User Profile Details - Content Groups - Deselecting a group and saving updates allocation', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             const groupToDeselect = cgData.testGroups[0];
 
@@ -330,7 +339,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Clear_All_Action_And_Save - Clear all removes all selected groups and persists', async ({ page }) => {
+        test('User Profile Details - Content Groups - Clear all removes all selected groups and persists', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -347,7 +356,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Selection_Count_Display - Count of selected groups is accurately displayed post save', async ({ page }) => {
+        test('User Profile Details - Content Groups - Count of selected groups is accurately displayed post save', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -374,7 +383,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Unsaved_Selections_Discarded_On_Close - Discards pending group selections when closing modal without saving', async ({ page }) => {
+        test('User Profile Details - Content Groups - Discards pending group selections when closing modal without saving', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -392,7 +401,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Manual_Full_Selection_Counter_Matches_Select_All - Manually checking each option updates counter identically to Select All', async ({ page }) => {
+        test('User Profile Details - Content Groups - Manually checking each option updates counter identically to Select All', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -408,7 +417,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Backdrop_Click_Collapses_Dropdown - Clicking outside the dropdown within modal closes the options menu', async ({ page }) => {
+        test('User Profile Details - Content Groups - Clicking outside the dropdown within modal closes the options menu', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -423,7 +432,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_Clear_All_Instantly_Redisables_Itself - Clicking Clear all immediately disables the button and resets counter', async ({ page }) => {
+        test('User Profile Details - Content Groups - Clicking Clear all immediately disables the button and resets counter', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -442,7 +451,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ContentGroup_User_To_User_State_Isolation - Group allocation on one user does not affect another user', async ({ page }) => {
+        test('User Profile Details - Content Groups - Group allocation on one user does not affect another user', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(cgEmailA);
@@ -470,16 +479,26 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
         test.beforeAll(async () => {
             const adminApi = new AdminApiService();
             await adminApi.initFromState('.auth/admin.json');
+            await adminApi.updateSecuritySettings({
+                selfRegistration: true,
+                automatedVerification: true,
+                twoFactorAuth: false,
+                mandatoryFields: { fields: [], isMandatory: false }
+            });
             await adminApi.addSingleUser("ServiceGroup UserA", sgEmailA);
             await adminApi.addSingleUser("ServiceGroup UserB", sgEmailB);
             await adminApi.close();
         });
 
         test.beforeEach(async ({ page }) => {
-            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/userManagement/manageUsers');
+            const dashboard = new AdminDashboardLoginPage(page);
+            await page.goto(process.env.ADMIN_TEST_URL + '/librarian/v2/elibrarySetup/dashboard');
+            await expect(page).toHaveTitle(/.*Codec Network.*/i, { timeout: 15000 });
+            await dashboard.sidebar.navigateToManageUsers();
+            await expect(page).toHaveURL(new RegExp(adminData.userManagement.expectedUrls.manageUsers));
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Dropdown_Options_Visible - Clicking on Service Group displays list of available options', async ({ page }) => {
+        test('User Profile Details - Service Group - Clicking on Service Group displays list of available options', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -496,7 +515,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Single_Select_Enforcement - Only one service group can be selected at a time', async ({ page }) => {
+        test('User Profile Details - Service Group - Only one service group can be selected at a time', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -512,7 +531,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Expired_Group_Displays_Warning - Selecting expired service group displays warning message while allowing selection', async ({ page }) => {
+        test('User Profile Details - Service Group - Selecting expired service group displays warning message while allowing selection', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -528,7 +547,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Active_Group_Clears_Expired_Warning - Switching from expired group to active group clears the warning message', async ({ page }) => {
+        test('User Profile Details - Service Group - Switching from expired group to active group clears the warning message', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -542,7 +561,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Save_Populates_Expiry_Date - Allocating service group automatically populates Expiry Date on save', async ({ page }) => {
+        test('User Profile Details - Service Group - Allocating service group automatically populates Expiry Date on save', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -562,7 +581,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Reassign_To_Another_Group - User with existing service group can be moved to another group', async ({ page }) => {
+        test('User Profile Details - Service Group - User with existing service group can be moved to another group', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -579,7 +598,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Unsaved_Selection_Discarded_On_Close - Changing selection without clicking save discards changes', async ({ page }) => {
+        test('User Profile Details - Service Group - Changing selection without clicking save discards changes', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -596,7 +615,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Modal_Close_Via_Close_Button - User Profile modal closes cleanly when clicking Close button', async ({ page }) => {
+        test('User Profile Details - Modal Controls - User Profile modal closes cleanly when clicking Close button', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -606,7 +625,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await expect(manageUsersPage.userProfileModal).toBeHidden();
         });
 
-        test('TC_ManageUsers_AssignServiceGroup_Modal_Close_Via_Escape_And_Backdrop - Assign Service Group modal closes when clicking escape or tapping outside', async ({ page }) => {
+        test('User Profile Details - Assign Service Group Modal - Modal closes when clicking escape or tapping outside', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailB);
 
@@ -623,7 +642,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await expect(manageUsersPage.assignGroupModal).toBeHidden();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Allocation_Persists_On_Rechecking_Overview - Re-checking user overview confirms assigned group persistence', async ({ page }) => {
+        test('User Profile Details - Service Group - Re-checking user overview confirms assigned group persistence', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -640,7 +659,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_Unassign_Group_Restores_Default - Selecting default placeholder unassigns service group', async ({ page }) => {
+        test('User Profile Details - Service Group - Selecting default placeholder unassigns service group', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
             await manageUsersPage.searchForUser(sgEmailA);
             await manageUsersPage.clickUserDetailsOverview(sgEmailA);
@@ -657,7 +676,7 @@ test.describe('Manage Users - User Profile Overview - User Details Tab', () => {
             await manageUsersPage.clickProfileCancel();
         });
 
-        test('TC_ManageUsers_UserOverview_ServiceGroup_User_To_User_State_Isolation - Service group assigned to one user does not affect another user', async ({ page }) => {
+        test('User Profile Details - Service Group - Service group assigned to one user does not affect another user', async ({ page }) => {
             const manageUsersPage = new ManageUsersPage(page);
 
             await manageUsersPage.searchForUser(sgEmailA);

@@ -60,5 +60,8 @@ This framework focuses on the **UI / End-to-End (E2E)** and **Integration Precon
   - Dynamic test cases are generated via `test.describe()` using datasets from `portal-data.json` or `admin-data.json`.
   - Every rule/field check runs as an independent `test()` block for transparent HTML/CSV reporting.
   - Inputs are recorded via `test.info().annotations.push({ type: 'testData', description: ... })`.
+- **Standard Test Naming (Natural Hierarchy)**:
+  - Every test case strictly follows the unified format: `[Page / Module] - [Component / Feature] - [Action and Expected Outcome]`.
+  - Prohibits legacy `TC_` prefixes, test IDs, and snake_case slugs across both Portal and Admin suites.
 - **Pre-Authenticated Projects**:
   - Tests utilize cached browser states from `tests/portal.setup.ts` and `tests/admin.setup.ts` to avoid redundant UI logins.

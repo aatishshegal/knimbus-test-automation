@@ -421,6 +421,14 @@ export class ServiceGroupsPage extends AdminBasePage {
         await this.datePicker.waitFor({ state: 'visible', timeout: 5000 });
     }
 
+    async navigateToMonthWithDisabledDates(): Promise<void> {
+        const prevBtn = this.datePicker.locator('.react-datepicker__navigation--previous');
+        if (await this.disabledDateDays.count() === 0 && await prevBtn.isVisible()) {
+            await prevBtn.click();
+            await this.page.waitForTimeout(500);
+        }
+    }
+
     async isEditRaChecked(): Promise<boolean> {
         return await this.editRaCheckbox.isChecked();
     }
