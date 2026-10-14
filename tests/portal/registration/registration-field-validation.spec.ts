@@ -17,12 +17,27 @@ test.describe('Registration Form Field Validation', () => {
     // Increased timeout to 300 seconds to safely allow all 70 data-driven scenarios to finish
     test.setTimeout(300000);
 
-    test('Data-Driven Boundary Validation on Registration Form', async ({ page, portalLoginPage, registrationPage }) => {
+    test('Data-Driven Boundary Validation on Registration Form', async ({ page, portalLoginPage, registrationPage, termsAndConditionsModal }) => {
         // 1. Navigate to Registration Form
         await portalLoginPage.navigateTo(process.env.PORTAL_URL!);
         await portalLoginPage.signInPopupTrigger.click();
         await portalLoginPage.signUpLink.click();
         await expect(registrationPage.registrationPageIdentifier).toBeVisible();
+
+        // 2. Flexible Terms & Conditions Check (Varies by library)
+        const isTermsPresent = await registrationPage.termsCheckbox.waitFor({ state: 'visible', timeout: 2000 })
+            .then(() => true)
+            .catch(() => false);
+
+        if (isTermsPresent) {
+            console.log(`[Registration Test] [SITUATION: PRESENT] Terms & Conditions is PRESENT in this library. Accepting for base validation state.`);
+            await registrationPage.termsCheckbox.check({ force: true });
+        } else {
+            console.log(`[Registration Test] [SITUATION: NOT PRESENT] Terms & Conditions is NOT present in this library. Skipping T&C base setup.`);
+        }
+
+        // Also check if a separate Terms & Conditions pop-up modal is present for this library
+        await termsAndConditionsModal.handleTermsAndConditionsIfVisible(2000);
 
         // 3. Prepare CSV Report array
         const reportData: any[] = [];
@@ -42,13 +57,32 @@ test.describe('Registration Form Field Validation', () => {
 
             if (targetField) {
                 try {
+                    // Check if this scenario is for Terms & Conditions when T&C is NOT present in this library
+                    if (data.field === 'termsCheckbox' && !isTermsPresent) {
+                        console.log(`[Registration Test] [SITUATION: NOT PRESENT] Terms & Conditions is NOT present in this library. Skipping scenario: ${data.scenario}`);
+                        reportData.push(`"${data.scenario}","${data.field}","${data.value || 'N/A'}","${data.expectedError || 'N/A'}","Skipped","Terms & Conditions not present in this library"\n`);
+                        continue;
+                    }
+
                     const tagName = await targetField.evaluate((el: HTMLElement) => el.tagName.toLowerCase()).catch(() => 'input');
-                    // Always clear the existing value before filling per user requirement, EXCEPT for file inputs and selects
-                    if (tagName !== 'select' && data.field !== 'idDocumentFront' && data.field !== 'idDocumentBack') {
+                    const inputType = await targetField.getAttribute('type').catch(() => '');
+
+                    // Ensure Terms & Conditions is accepted for other field tests ONLY IF it is present in this library
+                    if (data.field !== 'termsCheckbox' && isTermsPresent) {
+                        await registrationPage.termsCheckbox.check({ force: true }).catch(() => { });
+                    }
+
+                    // Always clear the existing value before filling per user requirement, EXCEPT for file inputs, selects, and checkboxes
+                    if (tagName !== 'select' && inputType !== 'checkbox' && data.field !== 'termsCheckbox' && data.field !== 'idDocumentFront' && data.field !== 'idDocumentBack') {
                         await targetField.clear({ timeout: 1000 });
                     }
 
-                    if (data.field === 'idDocumentFront' || data.field === 'idDocumentBack') {
+                    if (data.field === 'termsCheckbox' || inputType === 'checkbox') {
+                        // For Terms & Conditions: uncheck/toggle so validation is triggered
+                        await targetField.check({ force: true });
+                        await targetField.uncheck({ force: true });
+                    }
+                    else if (data.field === 'idDocumentFront' || data.field === 'idDocumentBack') {
                         const filePath = `tests/test-data/files/${data.value}`;
                         await targetField.setInputFiles(filePath, { timeout: 1000 });
                     }
@@ -82,11 +116,11 @@ test.describe('Registration Form Field Validation', () => {
                         // Use .last() to avoid strict mode violation when multiple fields share same error text
                         const errorMessage = page.getByText(data.expectedError!, { exact: false }).last();
                         await expect(errorMessage).toBeVisible({ timeout: 1000 });
-                        await expect(page.getByRole('button', { name: 'Continue' }).last()).toBeDisabled({ timeout: 1000 });
+                        await expect(registrationPage.continueButton).toBeDisabled({ timeout: 1000 });
                     }
                     else if (data.validationType === 'invalidState') {
                         await expect(targetField).toHaveClass(/is-invalid/, { timeout: 1000 });
-                        await expect(page.getByRole('button', { name: 'Continue' }).last()).toBeDisabled({ timeout: 1000 });
+                        await expect(registrationPage.continueButton).toBeDisabled({ timeout: 1000 });
                     }
                 } catch (error: any) {
                     resultStatus = 'Failed';

@@ -42,7 +42,7 @@ export class RegistrationPage extends BasePage {
     this.FullName = page.locator('input#userName');
     this.Email = page.locator('input#email');
     this.Password = page.locator('input#password');
-    this.termsCheckbox = page.getByRole('checkbox', { name: 'I have read and agree to the' });
+    this.termsCheckbox = page.locator('input#termAndCondition, input[name="termAndCondition"]');
     this.continueButton = page.getByRole('button', { name: /Next|Continue/i });
 
     // Initializing new locators using actual DOM names and IDs
@@ -81,9 +81,18 @@ export class RegistrationPage extends BasePage {
     await this.fillText(this.Password, password, 'Password');
   }
 
-  async acceptTermsAndConditions() {
-    console.log(`[RegistrationPage] Checking Terms & Conditions checkbox...`);
-    await this.termsCheckbox.check({ force: true });
+  async acceptTermsAndConditions(timeoutMs = 2000) {
+    const isPresent = await this.termsCheckbox.waitFor({ state: 'visible', timeout: timeoutMs })
+      .then(() => true)
+      .catch(() => false);
+
+    if (isPresent) {
+      console.log(`[RegistrationPage] [SITUATION: PRESENT] Terms & Conditions is PRESENT in this library. Checking checkbox...`);
+      await this.termsCheckbox.check({ force: true });
+      console.log(`[RegistrationPage] Successfully accepted Terms & Conditions.`);
+    } else {
+      console.log(`[RegistrationPage] [SITUATION: NOT PRESENT] Terms & Conditions is NOT present in this library. Skipping.`);
+    }
   }
   
   async submitRegistration() {

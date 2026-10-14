@@ -320,8 +320,8 @@ export class HomePage extends BasePage {
    * Generic verification that clicking a widget card navigates away to a results/detail page.
    */
   async verifyWidgetCardNavigation(widgetName: string) {
-    // Common landing patterns for card clicks
-    const pattern = /results|search|document|detail|course/i;
+    // Common landing patterns for card clicks (including external MOOC providers like edX, Coursera, NPTEL)
+    const pattern = /results|search|document|detail|course|edx|coursera|nptel|swayam|learn/i;
 
     // Wait a bit for potential new tabs to open
     await this.page.waitForTimeout(3000);

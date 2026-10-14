@@ -6,6 +6,7 @@ import { MandatoryDetailsPage } from '@pages/portal/MandatoryDetailsPage';
 import { WelcomePage } from '@pages/portal/WelcomePage';
 import { OtpPage } from '@pages/portal/OtpPage';
 import { HomePage } from '@pages/portal/HomePage';
+import { CoursePage } from '@pages/portal/CoursePage';
 import { TermsAndConditionsModal } from '@pages/portal/TermsAndConditionsModal';
 import { RegistrationPage } from '@pages/portal/RegistrationPage';
 import { ForgotPasswordPage } from '@pages/portal/ForgotPasswordPage';
@@ -27,6 +28,7 @@ type MyFixtures = {
   welcomePage: WelcomePage;
   otpPage: OtpPage;
   homePage: HomePage;
+  coursePage: CoursePage;
   termsAndConditionsModal: TermsAndConditionsModal;
   registrationPage: RegistrationPage;
   forgotPasswordPage: ForgotPasswordPage;
@@ -68,6 +70,10 @@ export const test = base.extend<MyFixtures>({
   homePage: async ({ page }, use) => {
     const homePage = new HomePage(page);
     await use(homePage);
+  },
+  coursePage: async ({ page }, use) => {
+    const coursePage = new CoursePage(page);
+    await use(coursePage);
   },
   termsAndConditionsModal: async ({ page }, use) => {
     const termsAndConditionsModal = new TermsAndConditionsModal(page);

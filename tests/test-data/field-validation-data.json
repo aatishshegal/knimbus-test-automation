@@ -212,6 +212,13 @@
         "expectedError": "Maximum 30 characters allowed"
     },
     {
+        "scenario": "Terms & Conditions - Without accepting Terms & Conditions",
+        "field": "termsCheckbox",
+        "validationType": "errorMessage",
+        "value": "UNCHECKED",
+        "expectedError": "Please accept the Terms & Conditions."
+    },
+    {
         "scenario": "Affiliation restricts input to 100 characters max",
         "field": "college",
         "validationType": "errorMessage",

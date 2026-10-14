@@ -3,6 +3,8 @@ import { test, expect } from '../../../src/fixtures';
 import { HomePage } from '../../../src/pages/portal/HomePage';
 import { PortalLoginPage } from '../../../src/pages/portal/PortalLoginPage';
 import { AdminApiService } from '../../../src/api/AdminApiService';
+import homePageData from '../../test-data/homePageData.json';
+
 
 test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation', () => {
     let sharedPage: Page;
@@ -115,15 +117,21 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
         }
     });
 
-    test('TC_HomePage_006 - Should display specific Section cards as configured in env @regression', async () => {
-        const envCards = process.env.SECTION_WIDGET_EXPECTED_CARDS || '';
-        const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
+    // test('TC_HomePage_006 - Should display specific Section cards as configured in env @regression', async () => {
+    //     const envCards = process.env.SECTION_WIDGET_EXPECTED_CARDS || '';
+    //     const expectedCards = envCards.split(',').map(c => c.trim()).filter(c => c.length > 0);
 
-        if (expectedCards.length > 0) {
-            const actualCards = await homePage.getWidgetCardTitles('SECTION');
-            expect(actualCards).toEqual(expect.arrayContaining(expectedCards));
-        }
+    //     if (expectedCards.length > 0) {
+    //         const actualCards = await homePage.getWidgetCardTitles('SECTION');
+    //         expect(actualCards).toEqual(expect.arrayContaining(expectedCards));
+    //     }
+    // });
+    test('TC_HomePage_006 - Should display specific Section cards as configured in test data @regression', async () => {
+        const expectedCards = homePageData.sectionWidgetExpectedCards || [];
+        const actualCards = await homePage.getWidgetCardTitles('SECTION');
+        expect(actualCards).toEqual(expect.arrayContaining(expectedCards));
     });
+
 
 
     test('TC_HomePage_007 - Should navigate correctly when clicking a Section card @regression', async () => {
@@ -138,7 +146,6 @@ test.describe.serial('Portal Home Page - Widgets Integrity & Routing Validation'
 
         await homePage.verifyHomePage();
     });
-
 
     // ============================================================
     // 4. SUBJECT WIDGET

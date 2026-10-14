@@ -1,0 +1,54 @@
+{
+  "widgetNames": {
+    "directory": "Course Directory",
+    "gallery": "Course Gallery",
+    "listing": "Course Listing",
+    "sliderCards": "Course Slider — Cards",
+    "sliderGallery": "Course Slider — Gallery"
+  },
+  "coursePageExpectedWidgets": [
+    "Course Directory",
+    "Course Gallery",
+    "Course Listing",
+    "Course Slider — Cards",
+    "Course Slider — Gallery"
+  ],
+  "allWidgetsInExactOrder": [
+    "Course Directory",
+    "Course Gallery",
+    "Course Listing",
+    "Course Slider — Cards",
+    "Course Slider — Gallery"
+  ],
+  "widgetsWithViewAll": [
+    "Course Directory"
+  ],
+  "searchValidQuery": "Windows",
+  "searchInvalidQuery": "XYZNonExistentCourse999",
+  "responsiveViewports": [
+    { "name": "desktop", "width": 1280, "height": 720 },
+    { "name": "tablet", "width": 768, "height": 1024 },
+    { "name": "mobile", "width": 375, "height": 667 }
+  ],
+  "courseDirectoryExpectedCards": [
+    "Windows 10 App Development Advanced",
+    "Wells Hydraulics",
+    "Well and Able - Improving the Physical Health of People with Intellectual Disability",
+    "Urban Rewilding: Restore Your Local Ecosystem",
+    "Types of Games in Level Design"
+  ],
+  "courseGalleryExpectedCards": [
+    "American Government",
+    "Anatomy: Cardiovascular  Urinary  and Respiratory Systems",
+    "AP Computer Science A: Java Programming Loops and Data Structures"
+  ],
+  "courseListingExpectedCards": [
+    "American Government",
+    "Anatomy: Cardiovascular  Urinary  and Respiratory Systems",
+    "AP Computer Science A: Java Programming Loops and Data Structures"
+  ],
+  "courseSliderCardsExpectedCards": [
+    "American Government",
+    "Anatomy: Cardiovascular  Urinary  and Respiratory Systems"
+  ]
+}

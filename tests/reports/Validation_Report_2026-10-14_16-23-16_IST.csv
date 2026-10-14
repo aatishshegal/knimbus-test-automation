@@ -29,6 +29,7 @@ Scenario,Field,Test Value,Expected Error,Result,Details
 "Password - Less than 5 char","Password","1234","Atleast 5 characters required","Passed",""
 "Password - In between space","Password","12 345","Space not allowed","Passed",""
 "Password - When enter 32 characters","Password","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","Maximum 30 characters allowed","Passed",""
+"Terms & Conditions - Without accepting Terms & Conditions","termsCheckbox","UNCHECKED","Please accept the Terms & Conditions.","Passed",""
 "Affiliation restricts input to 100 characters max","college","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","Maximum 100 characters allowed","Passed",""
 "Department restricts input to 100 characters max","department","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","Maximum 100 characters allowed","Passed",""
 "Degree restricts input to 150 characters max","qualification","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","Maximum 150 characters allowed","Passed",""
