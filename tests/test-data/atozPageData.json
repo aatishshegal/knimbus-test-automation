@@ -1,0 +1,42 @@
+{
+  "pageTitle": "A-Z List",
+  "pageSubtitle": "An exhaustive catalog of your organization's digital assets, allowing you to browse titles alphabetically, with or without specific predefined search criteria.",
+  "alphabetLetters": [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+    "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+  ],
+  "sampleFilterLetter": "A",
+  "filterFacets": [
+    "SOURCE",
+    "ACCESS TYPE",
+    "CONTENT",
+    "ABDC JOURNAL RATING",
+    "LANGUAGE",
+    "COVERAGE DEPTH",
+    "AUTHOR",
+    "PUBLICATION YEAR",
+    "SUBJECT",
+    "CONSORTIUM / ASSOCIATION",
+    "KNIMBUS COLLECTION",
+    "ORIGINAL SOURCE",
+    "SJR RANK"
+  ],
+  "sampleFacetToExpand": "CONTENT",
+  "tabs": {
+    "eCatalog": "eCatalog",
+    "multimedia": "Multimedia"
+  },
+  "searchWithinValidQuery": "Business",
+  "searchWithinInvalidQuery": "XYZNonExistentRandom99999",
+  "expectedViewModes": [
+    "Grid View",
+    "List View"
+  ],
+  "expectedSortOption": "Alphabetically",
+  "expectedCardActionButtons": [
+    "Read",
+    "Bookmark",
+    "Cite",
+    "Share"
+  ]
+}

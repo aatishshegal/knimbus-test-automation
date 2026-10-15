@@ -11,6 +11,7 @@ import { TermsAndConditionsModal } from '@pages/portal/TermsAndConditionsModal';
 import { RegistrationPage } from '@pages/portal/RegistrationPage';
 import { ForgotPasswordPage } from '@pages/portal/ForgotPasswordPage';
 import { ResetPasswordPage } from '@pages/portal/ResetPasswordPage';
+import { AtoZResultPage } from '@pages/portal/AtoZResultPage';
 import { AdminApiService } from '../api/AdminApiService';
 
 // New API-based helper function to handle Admin Session instantly
@@ -33,6 +34,7 @@ type MyFixtures = {
   registrationPage: RegistrationPage;
   forgotPasswordPage: ForgotPasswordPage;
   resetPasswordPage: ResetPasswordPage;
+  atozResultPage: AtoZResultPage;
   standardUser: { email: string, password: string };
   otpUser: { email: string, password: string };
   mandatoryDetailsUser: { email: string, password: string };
@@ -90,6 +92,10 @@ export const test = base.extend<MyFixtures>({
   resetPasswordPage: async ({ page }, use) => {
     const resetPasswordPage = new ResetPasswordPage(page);
     await use(resetPasswordPage);
+  },
+  atozResultPage: async ({ page }, use) => {
+    const atozResultPage = new AtoZResultPage(page);
+    await use(atozResultPage);
   },
   standardUser: async ({}, use) => {
     await withApiAdminSetup(async (adminApi) => {
