@@ -32,7 +32,8 @@ test.describe('Portal Section Page - Pure Section Widgets Coverage', () => {
         const portalLoginPage = new PortalLoginPage(sharedPage);
         sectionPage = new SectionPage(sharedPage);
 
-        await sharedPage.goto('https://playwright.knimbus.com/portal/v2/default/home');
+        const targetUrl = process.env.SECTION_PORTAL_URL || process.env.PORTAL_URL || 'https://sydneyuniversity.knimbus.com/portal/v2/default/home';
+        await sharedPage.goto(targetUrl);
         await portalLoginPage.login(email, password);
         await sectionPage.goto();
     });

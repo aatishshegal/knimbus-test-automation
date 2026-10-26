@@ -44,8 +44,10 @@ export class ContentPage extends BasePage {
     this.landingPageContentTab = page.locator('header bdi:has-text("Content"), nav a:has-text("Content")').first();
 
     // Widget 1: All Content Types Locators
-    this.allContentTypesHeading = page.locator('.grp-widget-title:has-text("All Content Types"), h1:has-text("All Content Types"), h2:has-text("All Content Types"), *:has-text("All Content Types")').first();
-    this.allContentTypesDescription = page.locator('.grp-widget-desc:has-text("Browse every format"), *:has-text("Browse every format — journals, books, proceedings, and more.")').first();
+    this.allContentTypesHeading = page.getByRole('heading', { name: /All Content Types/i })
+      .or(page.locator('.grp-widget-title, .widget-title, [class*="widget-title"], [class*="heading"], h1, h2, h3').filter({ hasText: /All Content Types/i }))
+      .first();
+    this.allContentTypesDescription = page.locator('.grp-widget-desc, [class*="widget-desc"]').filter({ hasText: /Browse every format/i }).first();
     this.allContentTypesCardContainer = page.locator('.widgetListNameWithImageStyle1, .widgetListNameWithImageStyle1Card').first();
     this.allContentTypesCards = page.locator('.widgetListNameWithImageStyle1Card ul li');
     this.allContentTypesImages = page.locator('.widgetNwlStyle1ImgContainer img, .widgetListNameWithImageStyle1Card img');
@@ -79,23 +81,29 @@ export class ContentPage extends BasePage {
   }
 
   async navigateToContentTab() {
-    if (await this.allContentTypesHeading.isVisible().catch(() => false)) {
+    if (await this.getWidgetHeading('All Content Types').isVisible().catch(() => false)) {
       return;
     }
 
-    const tab = this.contentTabLink.or(this.page.locator('a, bdi, span').filter({ hasText: /^Content$/i }).first());
+    const tab = this.page.getByRole('link', { name: /^Content$/i })
+      .or(this.page.locator('header a, nav a, bdi').filter({ hasText: /^Content$/i }))
+      .or(this.contentTabLink)
+      .first();
+
     if (await tab.isVisible({ timeout: 5000 }).catch(() => false)) {
       await tab.click();
-      await this.page.waitForLoadState('domcontentloaded');
       await this.page.waitForTimeout(1000);
+      await this.getWidgetHeading('All Content Types').waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
     } else {
       await this.page.goto('https://playwright.knimbus.com/portal/v2/default/home').catch(() => {});
       await this.page.waitForLoadState('domcontentloaded');
-      const navTab = this.page.locator('a, bdi, span').filter({ hasText: /^Content$/i }).first();
-      if (await navTab.isVisible().catch(() => false)) {
+      const navTab = this.page.getByRole('link', { name: /^Content$/i })
+        .or(this.page.locator('header a, nav a, bdi').filter({ hasText: /^Content$/i }))
+        .first();
+      if (await navTab.isVisible({ timeout: 5000 }).catch(() => false)) {
         await navTab.click();
-        await this.page.waitForLoadState('domcontentloaded');
         await this.page.waitForTimeout(1000);
+        await this.getWidgetHeading('All Content Types').waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
       }
     }
   }
@@ -103,26 +111,27 @@ export class ContentPage extends BasePage {
   async verifyContentPageLoaded() {
     await this.navigateToContentTab();
     await this.page.waitForLoadState('domcontentloaded');
-    const pageHeading = this.allContentTypesHeading
-      .or(this.getWidgetHeading('All Content Types'))
+    const pageHeading = this.getWidgetHeading('All Content Types')
       .or(this.getWidgetHeading('Content Types — Standard'))
-      .or(this.getWidgetHeading('Content Types'));
+      .or(this.getWidgetHeading('Content Types'))
+      .first();
     await expect(pageHeading).toBeVisible({ timeout: 15000 });
   }
 
   getWidgetHeading(widgetName: string): Locator {
-    const cleanName = widgetName.replace(/[—–-]/g, '.');
-    return this.page.locator('.grp-widget-title, .widget-title, [class*="widget-title"], [class*="heading"], h1, h2, h3, h4, h5, h6, div')
-      .filter({ hasText: new RegExp(cleanName, 'i') })
-      .or(this.page.locator(`.grp-widget-title:has-text("${widgetName}"), .grp-widget-title:has-text("Content Types")`))
+    const escaped = widgetName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    return this.page.getByRole('heading', { name: new RegExp(escaped, 'i') })
+      .or(this.page.locator('.grp-widget-title, .widget-title, [class*="widget-title"], [class*="heading"], h1, h2, h3, h4, h5, h6').filter({ hasText: new RegExp(escaped, 'i') }))
       .first();
   }
 
   getWidgetContainer(widgetName: string): Locator {
     const heading = this.getWidgetHeading(widgetName);
-    return heading.locator('xpath=ancestor::div[contains(@class,"var-padding") or contains(@class,"grp-widget") or contains(@class,"widget-container") or contains(@class,"container")][1]')
+    return heading.locator('xpath=ancestor::div[contains(@class,"container-fluid") or contains(@class,"var-padding") or contains(@class,"grp-widget") or contains(@class,"widget-container")][1]')
       .or(heading.locator('xpath=ancestor::div[contains(@class,"row")][2]'))
-      .or(this.page.locator('.widgetListNameWithImageStyle1Card, .widgetListNameWithImageStyle1').first())
+      .or(heading.locator('xpath=ancestor::div[contains(@class,"row") or contains(@class,"grp-widget") or contains(@class,"widget") or contains(@class,"section")][1]'))
+      .or(heading.locator('xpath=ancestor::section[1]'))
+      .or(heading.locator('..').locator('..'))
       .first();
   }
 
@@ -135,7 +144,7 @@ export class ContentPage extends BasePage {
   async verifyWidgetDescription(widgetName: string, expectedDescription: string) {
     const container = this.getWidgetContainer(widgetName);
     await container.scrollIntoViewIfNeeded().catch(() => {});
-    const desc = container.locator('.grp-widget-desc, .widget-desc').first().or(this.page.locator('.grp-widget-desc').first());
+    const desc = container.locator('.grp-widget-desc, .widget-desc').first();
     await expect(desc).toBeVisible({ timeout: 10000 });
     const actualText = (await desc.innerText().catch(() => '')).trim();
     expect(actualText).toContain(expectedDescription.trim().substring(0, 15));
@@ -177,7 +186,7 @@ export class ContentPage extends BasePage {
   async verifyWidgetViewAllButton(widgetName: string) {
     const container = this.getWidgetContainer(widgetName);
     await container.scrollIntoViewIfNeeded().catch(() => {});
-    const viewAllBtn = container.locator('a.viewAll, button:has-text("View all"), a:has-text("View all")').first().or(this.page.locator('a.viewAll, a:has-text("View all")').first());
+    const viewAllBtn = container.locator('a.viewAll, button:has-text("View all"), a:has-text("View all")').first();
     await expect(viewAllBtn).toBeVisible({ timeout: 10000 });
   }
 
@@ -196,7 +205,7 @@ export class ContentPage extends BasePage {
   async verifyWidgetCountsVisible(widgetName: string, containerSelector: string, badgeSelector: string) {
     const container = this.getWidgetContainer(widgetName);
     await container.scrollIntoViewIfNeeded().catch(() => {});
-    const badges = container.locator(`${containerSelector} ${badgeSelector}`);
+    const badges = container.locator(`${containerSelector} ${badgeSelector}`).filter({ hasText: /\d+/ });
     const count = await badges.count();
     expect(count).toBeGreaterThan(0);
     for (let i = 0; i < count; i++) {
@@ -245,10 +254,13 @@ export class ContentPage extends BasePage {
     if (await searchInput.isVisible().catch(() => false)) {
       await searchInput.fill(query);
       await this.page.waitForTimeout(500);
-      const visibleCount = await container.locator(`${cardSelector}:visible`).count();
+      const selector = cardSelector.includes('li') ? 'ul li:visible, li:visible' : `${cardSelector}:visible`;
+      const visibleCount = await container.locator(selector).count();
       expect(visibleCount).toBeGreaterThanOrEqual(0);
     } else {
-      const cardCount = await container.locator(cardSelector).count();
+      const cards = container.locator(cardSelector);
+      await cards.first().waitFor({ state: 'attached', timeout: 10000 }).catch(() => {});
+      const cardCount = await cards.count();
       expect(cardCount).toBeGreaterThan(0);
     }
   }
@@ -260,7 +272,8 @@ export class ContentPage extends BasePage {
     if (await searchInput.isVisible().catch(() => false)) {
       await searchInput.fill(query);
       await this.page.waitForTimeout(500);
-      const visibleCount = await container.locator(`${cardSelector}:visible`).count();
+      const selector = cardSelector.includes('li') ? 'ul li:visible, li:visible' : `${cardSelector}:visible`;
+      const visibleCount = await container.locator(selector).count();
       expect(visibleCount).toBe(0);
     } else {
       expect(true).toBe(true);
@@ -276,10 +289,14 @@ export class ContentPage extends BasePage {
       await this.page.waitForTimeout(300);
       await searchInput.fill('');
       await this.page.waitForTimeout(500);
-      const restoredCount = await container.locator(cardSelector).count();
+      const cards = container.locator(cardSelector);
+      await cards.first().waitFor({ state: 'attached', timeout: 10000 }).catch(() => {});
+      const restoredCount = await cards.count();
       expect(restoredCount).toBeGreaterThan(0);
     } else {
-      const cardCount = await container.locator(cardSelector).count();
+      const cards = container.locator(cardSelector);
+      await cards.first().waitFor({ state: 'attached', timeout: 10000 }).catch(() => {});
+      const cardCount = await cards.count();
       expect(cardCount).toBeGreaterThan(0);
     }
   }

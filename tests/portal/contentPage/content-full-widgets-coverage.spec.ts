@@ -412,21 +412,21 @@ test.describe('Portal Content Page - Pure Content Widgets & Actions Coverage', (
      * Objective: Verify in-widget positive search filtering for "Content Types — Style 2".
      */
     test('TC_ContentPage_W04_10 - "Content Types — Style 2" - In-widget positive search filtering @regression', async () => {
-        await contentPage.verifyPositiveSearchQuery('Content Types — Style 2', 'Journal', 'div, ul li');
+        await contentPage.verifyPositiveSearchQuery('Content Types — Style 2', 'Journal', 'ul li');
     });
 
     /**
      * Objective: Verify in-widget negative search returning 0 results for "Content Types — Style 2".
      */
     test('TC_ContentPage_W04_11 - "Content Types — Style 2" - In-widget negative search returning 0 results @regression', async () => {
-        await contentPage.verifyNegativeSearchQuery('Content Types — Style 2', 'NON_EXISTENT_FORMAT_999', 'div, ul li');
+        await contentPage.verifyNegativeSearchQuery('Content Types — Style 2', 'NON_EXISTENT_FORMAT_999', 'ul li');
     });
 
     /**
      * Objective: Verify in-widget search reset behavior for "Content Types — Style 2".
      */
     test('TC_ContentPage_W04_12 - "Content Types — Style 2" - In-widget search reset behavior @regression', async () => {
-        await contentPage.verifySearchResetQuery('Content Types — Style 2', 'div, ul li');
+        await contentPage.verifySearchResetQuery('Content Types — Style 2', 'ul li');
     });
 
     // ==========================================

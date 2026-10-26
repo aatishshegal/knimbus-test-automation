@@ -1,0 +1,70 @@
+{
+  "targetUrl": "https://playwright.knimbus.com/portal/v2/default/home",
+  "subjectUrl": "https://playwright.knimbus.com/portal/v2/custom/subject",
+  "widgetHeadings": {
+    "nameAndImage": "Subjects — Name & Image",
+    "gallery": "Subjects — Gallery",
+    "sliderCards": "Subject Slider — Cards",
+    "sliderGallery": "Subject Slider — Gallery",
+    "featuredSubjects": "Featured Subjects"
+  },
+  "expectedDescriptions": {
+    "nameAndImage": "Academic disciplines displayed with name and representative image.",
+    "gallery": "Visual gallery of academic subjects and disciplines.",
+    "sliderCards": "Interactive slider showcasing subjects with cover images.",
+    "sliderGallery": "Image slider highlighting key academic disciplines.",
+    "featuredSubjects": "Selected subjects with name and image for focused browsing."
+  },
+  "sampleSubjects": {
+    "nameAndImage": [
+      "Accounting",
+      "Aerospace Engineering",
+      "Analysis",
+      "Anthropology",
+      "Archaeology",
+      "Arts and Social Sciences",
+      "Chemistry",
+      "Computer Science",
+      "Education",
+      "Fine Arts"
+    ],
+    "gallery": [
+      "Zoology",
+      "World Literatures",
+      "World History",
+      "Water Management",
+      "Waste Management",
+      "Vocational Education",
+      "Veterinary Medicine",
+      "Urology"
+    ],
+    "sliderCards": [
+      "Applied Psychology",
+      "Aquaculture",
+      "Archaeology",
+      "Artificial Intelligence",
+      "Arts and Crafts"
+    ],
+    "sliderGallery": [
+      "Accounting",
+      "Aerospace Engineering",
+      "Analysis",
+      "Anthropology",
+      "Archaeology"
+    ],
+    "featuredSubjects": [
+      "Accounting",
+      "Aerospace Engineering",
+      "Analysis",
+      "Anthropology",
+      "Archaeology"
+    ]
+  },
+  "search": {
+    "positiveQuery": "Accounting",
+    "positiveQuerySecondary": "Engineering",
+    "invalidQuery": "NON_EXISTENT_SUBJECT_XYZ_9999",
+    "specialCharQuery": "!@#$%^&*()_+",
+    "placeholder": "Search"
+  }
+}

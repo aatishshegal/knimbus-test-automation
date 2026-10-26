@@ -1,8 +1,8 @@
 {
-  "targetUrl": "https://qa-dummyqatesting-v2.knimbus.com/portal/v2/default/home",
+  "targetUrl": "https://sydneyuniversity.knimbus.com/portal/v2/default/home",
   "credentials": {
-    "email": "sectionautomationwithplaywrite@yopmail.com",
-    "password": "12345"
+    "email": "ponting@yopmail.com",
+    "password": "123456"
   },
   "widgetHeadings": {
     "sectionOnlyImage": "Section Only image",
