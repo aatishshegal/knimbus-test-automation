@@ -12,6 +12,10 @@ import { RegistrationPage } from '@pages/portal/RegistrationPage';
 import { ForgotPasswordPage } from '@pages/portal/ForgotPasswordPage';
 import { ResetPasswordPage } from '@pages/portal/ResetPasswordPage';
 import { AtoZResultPage } from '@pages/portal/AtoZResultPage';
+import { OcaPage } from '@pages/portal/OcaPage';
+import { FeedbackFormPage } from '@pages/portal/FeedbackFormPage';
+import { ArticleRequestFormPage } from '@pages/portal/ArticleRequestFormPage';
+import { BookRequestFormPage } from '@pages/portal/BookRequestFormPage';
 import { AdminApiService } from '../api/AdminApiService';
 
 // New API-based helper function to handle Admin Session instantly
@@ -35,6 +39,10 @@ type MyFixtures = {
   forgotPasswordPage: ForgotPasswordPage;
   resetPasswordPage: ResetPasswordPage;
   atozResultPage: AtoZResultPage;
+  ocaPage: OcaPage;
+  feedbackFormPage: FeedbackFormPage;
+  articleRequestFormPage: ArticleRequestFormPage;
+  bookRequestFormPage: BookRequestFormPage;
   standardUser: { email: string, password: string };
   otpUser: { email: string, password: string };
   mandatoryDetailsUser: { email: string, password: string };
@@ -96,6 +104,22 @@ export const test = base.extend<MyFixtures>({
   atozResultPage: async ({ page }, use) => {
     const atozResultPage = new AtoZResultPage(page);
     await use(atozResultPage);
+  },
+  ocaPage: async ({ page }, use) => {
+    const ocaPage = new OcaPage(page);
+    await use(ocaPage);
+  },
+  feedbackFormPage: async ({ page }, use) => {
+    const feedbackFormPage = new FeedbackFormPage(page);
+    await use(feedbackFormPage);
+  },
+  articleRequestFormPage: async ({ page }, use) => {
+    const articleRequestFormPage = new ArticleRequestFormPage(page);
+    await use(articleRequestFormPage);
+  },
+  bookRequestFormPage: async ({ page }, use) => {
+    const bookRequestFormPage = new BookRequestFormPage(page);
+    await use(bookRequestFormPage);
   },
   standardUser: async ({}, use) => {
     await withApiAdminSetup(async (adminApi) => {

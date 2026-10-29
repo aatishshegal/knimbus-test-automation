@@ -1,0 +1,228 @@
+{
+  "navLinkName": "Off-Campus Access",
+  "expectedCategoryCount": 6,
+  "categories": [
+    {
+      "name": "Alpha Category",
+      "count": 15,
+      "fullText": "Alpha Category (15)"
+    },
+    {
+      "name": "Cat",
+      "count": 1,
+      "fullText": "Cat (1)"
+    },
+    {
+      "name": "Mix Category",
+      "count": 5,
+      "fullText": "Mix Category (5)"
+    },
+    {
+      "name": "Premium Publication category",
+      "count": 11,
+      "fullText": "Premium Publication category (11)"
+    },
+    {
+      "name": "Test 1",
+      "count": 3,
+      "fullText": "Test 1 (3)"
+    },
+    {
+      "name": "Uncategorized",
+      "count": 6,
+      "fullText": "Uncategorized (6)"
+    }
+  ],
+  "widgets": {
+    "toggleView": {
+      "title": "Remote Access — Toggle View",
+      "description": "Switch between publisher groups for off-campus authenticated access.",
+      "categoryCount": 6,
+      "initialCategories": [
+        "Alpha Category (15)",
+        "Cat (1)",
+        "Mix Category (5)",
+        "Premium Publication category (11)",
+        "Test 1 (3)",
+        "Uncategorized (6)"
+      ],
+      "categoriesWithCounts": [
+        {
+          "name": "Alpha Category",
+          "count": 15
+        },
+        {
+          "name": "Cat",
+          "count": 1
+        },
+        {
+          "name": "Mix Category",
+          "count": 5
+        },
+        {
+          "name": "Premium Publication category",
+          "count": 11
+        },
+        {
+          "name": "Test 1",
+          "count": 3
+        },
+        {
+          "name": "Uncategorized",
+          "count": 6
+        }
+      ],
+      "searchQuery": "Bentham",
+      "expectedResource": "Bentham Science",
+      "postSearchCategories": [
+        "Alpha Category (1)",
+        "Cat (0)",
+        "Mix Category (0)",
+        "Premium Publication category (0)",
+        "Test 1 (0)",
+        "Uncategorized (0)"
+      ]
+    },
+    "standard": {
+      "title": "Remote Access — Standard",
+      "description": "Access publisher platforms remotely with your university credentials.",
+      "categoryCount": 6,
+      "initialCategories": [
+        "Alpha Category (15)",
+        "Cat (1)",
+        "Mix Category (5)",
+        "Premium Publication category (11)",
+        "Test 1 (3)",
+        "Uncategorized (6)"
+      ],
+      "categoriesWithCounts": [
+        {
+          "name": "Alpha Category",
+          "count": 15
+        },
+        {
+          "name": "Cat",
+          "count": 1
+        },
+        {
+          "name": "Mix Category",
+          "count": 5
+        },
+        {
+          "name": "Premium Publication category",
+          "count": 11
+        },
+        {
+          "name": "Test 1",
+          "count": 3
+        },
+        {
+          "name": "Uncategorized",
+          "count": 6
+        }
+      ],
+      "searchQuery": "Cambridge",
+      "expectedResource": "Cambridge eBook Online"
+    },
+    "grouped": {
+      "title": "Remote Access — Grouped",
+      "description": "Grouped publisher listing for off-campus resource access.",
+      "categoryCount": 6,
+      "initialCategories": [
+        "Alpha Category (15)",
+        "Cat (1)",
+        "Mix Category (5)",
+        "Premium Publication category (11)",
+        "Test 1 (3)",
+        "Uncategorized (6)"
+      ],
+      "categoriesWithCounts": [
+        {
+          "name": "Alpha Category",
+          "count": 15
+        },
+        {
+          "name": "Cat",
+          "count": 1
+        },
+        {
+          "name": "Mix Category",
+          "count": 5
+        },
+        {
+          "name": "Premium Publication category",
+          "count": 11
+        },
+        {
+          "name": "Test 1",
+          "count": 3
+        },
+        {
+          "name": "Uncategorized",
+          "count": 6
+        }
+      ],
+      "searchQuery": "Indiastat",
+      "expectedResource": "Indiastat"
+    },
+    "tabbed": {
+      "title": "Remote Access — Tabbed",
+      "description": "Tabbed navigation to publisher platforms — click any resource to access remotely.",
+      "categoryCount": 6,
+      "tabs": [
+        "Alpha Category (15)",
+        "Cat (1)",
+        "Mix Category (5)",
+        "Premium Publication category (11)",
+        "Test 1 (3)",
+        "Uncategorized (6)"
+      ],
+      "tabsWithCounts": [
+        {
+          "name": "Alpha Category",
+          "count": 15
+        },
+        {
+          "name": "Cat",
+          "count": 1
+        },
+        {
+          "name": "Mix Category",
+          "count": 5
+        },
+        {
+          "name": "Premium Publication category",
+          "count": 11
+        },
+        {
+          "name": "Test 1",
+          "count": 3
+        },
+        {
+          "name": "Uncategorized",
+          "count": 6
+        }
+      ],
+      "activeTabForSearch": "Alpha Category (15)",
+      "searchQuery": "Bentham",
+      "expectedResource": "Bentham Science"
+    }
+  },
+  "responsiveViewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 667
+    }
+  ]
+}

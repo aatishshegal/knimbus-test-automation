@@ -72,4 +72,51 @@ export class YopmailPage {
     console.log(`[Yopmail] Successfully extracted Reset Link: ${match[0]}`);
     return match[0];
   }
+
+  /**
+   * Waits for and retrieves the title/subject of the latest email for a given user on Yopmail.
+   * Retries and refreshes the inbox if the email hasn't arrived yet.
+   *
+   * @param email The Yopmail email address (e.g. prant3@yopmail.com)
+   * @param expectedPattern Optional substring or RegExp to match the expected email title
+   * @param timeoutSeconds Max wait time in seconds (default 30)
+   * @returns The title/subject string of the matched or latest email
+   */
+  async getLatestEmailTitle(email: string, expectedPattern?: string | RegExp, timeoutSeconds = 30): Promise<string> {
+    console.log(`[Yopmail] Fetching latest email title for ${email}...`);
+
+    await this.page.goto('https://yopmail.com/');
+    await this.page.locator('#login').fill(email.split('@')[0]);
+    await this.page.locator('button[title="Check Inbox @yopmail.com"]').click();
+
+    const maxRetries = Math.ceil(timeoutSeconds / 3);
+    for (let i = 0; i < maxRetries; i++) {
+      await this.page.waitForTimeout(3000);
+      try {
+        const inboxFrame = this.page.frameLocator('iframe#ifinbox');
+        const firstMail = inboxFrame.locator('.m').first();
+        if (await firstMail.isVisible()) {
+          const subject = (await firstMail.locator('.lms').innerText()).trim();
+          if (!expectedPattern) {
+            console.log(`[Yopmail] Latest email title: "${subject}"`);
+            return subject;
+          }
+          const matches = typeof expectedPattern === 'string'
+            ? subject.toLowerCase().includes(expectedPattern.toLowerCase())
+            : expectedPattern.test(subject);
+          if (matches) {
+            console.log(`[Yopmail] Found matching email title: "${subject}"`);
+            return subject;
+          }
+        }
+      } catch (e) {
+        // Frame might be refreshing or loading
+      }
+      // Click refresh inbox button
+      await this.page.locator('#refresh').click().catch(() => {});
+    }
+
+    throw new Error(`[Yopmail] Expected email matching pattern "${expectedPattern}" was not found in ${email} inbox within ${timeoutSeconds}s.`);
+  }
 }
+

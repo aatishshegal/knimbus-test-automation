@@ -1,0 +1,63 @@
+{
+  "pageTitle": "Book Request",
+  "pageDescription": "If you are looking for a specific article or journal, please send a request by entering the details below:",
+  "breadcrumbTitle": "Book Request Form",
+  "validBook": {
+    "bookTitle": "Clean Code: A Handbook of Agile Software Craftsmanship",
+    "isbn": "978-0132350884",
+    "author": "Robert C. Martin",
+    "volume": "1st Edition",
+    "pages": "Chapter 1-3, pp. 1-45",
+    "doi": "10.1000/182"
+  },
+  "minimalMandatoryBook": {
+    "bookTitle": "Design Patterns: Elements of Reusable Object-Oriented Software",
+    "author": "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides"
+  },
+  "specialCharBook": {
+    "bookTitle": "Structure & Interpretation of Computer Programs (SICP) - 2nd Ed. [Special]",
+    "isbn": "978-0262510875",
+    "author": "Harold Abelson & Gerald Jay Sussman, Ph.D.",
+    "volume": "Rev. 2.0",
+    "pages": "pp. 100-150",
+    "doi": "10.1007/978-3-642-00000-0"
+  },
+  "fieldValidation": {
+    "bookTitle": {
+      "valid": "Introduction to Algorithms",
+      "special": "Algorithms & Data Structures: In-Depth (4th Ed.)!"
+    },
+    "author": {
+      "valid": "Thomas H. Cormen",
+      "special": "Dr. O'Reilly & Associates"
+    },
+    "isbn": {
+      "valid": "978-0262033848",
+      "tenDigit": "0262033844"
+    },
+    "volume": {
+      "valid": "3rd Edition"
+    },
+    "pages": {
+      "valid": "Chapter 4, pp. 78-95"
+    },
+    "doi": {
+      "valid": "10.1016/j.comp.2024.01.001"
+    }
+  },
+  "whitespaceOnly": "     ",
+  "overLimitTitle": "This is an extraordinarily long book title created specifically to test the maximum character boundary threshold of one hundred and one characters for input fields in Knimbus portal forms validation suite.",
+  "expectedTruncatedTitle101": "This is an extraordinarily long book title created specifically to test the maximum character boundar",
+  "overLimitYear100": "9780132350884978013235088497801323508849780132350884978013235088497801323508849780132350884978013235088497801323508849780132350884",
+  "expectedTruncatedYear100": "9780132350884978013235088497801323508849780132350884978013235088497801323508849780132350884978013235",
+  "labels": {
+    "bookTitle": "Book Title",
+    "isbn": "ISBN",
+    "author": "Author",
+    "volume": "Edition",
+    "pages": "Chapter / Pages",
+    "doi": "DOI"
+  },
+  "expectedSuccessMessage": "Your article request has been successfully submitted to the librarian",
+  "expectedEmailSubjectPattern": "Book request"
+}

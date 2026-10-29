@@ -1,0 +1,76 @@
+{
+  "pageTitle": "Request an Article",
+  "pageDescription": "Can't find what you need? Submit a request and the library will source it for you.",
+  "breadcrumbTitle": "Article Request Form",
+  "validArticle": {
+    "journalTitle": "Nature Biomedical Engineering",
+    "year": "2024",
+    "volume": "8",
+    "issue": "3",
+    "pages": "245-258",
+    "doi": "10.1038/s41551-023-01000-x",
+    "author": "Dr. Sarah Jenkins",
+    "articleTitle": "Deep Learning Optimization in Healthcare Diagnostics"
+  },
+  "minimalMandatoryArticle": {
+    "journalTitle": "The Lancet",
+    "author": "Dr. Watson",
+    "articleTitle": "Clinical Observations in General Medicine"
+  },
+  "specialCharArticle": {
+    "journalTitle": "IEEE Trans. on Pattern Analysis & Machine Intelligence (PAMI)",
+    "year": "2023",
+    "volume": "45(12)",
+    "issue": "Suppl #2",
+    "pages": "S101-S115",
+    "doi": "10.1109/TPAMI.2023.1234567",
+    "author": "J. Doe & A. Smith-Connor, Ph.D.",
+    "articleTitle": "Advancements in Multi-Modal AI: A Survey (2020-2023) & Insights"
+  },
+  "fieldValidation": {
+    "publication": {
+      "valid": "Nature Biotechnology",
+      "special": "Journal of A.I. & Medicine (JAM)"
+    },
+    "author": {
+      "valid": "Prof. Alan Turing",
+      "special": "Dr. O'Connor-Smith & Co."
+    },
+    "articleTitle": {
+      "valid": "Quantum Machine Learning",
+      "special": "Q-Learning: State-of-the-Art (2024)!"
+    },
+    "year": {
+      "valid": "2025"
+    },
+    "volume": {
+      "valid": "42"
+    },
+    "issue": {
+      "valid": "3"
+    },
+    "pages": {
+      "valid": "100-112"
+    },
+    "doi": {
+      "valid": "10.1016/j.cell.2024.01.001"
+    }
+  },
+  "whitespaceOnly": "     ",
+  "overLimitTitle": "This is an extraordinarily long article title created specifically to test the maximum character boundary threshold of one hundred and one characters for input fields in Knimbus portal forms validation suite.",
+  "expectedTruncatedTitle101": "This is an extraordinarily long article title created specifically to test the maximum character boun",
+  "overLimitYear100": "202420242024202420242024202420242024202420242024202420242024202420242024202420242024202420242024202420242024202420242024",
+  "expectedTruncatedYear100": "2024202420242024202420242024202420242024202420242024202420242024202420242024202420242024202420242024",
+  "labels": {
+    "publication": "Publication",
+    "publicationYear": "Publication Year",
+    "volume": "Volume",
+    "issue": "Issue",
+    "pages": "Pages",
+    "doi": "DOI",
+    "author": "Author",
+    "title": "Title"
+  },
+  "expectedSuccessMessage": "Your article request has been successfully submitted to the librarian",
+  "expectedEmailSubjectPattern": "Article request"
+}
